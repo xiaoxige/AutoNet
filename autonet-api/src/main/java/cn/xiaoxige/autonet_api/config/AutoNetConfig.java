@@ -76,7 +76,7 @@ public class AutoNetConfig {
             return this;
         }
 
-        public Buidler setGetParams(Map getParams) {
+        public Buidler setGetDelParams(Map getParams) {
             setGetDelParam(getParams, true);
             return this;
         }

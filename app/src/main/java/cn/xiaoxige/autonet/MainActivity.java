@@ -2,6 +2,7 @@ package cn.xiaoxige.autonet;
 
 import android.os.Bundle;
 
+import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.trello.rxlifecycle2.components.RxActivity;
 
 import cn.xiaoxige.annotation.AutoNetAnontation;
@@ -18,6 +19,8 @@ public class MainActivity extends RxActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startSoftNet(null, bindUntilEvent(ActivityEvent.DESTROY), new TestCallback());
+        cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startUnSoftNet(null, new TestCallback());
     }
 
     @AutoNetEncryptionAnontation(value = false)
@@ -44,7 +47,7 @@ public class MainActivity extends RxActivity {
 
     @AutoNetEncryptionAnontation(value = false)
     @AutoNetBaseUrlKeyAnontation(value = "default")
-    @AutoNetPatternAnontation(value = AutoNetPatternAnontation.NetPattern.POST)
+    @AutoNetPatternAnontation(value = AutoNetPatternAnontation.NetPattern.GET)
     @AutoNetAnontation(url = "/")
     public class TwoCallback implements IAutoNetDataCallback {
 
