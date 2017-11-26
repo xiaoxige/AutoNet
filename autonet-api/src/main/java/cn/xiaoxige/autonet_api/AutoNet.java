@@ -7,6 +7,7 @@ import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.data.requestentity.IRequestEntity;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
+import cn.xiaoxige.autonet_api.presenter.AutoNetPresenter;
 import io.reactivex.FlowableTransformer;
 
 /**
@@ -70,6 +71,25 @@ public class AutoNet {
         String baseUrl = mConfig.getBaseUrl().get(baseUrlKey);
         if (TextUtils.isEmpty(baseUrl)) {
             throw new NullPointerException("BaseUrl is NULL.");
+        }
+
+        AutoNetPresenter presenter = new AutoNetPresenter(
+                requestEntity, baseUrl, url,
+                writeTime, readTime, connectOutTime,
+                isEncryption,
+                transformer, mConfig, mAutoNetEncryptionCallback, callback
+        );
+
+        if (pattern == AutoNetPatternAnontation.NetPattern.GET) {
+            presenter.doGet();
+        } else if (pattern == AutoNetPatternAnontation.NetPattern.POST) {
+            presenter.doPost();
+        } else if (pattern == AutoNetPatternAnontation.NetPattern.DELETE) {
+            presenter.doDelete();
+        } else if (pattern == AutoNetPatternAnontation.NetPattern.PUT) {
+            presenter.doPut();
+        } else {
+            throw new RuntimeException("This pattern is not Support.");
         }
     }
 }
