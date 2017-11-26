@@ -19,7 +19,7 @@ public class MyApplication extends Application {
         AutoNetConfig config = new AutoNetConfig.Buidler()
                 .setBaseUrl("http://www.baidu.com")
                 .build();
-        AutoNet.getInstance().init(config).setAutoNetEncryption(new IAutoNetEncryptionCallback() {
+        AutoNet.getInstance().init(this, config).setAutoNetEncryption(new IAutoNetEncryptionCallback() {
             @Override
             public String encryption(String beforeValue) {
                 return "";

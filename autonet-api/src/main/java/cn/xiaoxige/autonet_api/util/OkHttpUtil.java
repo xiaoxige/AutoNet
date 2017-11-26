@@ -2,6 +2,8 @@ package cn.xiaoxige.autonet_api.util;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 
+import java.util.concurrent.TimeUnit;
+
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import cn.xiaoxige.autonet_api.net.BaseApplicationInterceptor;
@@ -13,10 +15,16 @@ import okhttp3.OkHttpClient;
 
 public class OkHttpUtil {
 
-    public static OkHttpClient start(boolean encryption, AutoNetConfig config, IAutoNetEncryptionCallback autoNetEncryption) {
+
+    public static OkHttpClient start(boolean isencryption, AutoNetConfig config,
+                                     long writeTime, long readtime, long connectOutTime,
+                                     IAutoNetEncryptionCallback autoNetEncryptionCallback) {
         OkHttpClient client = new OkHttpClient.Builder()
-                .addNetworkInterceptor(new BaseApplicationInterceptor(encryption, config, autoNetEncryption))
+                .addNetworkInterceptor(new BaseApplicationInterceptor(isencryption, config, autoNetEncryptionCallback))
                 .addNetworkInterceptor(new StethoInterceptor())
+                .writeTimeout(writeTime, TimeUnit.SECONDS)
+                .readTimeout(readtime, TimeUnit.SECONDS)
+                .connectTimeout(connectOutTime, TimeUnit.SECONDS)
                 .build();
         return client;
     }

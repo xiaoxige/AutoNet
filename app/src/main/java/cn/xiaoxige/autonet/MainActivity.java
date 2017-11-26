@@ -20,13 +20,12 @@ public class MainActivity extends RxActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startSoftNet(null, bindUntilEvent(ActivityEvent.DESTROY), new TestCallback());
-        cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startUnSoftNet(null, new TestCallback());
     }
 
     @AutoNetEncryptionAnontation(value = false)
     @AutoNetBaseUrlKeyAnontation(value = "default")
-    @AutoNetPatternAnontation(value = AutoNetPatternAnontation.NetPattern.POST)
-    @AutoNetAnontation(url = "/")
+    @AutoNetPatternAnontation(value = AutoNetPatternAnontation.NetPattern.GET)
+    @AutoNetAnontation(url = "/name")
     public class TestCallback implements IAutoNetDataCallback<TestResponseEntity> {
 
         @Override

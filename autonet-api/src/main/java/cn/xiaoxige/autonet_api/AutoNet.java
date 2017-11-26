@@ -1,6 +1,9 @@
 package cn.xiaoxige.autonet_api;
 
+import android.content.Context;
 import android.text.TextUtils;
+
+import com.facebook.stetho.Stetho;
 
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
@@ -29,8 +32,11 @@ public class AutoNet {
         return mAutoNet;
     }
 
-    public AutoNet init(AutoNetConfig config) {
-        this.mConfig = config;
+    public AutoNet init(Context config, AutoNetConfig autoNetConfig) {
+        this.mConfig = autoNetConfig;
+
+        Stetho.initializeWithDefaults(config);
+
         return this;
     }
 

@@ -60,13 +60,13 @@ public class AutoNetPresenter {
         this.mConnectOutTime = connectOutTime;
         this.mIsEncryption = isEncryption;
         this.mConfig = config;
+        this.mAutoNetEncryptionCallback = autoNetEncryptionCallback;
 
         this.mTransformer = transformer;
 
         this.mCallback = callback;
-        this.mAutoNetEncryptionCallback = autoNetEncryptionCallback;
 
-        mRepo = new AutoNetRepoImpl();
+        mRepo = new AutoNetRepoImpl(mConfig, mIsEncryption, mResultUrl, mWriteTime, mReadTime, mConnectOutTime, mAutoNetEncryptionCallback);
     }
 
     public void doGet() {
