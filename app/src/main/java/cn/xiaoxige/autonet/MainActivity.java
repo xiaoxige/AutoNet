@@ -9,6 +9,7 @@ import cn.xiaoxige.annotation.AutoNetAnontation;
 import cn.xiaoxige.annotation.AutoNetBaseUrlKeyAnontation;
 import cn.xiaoxige.annotation.AutoNetEncryptionAnontation;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
+import cn.xiaoxige.autonet.model.TestRequestEntity;
 import cn.xiaoxige.autonet.model.TestResponseEntity;
 import cn.xiaoxige.autonet_api.data.responsentity.IResponseEntity;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallback;
@@ -19,7 +20,8 @@ public class MainActivity extends RxActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startSoftNet(null, bindUntilEvent(ActivityEvent.DESTROY), new TestCallback());
+//        cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startSoftNet(null, bindUntilEvent(ActivityEvent.DESTROY), new TestCallback());
+        cn.xiaoxige.autonet.MainActivityTwoCallbackAutoProxy.startSoftNet(new TestRequestEntity("xiaoxige", 22), bindUntilEvent(ActivityEvent.DESTROY), new TwoCallback());
     }
 
     @AutoNetEncryptionAnontation(value = false)
@@ -46,7 +48,7 @@ public class MainActivity extends RxActivity {
 
     @AutoNetEncryptionAnontation(value = false)
     @AutoNetBaseUrlKeyAnontation(value = "default")
-    @AutoNetPatternAnontation(value = AutoNetPatternAnontation.NetPattern.GET)
+    @AutoNetPatternAnontation(value = AutoNetPatternAnontation.NetPattern.POST)
     @AutoNetAnontation(url = "/")
     public class TwoCallback implements IAutoNetDataCallback {
 

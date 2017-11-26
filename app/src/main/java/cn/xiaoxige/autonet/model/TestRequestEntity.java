@@ -1,14 +1,23 @@
 package cn.xiaoxige.autonet.model;
 
-import cn.xiaoxige.autonet_api.data.responsentity.IResponseEntity;
+import cn.xiaoxige.autonet_api.data.requestentity.IRequestEntity;
 
 /**
- * Created by 小稀革 on 2017/11/26.
+ * Created by zhuxiaoan on 2017/11/27.
  */
 
-public class TestResponseEntity extends IResponseEntity {
+public class TestRequestEntity implements IRequestEntity {
+
     private String name;
     private int age;
+
+    public TestRequestEntity() {
+    }
+
+    public TestRequestEntity(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
 
     public String getName() {
         return name;

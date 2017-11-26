@@ -1,5 +1,7 @@
 package cn.xiaoxige.autonet_api.repository;
 
+import com.google.gson.Gson;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -70,14 +72,15 @@ public class AutoNetRepoImpl implements AutoNetRepo {
     }
 
     @Override
-    public Flowable doPost(IRequestEntity entity) {
+    public Flowable doPost(final IRequestEntity entity) {
 
         Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
             @Override
             public void subscribe(@NonNull FlowableEmitter emitter) throws Exception {
                 final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-                // TODO: 2017/11/27 json ???
-                RequestBody body = RequestBody.create(JSON, "");
+                Gson gson = new Gson();
+                String json = gson.toJson(entity);
+                RequestBody body = RequestBody.create(JSON, json);
                 Request request = new Request.Builder()
                         .url(mUrl)
                         .post(body)
@@ -128,14 +131,15 @@ public class AutoNetRepoImpl implements AutoNetRepo {
     }
 
     @Override
-    public Flowable doPut(IRequestEntity entity) {
+    public Flowable doPut(final IRequestEntity entity) {
 
         Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
             @Override
             public void subscribe(@NonNull FlowableEmitter emitter) throws Exception {
                 final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-                // TODO: 2017/11/27 json ???
-                RequestBody body = RequestBody.create(JSON, "");
+                Gson gson = new Gson();
+                String json = gson.toJson(entity);
+                RequestBody body = RequestBody.create(JSON, json);
                 Request request = new Request.Builder()
                         .url(mUrl)
                         .put(body)
