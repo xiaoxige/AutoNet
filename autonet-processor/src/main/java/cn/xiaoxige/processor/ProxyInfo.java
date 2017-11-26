@@ -1,5 +1,7 @@
 package cn.xiaoxige.processor;
 
+import javax.lang.model.element.TypeElement;
+
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 
 /**
@@ -8,10 +10,11 @@ import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 
 public class ProxyInfo {
 
-    public static final String AUTONETPROXY = "autoproxy";
+    public static final String AUTONETPROXY = "AutoProxy";
+
     public String packageName;
-    // full pullPackageName
-    public String pullPackageName;
+    // full fullPackageName
+    public String fullPackageName;
     public String className;
 
     public String url;
@@ -24,4 +27,6 @@ public class ProxyInfo {
     public boolean isEncryption;
 
     public AutoNetPatternAnontation.NetPattern netPattern;
+
+    public TypeElement typeElement;
 }

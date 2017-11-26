@@ -4,6 +4,7 @@ import android.util.Log;
 
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 
 /**
@@ -34,28 +35,28 @@ public class AutoNet {
         this.mAutoNetEncryptionCallback = autoNetEncryptionCallback;
     }
 
-    public void startNet() {
-        startNet("default", "/", 5000, 5000, 5000, AutoNetPatternAnontation.NetPattern.GET);
+    public void startNet(IAutoNetDataCallback callback) {
+        startNet(AutoNetPatternAnontation.NetPattern.GET, callback);
     }
 
-    public void startNet(AutoNetPatternAnontation.NetPattern pattern) {
-        startNet("default", "/", 5000, 5000, 5000, pattern);
+    public void startNet(AutoNetPatternAnontation.NetPattern pattern, IAutoNetDataCallback callback) {
+        startNet(5000, 5000, 5000, pattern, callback);
     }
 
     public void startNet(long writeTime, long readTime, long connectOutTime,
-                         AutoNetPatternAnontation.NetPattern pattern) {
-        startNet("default", "/", writeTime, readTime, connectOutTime, pattern);
+                         AutoNetPatternAnontation.NetPattern pattern, IAutoNetDataCallback callback) {
+        startNet("/", writeTime, readTime, connectOutTime, false, pattern, callback);
     }
 
     public void startNet(String url,
-                         long writeTime, long readTime, long connectOutTime,
-                         AutoNetPatternAnontation.NetPattern pattern) {
-        startNet("default", url, writeTime, readTime, connectOutTime, pattern);
+                         long writeTime, long readTime, long connectOutTime, boolean isEncryption,
+                         AutoNetPatternAnontation.NetPattern pattern, IAutoNetDataCallback callback) {
+        startNet("default", url, writeTime, readTime, connectOutTime, isEncryption, pattern, callback);
     }
 
     public void startNet(String baseUrlKey, String url,
-                         long writeTime, long readTime, long connectOutTime,
-                         AutoNetPatternAnontation.NetPattern pattern) {
+                         long writeTime, long readTime, long connectOutTime, boolean isEncryption,
+                         AutoNetPatternAnontation.NetPattern pattern, IAutoNetDataCallback callback) {
         Log.e("TAG", "baseUrlKey = " + baseUrlKey + ", url = " + url + ", writeTime = " + writeTime
                 + ", readTime = " + readTime + ", connectOutTime = "
                 + connectOutTime + ", pattern = " + pattern);

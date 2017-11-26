@@ -85,8 +85,13 @@ public class AnnotationProcessor extends AbstractProcessor {
             return false;
         }
 
-        ProxyWriteUtil.write(mInfoMap, mFiler);
-        mInfoMap.clear();
+        try {
+            ProxyWriteUtil.write(mInfoMap, mFiler);
+        } catch (Exception e) {
+            printError(e.toString());
+        } finally {
+            mInfoMap.clear();
+        }
         return true;
     }
 
@@ -110,9 +115,10 @@ public class AnnotationProcessor extends AbstractProcessor {
                 proxyInfo = new ProxyInfo();
                 mInfoMap.put(packageName, proxyInfo);
             }
-            proxyInfo.pullPackageName = packageName;
+            proxyInfo.fullPackageName = packageName;
             proxyInfo.className = className;
             proxyInfo.packageName = mElementUtils.getPackageOf(element).getQualifiedName().toString();
+            proxyInfo.typeElement = typeElement;
 
             if (annotation instanceof AutoNetPatternAnontation) {
                 autoNetPatternProc(proxyInfo, (AutoNetPatternAnontation) annotation);

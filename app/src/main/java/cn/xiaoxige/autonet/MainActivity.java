@@ -20,7 +20,7 @@ public class MainActivity extends Activity {
 
     @AutoNetEncryptionAnontation(value = false)
     @AutoNetBaseUrlKeyAnontation(value = "default")
-    @AutoNetPatternAnontation(value = AutoNetPatternAnontation.NetPattern.GET)
+    @AutoNetPatternAnontation(value = AutoNetPatternAnontation.NetPattern.POST)
     @AutoNetAnontation(url = "/")
     public class TestCallback implements IAutoNetDataCallback<TestResponseEntity> {
 
