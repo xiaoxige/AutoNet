@@ -13,6 +13,15 @@ buildscript {
 }
 
 allprojects {
+
+    //强制指定冲突依赖的版本
+    configurations.all {
+        resolutionStrategy {
+            force "com.android.support:support-annotations:25.3.1",
+                    "com.android.support:appcompat-v7:25.3.1"
+        }
+    }
+
     repositories {
         jcenter()
     }
