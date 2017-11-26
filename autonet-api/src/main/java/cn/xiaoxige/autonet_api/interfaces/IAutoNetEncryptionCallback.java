@@ -1,10 +1,10 @@
 package cn.xiaoxige.autonet_api.interfaces;
 
 /**
- * Created by 小稀革 on 2017/11/26.
+ * Created by zhuxiaoan on 2017/11/26.
  */
 
-public interface IAutoNetEncryption {
+public interface IAutoNetEncryptionCallback {
 
     String encryption(String beforeValue);
 

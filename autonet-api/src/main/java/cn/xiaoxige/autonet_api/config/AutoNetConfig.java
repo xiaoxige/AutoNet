@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by 小稀革 on 2017/11/26.
- * AutoNet的配置
+ * Created by zhuxiaoan on 2017/11/26.
+ * AutoNetConfigs
  */
 
 public class AutoNetConfig {
@@ -20,7 +20,7 @@ public class AutoNetConfig {
     private AutoNetConfig(Buidler buidler) {
         this.mBaseUrl = buidler.mBaseUrl;
         this.mHeader = buidler.mHeader;
-        this.mGetDelParams = buidler.mGetParams;
+        this.mGetDelParams = buidler.mGetDelParams;
     }
 
     public Map<String, String> getBaseUrl() {
@@ -39,20 +39,20 @@ public class AutoNetConfig {
 
         private Map<String, String> mBaseUrl = null;
         private Map<String, String> mHeader = null;
-        private Map<String, String> mGetParams = null;
+        private Map<String, String> mGetDelParams = null;
 
 
         public Buidler() {
             mBaseUrl = new HashMap<>();
             mHeader = new HashMap<>();
-            mGetParams = new HashMap<>();
+            mGetDelParams = new HashMap<>();
         }
 
 
         public Buidler setBaseUrl(String baseUrl) {
             Map<String, String> mapBaseUrl = new HashMap<>();
             mapBaseUrl.put("default", baseUrl);
-            setGetParam(mapBaseUrl, true);
+            setGetDelParam(mapBaseUrl, true);
             return this;
         }
 
@@ -77,12 +77,12 @@ public class AutoNetConfig {
         }
 
         public Buidler setGetParams(Map getParams) {
-            setGetParam(getParams, true);
+            setGetDelParam(getParams, true);
             return this;
         }
 
-        public Buidler addGetParams(Map getParams) {
-            setGetParam(getParams, false);
+        public Buidler addGetDelParams(Map getParams) {
+            setGetDelParam(getParams, false);
             return this;
         }
 
@@ -110,14 +110,14 @@ public class AutoNetConfig {
             mHeader.putAll(header);
         }
 
-        private void setGetParam(Map getParam, boolean isClear) {
+        private void setGetDelParam(Map getParam, boolean isClear) {
             if (getParam == null) {
                 return;
             }
             if (isClear) {
-                mGetParams.clear();
+                mGetDelParams.clear();
             }
-            mGetParams.putAll(getParam);
+            mGetDelParams.putAll(getParam);
         }
     }
 

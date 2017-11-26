@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
-import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryption;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -26,7 +26,7 @@ public class BaseApplicationInterceptor implements Interceptor {
 
     private boolean mIsEncryption;
     private AutoNetConfig mConfig;
-    private IAutoNetEncryption mAutoNetEncryption;
+    private IAutoNetEncryptionCallback mAutoNetEncryption;
 
     public BaseApplicationInterceptor(boolean encryption) {
         this(encryption, null, null);
@@ -36,7 +36,7 @@ public class BaseApplicationInterceptor implements Interceptor {
         this(encryption, config, null);
     }
 
-    public BaseApplicationInterceptor(boolean encryption, AutoNetConfig config, IAutoNetEncryption autoNetEncryption) {
+    public BaseApplicationInterceptor(boolean encryption, AutoNetConfig config, IAutoNetEncryptionCallback autoNetEncryption) {
         this.mIsEncryption = encryption;
         this.mConfig = config;
         this.mAutoNetEncryption = autoNetEncryption;

@@ -6,10 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by zhuxiaoan on 2017/11/26.
+ * Created by 小稀革 on 2017/11/26.
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
-public @interface AutoNetBaseUrlKeyAnontation {
-    String value() default "default";
+public @interface AutoNetEncryptionAnontation {
+    boolean value() default false;
 }
