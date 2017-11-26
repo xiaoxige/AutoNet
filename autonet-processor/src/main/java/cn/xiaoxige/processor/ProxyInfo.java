@@ -1,5 +1,7 @@
 package cn.xiaoxige.processor;
 
+import cn.xiaoxige.annotation.AutoNetPatternAnontation;
+
 /**
  * Created by zhuxiaoan on 2017/11/26.
  */
@@ -7,9 +9,19 @@ package cn.xiaoxige.processor;
 public class ProxyInfo {
 
     public static final String AUTONETPROXY = "autoproxy";
-    // 全包名
     public String packageName;
-
+    // full pullPackageName
+    public String pullPackageName;
     public String className;
 
+    public String url;
+    public long writeTime;
+    public long readTime;
+    public long connectOutTime;
+
+    public String baseUrlKey;
+
+    public boolean isEncryption;
+
+    public AutoNetPatternAnontation.NetPattern netPattern;
 }

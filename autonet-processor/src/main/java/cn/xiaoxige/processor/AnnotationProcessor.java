@@ -85,7 +85,8 @@ public class AnnotationProcessor extends AbstractProcessor {
             return false;
         }
 
-
+        ProxyWriteUtil.write(mInfoMap, mFiler);
+        mInfoMap.clear();
         return true;
     }
 
@@ -100,17 +101,27 @@ public class AnnotationProcessor extends AbstractProcessor {
                 return false;
             }
             TypeElement typeElement = (TypeElement) element;
-            String className = typeElement.getQualifiedName().toString();
+            String packageName = typeElement.getQualifiedName().toString();
+            String className = typeElement.getSimpleName().toString();
             Annotation annotation = typeElement.getAnnotation(clazz);
 
+            ProxyInfo proxyInfo = mInfoMap.get(packageName);
+            if (proxyInfo == null) {
+                proxyInfo = new ProxyInfo();
+                mInfoMap.put(packageName, proxyInfo);
+            }
+            proxyInfo.pullPackageName = packageName;
+            proxyInfo.className = className;
+            proxyInfo.packageName = mElementUtils.getPackageOf(element).getQualifiedName().toString();
+
             if (annotation instanceof AutoNetPatternAnontation) {
-                autoNetPatternProc(className, (AutoNetPatternAnontation) annotation);
+                autoNetPatternProc(proxyInfo, (AutoNetPatternAnontation) annotation);
             } else if (annotation instanceof AutoNetEncryptionAnontation) {
-                autoNetEncryptionProc(className, (AutoNetEncryptionAnontation) annotation);
+                autoNetEncryptionProc(proxyInfo, (AutoNetEncryptionAnontation) annotation);
             } else if (annotation instanceof AutoNetBaseUrlKeyAnontation) {
-                autoNetBaseUrlKeyProc(className, (AutoNetBaseUrlKeyAnontation) annotation);
+                autoNetBaseUrlKeyProc(proxyInfo, (AutoNetBaseUrlKeyAnontation) annotation);
             } else if (annotation instanceof AutoNetAnontation) {
-                autoNetProc(className, (AutoNetAnontation) annotation);
+                autoNetProc(proxyInfo, (AutoNetAnontation) annotation);
             } else {
                 return false;
             }
@@ -118,20 +129,30 @@ public class AnnotationProcessor extends AbstractProcessor {
         return true;
     }
 
-    private void autoNetPatternProc(String className, AutoNetPatternAnontation annotation) {
-
+    private void autoNetPatternProc(ProxyInfo proxyInfo, AutoNetPatternAnontation annotation) {
+        AutoNetPatternAnontation.NetPattern value = annotation.value();
+        proxyInfo.netPattern = value;
     }
 
-    private void autoNetEncryptionProc(String className, AutoNetEncryptionAnontation annotation) {
-
+    private void autoNetEncryptionProc(ProxyInfo proxyInfo, AutoNetEncryptionAnontation annotation) {
+        boolean value = annotation.value();
+        proxyInfo.isEncryption = value;
     }
 
-    private void autoNetBaseUrlKeyProc(String className, AutoNetBaseUrlKeyAnontation annotation) {
-
+    private void autoNetBaseUrlKeyProc(ProxyInfo proxyInfo, AutoNetBaseUrlKeyAnontation annotation) {
+        String value = annotation.value();
+        proxyInfo.baseUrlKey = value;
     }
 
-    private void autoNetProc(String className, AutoNetAnontation annotation) {
-
+    private void autoNetProc(ProxyInfo proxyInfo, AutoNetAnontation annotation) {
+        String url = annotation.url();
+        long writeTime = annotation.writeTime();
+        long readTime = annotation.readTime();
+        long connectOutTime = annotation.connectOutTime();
+        proxyInfo.url = url;
+        proxyInfo.writeTime = writeTime;
+        proxyInfo.readTime = readTime;
+        proxyInfo.connectOutTime = connectOutTime;
     }
 
     private void printError(String error) {
