@@ -30,11 +30,9 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     compile project(':autonet-annotation')
-    // 联网框架
-    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    //OkHttp
+    compile 'com.squareup.okhttp3:okhttp:3.9.1'
     // RxJava
-    compile 'com.squareup.retrofit2:converter-scalars:+'
-    compile 'com.squareup.retrofit2:converter-gson:+'
     compile 'io.reactivex.rxjava2:rxjava:2.1.6'
     // RxLife
     compile 'com.trello.rxlifecycle2:rxlifecycle:2.2.0'
