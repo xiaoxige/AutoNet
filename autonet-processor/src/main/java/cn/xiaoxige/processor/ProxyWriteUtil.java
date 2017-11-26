@@ -50,19 +50,22 @@ public class ProxyWriteUtil {
                 .append("import static cn.xiaoxige.annotation.AutoNetPatternAnontation.NetPattern.POST;\n")
                 .append("import static cn.xiaoxige.annotation.AutoNetPatternAnontation.NetPattern.DELETE;\n")
                 .append("import static cn.xiaoxige.annotation.AutoNetPatternAnontation.NetPattern.PUT;\n")
+                .append("import cn.xiaoxige.autonet_api.data.requestentity.IRequestEntity;\n")
                 .append("import cn.xiaoxige.annotation.AutoNetPatternAnontation;\n\n")
         ;
 
         // class start
         buffer.append("public class " + (newClassName) + " { \n");
 
-        buffer.append("public static void startNet(Object entity, IAutoNetDataCallback callback) {\n");
+        buffer.append("public static void startNet(IRequestEntity entity, IAutoNetDataCallback callback) {\n");
         buffer.append("AutoNet.getInstance().startNet("
+                + "entity" + ", "
                 + "\"" + info.baseUrlKey + "\"" + ", "
                 + "\"" + info.url + "\"" + ", "
                 + info.writeTime + ", "
                 + info.readTime + ", "
                 + info.connectOutTime + ","
+                + info.isEncryption + ","
                 + info.netPattern + ", "
                 + "callback);\n");
 

@@ -8,6 +8,7 @@ import cn.xiaoxige.annotation.AutoNetBaseUrlKeyAnontation;
 import cn.xiaoxige.annotation.AutoNetEncryptionAnontation;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.autonet.model.TestResponseEntity;
+import cn.xiaoxige.autonet_api.data.responsentity.IResponseEntity;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallback;
 
 public class MainActivity extends Activity {
@@ -26,6 +27,28 @@ public class MainActivity extends Activity {
 
         @Override
         public void onSuccess(TestResponseEntity entity) {
+
+        }
+
+        @Override
+        public void onEmpty() {
+
+        }
+
+        @Override
+        public void onError(Throwable throwable) {
+
+        }
+    }
+
+    @AutoNetEncryptionAnontation(value = false)
+    @AutoNetBaseUrlKeyAnontation(value = "default")
+    @AutoNetPatternAnontation(value = AutoNetPatternAnontation.NetPattern.POST)
+    @AutoNetAnontation(url = "/")
+    public class TwoCallback implements IAutoNetDataCallback{
+
+        @Override
+        public void onSuccess(IResponseEntity entity) {
 
         }
 
