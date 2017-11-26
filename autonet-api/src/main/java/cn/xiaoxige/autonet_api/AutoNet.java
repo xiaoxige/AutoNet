@@ -1,10 +1,13 @@
 package cn.xiaoxige.autonet_api;
 
+import android.text.TextUtils;
+
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.data.requestentity.IRequestEntity;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
+import io.reactivex.FlowableTransformer;
 
 /**
  * Created by zhuxiaoan on 2017/11/26.
@@ -56,5 +59,17 @@ public class AutoNet {
     public void startNet(IRequestEntity requestEntity, String baseUrlKey, String url,
                          long writeTime, long readTime, long connectOutTime, boolean isEncryption,
                          AutoNetPatternAnontation.NetPattern pattern, IAutoNetDataCallback callback) {
+        startNet(requestEntity, baseUrlKey, url, writeTime, readTime, connectOutTime, isEncryption, pattern, null, callback);
+    }
+
+    public void startNet(IRequestEntity requestEntity, String baseUrlKey, String url,
+                         long writeTime, long readTime, long connectOutTime, boolean isEncryption,
+                         AutoNetPatternAnontation.NetPattern pattern,
+                         FlowableTransformer transformer,
+                         IAutoNetDataCallback callback) {
+        String baseUrl = mConfig.getBaseUrl().get(baseUrlKey);
+        if (TextUtils.isEmpty(baseUrl)) {
+            throw new NullPointerException("BaseUrl is NULL.");
+        }
     }
 }

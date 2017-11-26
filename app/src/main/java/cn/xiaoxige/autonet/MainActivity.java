@@ -1,7 +1,8 @@
 package cn.xiaoxige.autonet;
 
-import android.app.Activity;
 import android.os.Bundle;
+
+import com.trello.rxlifecycle2.components.RxActivity;
 
 import cn.xiaoxige.annotation.AutoNetAnontation;
 import cn.xiaoxige.annotation.AutoNetBaseUrlKeyAnontation;
@@ -11,7 +12,7 @@ import cn.xiaoxige.autonet.model.TestResponseEntity;
 import cn.xiaoxige.autonet_api.data.responsentity.IResponseEntity;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallback;
 
-public class MainActivity extends Activity {
+public class MainActivity extends RxActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +46,7 @@ public class MainActivity extends Activity {
     @AutoNetBaseUrlKeyAnontation(value = "default")
     @AutoNetPatternAnontation(value = AutoNetPatternAnontation.NetPattern.POST)
     @AutoNetAnontation(url = "/")
-    public class TwoCallback implements IAutoNetDataCallback{
+    public class TwoCallback implements IAutoNetDataCallback {
 
         @Override
         public void onSuccess(IResponseEntity entity) {

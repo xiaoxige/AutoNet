@@ -52,7 +52,7 @@ public class AutoNetConfig {
         public Buidler setBaseUrl(String baseUrl) {
             Map<String, String> mapBaseUrl = new HashMap<>();
             mapBaseUrl.put("default", baseUrl);
-            setGetDelParam(mapBaseUrl, true);
+            setBaseUrl(mapBaseUrl, true);
             return this;
         }
 
