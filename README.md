@@ -46,6 +46,7 @@ maven { url "https://dl.bintray.com/xiaoxige/autonet"; }
 
 在Application中进行初始化：
 简单初始化入下：
+
         Map head = new HashMap();
         head.put("token", "xxxxxx");
         Map mapBaseUrl = new HashMap();
@@ -61,6 +62,7 @@ maven { url "https://dl.bintray.com/xiaoxige/autonet"; }
                 return beforeValue;
             }
         });
+	
 以上初始化设置了BaseUrl, 该BaseUrl没有设置key， 及为默认的key(default), 当然还可以通过
 .setBaseUrl(Map map)去设置更多的BaseUrl.
 其中setHeader/setGetDelParams跟setBaseUrl设置方法一样。
@@ -74,32 +76,33 @@ head/getdelparams/baseurl都提供了set和add的方法， set会把以前的清
 
 在请求前， 先定义请求的参数类，和接受后的json数据类。请让你的请求参数类去实现IRequestEntity接口， 让你的接受后的json数据类去集成AutoResponseEntity。
 如下所示：
-public class JsonTestRequestEntity implements IRequestEntity {
-    private String m;
-    private String c;
-    private String a;
-    public String getM() {
-        return m;
-    }
-    public void setM(String m) {
-        this.m = m;
-    }
-    public String getC() {
-        return c;
-    }
-    public void setC(String c) {
-        this.c = c;
-    }
-    public String getA() {
-        return a;
-    }
-    public void setA(String a) {
-        this.a = a;
-    }
-}
+
+	public class JsonTestRequestEntity implements IRequestEntity {
+    		private String m;
+    		private String c;
+    		private String a;
+    		public String getM() {
+        		return m;
+    		}
+    		public void setM(String m) {
+        		this.m = m;
+    		}
+   		public String getC() {
+        		return c;
+    		}
+    		public void setC(String c) {
+        		this.c = c;
+    		}
+    		public String getA() {
+        		return a;
+    		}
+    		public void setA(String a) {
+        		this.a = a;
+    		}
+	}
 
 
-              public class JsonTestResponseEntity extends AutoResponseEntity {
+            public class JsonTestResponseEntity extends AutoResponseEntity {
             private String status;
             private long code;
             private String message;
@@ -107,13 +110,14 @@ public class JsonTestRequestEntity implements IRequestEntity {
             public static class Data{
                  ......
            }
-}
+	}
 
 现在开始可以写请求的数据接口了：注意 请实现IAutoNetDataCallback接口， 泛型最好写出我们的数据要返回的类型
 
 比如我们要请求的场景为Get请求， 默认的BaseUrl, 不加密， url为/xxx.php
 
 我们就可以这样写
+
     @AutoNetResponseEntityClass(value = JsonTestResponseEntity.class)
     @AutoNetPatternAnontation(value = AutoNetPatternAnontation.NetPattern.GET)
     @AutoNetAnontation(url = "/xxx.php")
@@ -128,6 +132,7 @@ public class JsonTestRequestEntity implements IRequestEntity {
         public void onError(Throwable throwable) {
         }
     }
+    
 对是的，没错这样就写好了。 数据会自动请求及返回。
 
 这样就直接请求了？肯定不是呀。先听我慢慢说
@@ -135,11 +140,12 @@ public class JsonTestRequestEntity implements IRequestEntity {
 现在去ReBuild Project。编译完成后，在你需要去联网获得数据的时候去掉一个类的方法。该类的结构特点有如下：
 如果该请求接口是内部类的话，其类名为外面的类名+该接口的类名+AutoProxy。如果是单独的类的话， 则是改类的前一级报名+该类的类名+AutoProxy,
 该类中有两个方法， 一个是安全的网络请求， 一个是不安全的网络请求， 只要是是否绑定Rxlefe来定的。 如果使用安全的网络请求， 比如说吧， 你在Activity中写了改网络请求的接口， 那么这个Activity就要去集成RxActivity了。通过bindUntilEvent(ActivityEvent.DESTROY)，使该生命周期和RxJave绑定。
-JsonTestRequestEntity entity = new JsonTestRequestEntity();
-entity.setA("guidepage");
-entity.setM("ina_app");
-entity.setC("other");
-cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startSoftNet(entity, bindUntilEvent(ActivityEvent.DESTROY), new TestCallback());
+
+	JsonTestRequestEntity entity = new JsonTestRequestEntity();
+	entity.setA("guidepage");
+	entity.setM("ina_app");
+	entity.setC("other");
+	cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startSoftNet(entity, bindUntilEvent(ActivityEvent.DESTROY), new TestCallback());
 
 
 再比如情景：Post请求，使用keyjsonTestBaseUrl的BaseUrl, 为需要加密，加密的type为1,  网络连接数据为15秒， url为/xxx.xxx
