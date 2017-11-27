@@ -18,6 +18,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 
@@ -25,6 +26,7 @@ import cn.xiaoxige.annotation.AutoNetAnontation;
 import cn.xiaoxige.annotation.AutoNetBaseUrlKeyAnontation;
 import cn.xiaoxige.annotation.AutoNetEncryptionAnontation;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
+import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
 
 /**
  * Created by zhuxiaoan on 2017/11/26.
@@ -85,6 +87,10 @@ public class AnnotationProcessor extends AbstractProcessor {
             return false;
         }
 
+        if (!isAnnotatedWithClass(roundEnvironment, AutoNetResponseEntityClass.class)) {
+            return false;
+        }
+
         try {
             ProxyWriteUtil.write(mInfoMap, mFiler);
         } catch (Exception e) {
@@ -128,12 +134,15 @@ public class AnnotationProcessor extends AbstractProcessor {
                 autoNetBaseUrlKeyProc(proxyInfo, (AutoNetBaseUrlKeyAnontation) annotation);
             } else if (annotation instanceof AutoNetAnontation) {
                 autoNetProc(proxyInfo, (AutoNetAnontation) annotation);
+            } else if (annotation instanceof AutoNetResponseEntityClass) {
+                autoNetResponseEntityClassProc(proxyInfo, (AutoNetResponseEntityClass) annotation, element);
             } else {
                 return false;
             }
         }
         return true;
     }
+
 
     private void autoNetPatternProc(ProxyInfo proxyInfo, AutoNetPatternAnontation annotation) {
         AutoNetPatternAnontation.NetPattern value = annotation.value();
@@ -159,6 +168,15 @@ public class AnnotationProcessor extends AbstractProcessor {
         proxyInfo.writeTime = writeTime;
         proxyInfo.readTime = readTime;
         proxyInfo.connectOutTime = connectOutTime;
+    }
+
+    private void autoNetResponseEntityClassProc(ProxyInfo proxyInfo, AutoNetResponseEntityClass annotation, Element element) {
+        try {
+            annotation.value();
+        } catch (MirroredTypeException e) {
+            String responseEntityClassName = e.getTypeMirror().toString();
+            proxyInfo.responseClazzName = responseEntityClassName;
+        }
     }
 
     private void printError(String error) {

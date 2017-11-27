@@ -13,14 +13,16 @@ public class DoPutUsecase extends BaseUsecase {
 
     private AutoNetRepo mRepo;
     private IRequestEntity mEntity;
+    private Class mResponseEntityClass;
 
-    public DoPutUsecase(AutoNetRepo repo, IRequestEntity entity) {
+    public DoPutUsecase(AutoNetRepo repo, IRequestEntity entity, Class responseEntityClass) {
         this.mRepo = repo;
         this.mEntity = entity;
+        this.mResponseEntityClass = responseEntityClass;
     }
 
     @Override
     public Flowable getFlowable() {
-        return mRepo.doPut(mEntity);
+        return mRepo.doPut(mEntity, mResponseEntityClass);
     }
 }

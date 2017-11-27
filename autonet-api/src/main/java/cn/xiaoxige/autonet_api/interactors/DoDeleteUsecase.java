@@ -14,14 +14,16 @@ public class DoDeleteUsecase extends BaseUsecase {
 
     private AutoNetRepo mRepo;
     private IRequestEntity mEntity;
+    private Class mResponseEntityClass;
 
-    public DoDeleteUsecase(AutoNetRepo repo, IRequestEntity entity) {
+    public DoDeleteUsecase(AutoNetRepo repo, IRequestEntity entity, Class mResponseEntityClass) {
         this.mRepo = repo;
         this.mEntity = entity;
+        this.mResponseEntityClass = mResponseEntityClass;
     }
 
     @Override
     public Flowable getFlowable() {
-        return mRepo.doDelete(mEntity);
+        return mRepo.doDelete(mEntity, mResponseEntityClass);
     }
 }

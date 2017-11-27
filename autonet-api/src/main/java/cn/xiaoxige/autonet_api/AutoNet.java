@@ -60,16 +60,17 @@ public class AutoNet {
     public void startNet(IRequestEntity requestEntity, String url,
                          long writeTime, long readTime, long connectOutTime, boolean isEncryption,
                          AutoNetPatternAnontation.NetPattern pattern, IAutoNetDataCallback callback) {
-        startNet(requestEntity, "default", url, writeTime, readTime, connectOutTime, isEncryption, pattern, callback);
+        startNet(requestEntity, null, "default", url, writeTime, readTime, connectOutTime, isEncryption, pattern, callback);
     }
 
-    public void startNet(IRequestEntity requestEntity, String baseUrlKey, String url,
+    public void startNet(IRequestEntity requestEntity, Class responseEntityClass, String baseUrlKey, String url,
                          long writeTime, long readTime, long connectOutTime, boolean isEncryption,
                          AutoNetPatternAnontation.NetPattern pattern, IAutoNetDataCallback callback) {
-        startNet(requestEntity, baseUrlKey, url, writeTime, readTime, connectOutTime, isEncryption, pattern, null, callback);
+        startNet(requestEntity, null,
+                baseUrlKey, url, writeTime, readTime, connectOutTime, isEncryption, pattern, null, callback);
     }
 
-    public void startNet(IRequestEntity requestEntity, String baseUrlKey, String url,
+    public void startNet(IRequestEntity requestEntity, Class responseEntityClass, String baseUrlKey, String url,
                          long writeTime, long readTime, long connectOutTime, boolean isEncryption,
                          AutoNetPatternAnontation.NetPattern pattern,
                          FlowableTransformer transformer,
@@ -80,7 +81,7 @@ public class AutoNet {
         }
 
         AutoNetPresenter presenter = new AutoNetPresenter(
-                requestEntity, baseUrl, url,
+                requestEntity, responseEntityClass, baseUrl, url,
                 writeTime, readTime, connectOutTime,
                 isEncryption,
                 transformer, mConfig, mAutoNetEncryptionCallback, callback

@@ -62,6 +62,7 @@ public class ProxyWriteUtil {
         buffer.append("public static void startUnSoftNet(IRequestEntity entity, IAutoNetDataCallback callback) {\n");
         buffer.append("AutoNet.getInstance().startNet("
                 + "entity" + ", "
+                + (info.responseClazzName == null ? "null, " : info.responseClazzName + ".class, ")
                 + "\"" + info.baseUrlKey + "\"" + ", "
                 + "\"" + info.url + "\"" + ", "
                 + info.writeTime + ", "
@@ -77,6 +78,7 @@ public class ProxyWriteUtil {
         buffer.append("public static void startSoftNet(IRequestEntity entity, FlowableTransformer transformer, IAutoNetDataCallback callback) {\n");
         buffer.append("AutoNet.getInstance().startNet("
                 + "entity" + ", "
+                + (info.responseClazzName == null ? "null, " : info.responseClazzName + ".class, ")
                 + "\"" + info.baseUrlKey + "\"" + ", "
                 + "\"" + info.url + "\"" + ", "
                 + info.writeTime + ", "

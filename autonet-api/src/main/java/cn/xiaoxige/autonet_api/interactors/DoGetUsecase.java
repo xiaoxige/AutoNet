@@ -13,14 +13,16 @@ public class DoGetUsecase extends BaseUsecase {
 
     private AutoNetRepo mRepo;
     private IRequestEntity mEntity;
+    private Class mResponseEntityClass;
 
-    public DoGetUsecase(AutoNetRepo repo, IRequestEntity requestEntity) {
+    public DoGetUsecase(AutoNetRepo repo, IRequestEntity requestEntity, Class responseEntityClass) {
         this.mRepo = repo;
         this.mEntity = requestEntity;
+        this.mResponseEntityClass = responseEntityClass;
     }
 
     @Override
     public Flowable getFlowable() {
-        return mRepo.doGet(mEntity);
+        return mRepo.doGet(mEntity, mResponseEntityClass);
     }
 }

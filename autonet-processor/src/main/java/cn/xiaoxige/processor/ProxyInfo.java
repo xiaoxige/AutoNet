@@ -28,5 +28,7 @@ public class ProxyInfo {
 
     public AutoNetPatternAnontation.NetPattern netPattern;
 
+    public String responseClazzName;
+
     public TypeElement typeElement;
 }

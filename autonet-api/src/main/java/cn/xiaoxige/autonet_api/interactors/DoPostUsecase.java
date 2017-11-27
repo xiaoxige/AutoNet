@@ -14,14 +14,16 @@ public class DoPostUsecase extends BaseUsecase {
 
     private AutoNetRepo mRepo;
     private IRequestEntity mEntity;
+    private Class mResponseEntityClass;
 
-    public DoPostUsecase(AutoNetRepo repo, IRequestEntity requestEntity) {
+    public DoPostUsecase(AutoNetRepo repo, IRequestEntity requestEntity, Class responseEntityClass) {
         this.mRepo = repo;
         this.mEntity = requestEntity;
+        this.mResponseEntityClass = responseEntityClass;
     }
 
     @Override
     public Flowable getFlowable() {
-        return mRepo.doPost(mEntity);
+        return mRepo.doPost(mEntity, mResponseEntityClass);
     }
 }

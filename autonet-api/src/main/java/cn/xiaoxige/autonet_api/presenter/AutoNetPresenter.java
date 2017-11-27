@@ -21,6 +21,8 @@ import io.reactivex.FlowableTransformer;
 public class AutoNetPresenter {
     // data
     private IRequestEntity mRequestEntity;
+    // data
+    private Class mResponseEntityClass;
     //data
     private String mResultUrl;
     //data
@@ -38,18 +40,20 @@ public class AutoNetPresenter {
     //data
     private IAutoNetEncryptionCallback mAutoNetEncryptionCallback;
 
+
     private String mBaseUrl;
     private String mUrl;
     private IAutoNetDataCallback mCallback;
 
     private AutoNetRepo mRepo;
 
-    public AutoNetPresenter(IRequestEntity requestEntity, String baseUrl, String url,
+    public AutoNetPresenter(IRequestEntity requestEntity, Class responseEntityClass, String baseUrl, String url,
                             long writeTime, long readTime, long connectOutTime, boolean isEncryption,
                             FlowableTransformer transformer, AutoNetConfig config,
                             IAutoNetEncryptionCallback autoNetEncryptionCallback,
                             IAutoNetDataCallback callback) {
         this.mRequestEntity = requestEntity;
+        this.mResponseEntityClass = responseEntityClass;
 
         this.mBaseUrl = baseUrl;
         this.mUrl = url;
@@ -71,7 +75,7 @@ public class AutoNetPresenter {
 
     public void doGet() {
 
-        DoGetUsecase usecase = new DoGetUsecase(mRepo, mRequestEntity);
+        DoGetUsecase usecase = new DoGetUsecase(mRepo, mRequestEntity, mResponseEntityClass);
         usecase.execute(new DefaultSubscriber<IResponseEntity>() {
             @Override
             public void DefaultOnNext(IResponseEntity data) {
@@ -94,7 +98,7 @@ public class AutoNetPresenter {
     }
 
     public void doPost() {
-        DoPostUsecase usecase = new DoPostUsecase(mRepo, mRequestEntity);
+        DoPostUsecase usecase = new DoPostUsecase(mRepo, mRequestEntity, mResponseEntityClass);
         usecase.execute(new DefaultSubscriber<IResponseEntity>() {
             @Override
             public void DefaultOnNext(IResponseEntity data) {
@@ -117,7 +121,7 @@ public class AutoNetPresenter {
     }
 
     public void doDelete() {
-        DoDeleteUsecase usecase = new DoDeleteUsecase(mRepo, mRequestEntity);
+        DoDeleteUsecase usecase = new DoDeleteUsecase(mRepo, mRequestEntity, mResponseEntityClass);
         usecase.execute(new DefaultSubscriber<IResponseEntity>() {
             @Override
             public void DefaultOnNext(IResponseEntity data) {
@@ -140,7 +144,7 @@ public class AutoNetPresenter {
     }
 
     public void doPut() {
-        DoPutUsecase usecase = new DoPutUsecase(mRepo, mRequestEntity);
+        DoPutUsecase usecase = new DoPutUsecase(mRepo, mRequestEntity, mResponseEntityClass);
         usecase.execute(new DefaultSubscriber<IResponseEntity>() {
             @Override
             public void DefaultOnNext(IResponseEntity data) {

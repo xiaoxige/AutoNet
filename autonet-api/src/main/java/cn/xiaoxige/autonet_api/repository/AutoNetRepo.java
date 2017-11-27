@@ -9,12 +9,12 @@ import io.reactivex.Flowable;
 
 public interface AutoNetRepo {
 
-    Flowable doGet(IRequestEntity entity);
+    Flowable doGet(IRequestEntity entity, Class responseEntityClass);
 
-    Flowable doPost(IRequestEntity entity);
+    Flowable doPost(IRequestEntity entity, Class responseEntityClass);
 
-    Flowable doDelete(IRequestEntity entity);
+    Flowable doDelete(IRequestEntity entity, Class responseEntityClass);
 
-    Flowable doPut(IRequestEntity entity);
+    Flowable doPut(IRequestEntity entity, Class responseEntityClass);
 
 }

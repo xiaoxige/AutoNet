@@ -2,6 +2,7 @@ package cn.xiaoxige.autonet;
 
 import android.os.Bundle;
 
+import com.google.gson.Gson;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.trello.rxlifecycle2.components.RxActivity;
 
@@ -9,6 +10,10 @@ import cn.xiaoxige.annotation.AutoNetAnontation;
 import cn.xiaoxige.annotation.AutoNetBaseUrlKeyAnontation;
 import cn.xiaoxige.annotation.AutoNetEncryptionAnontation;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
+import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
+import cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy;
+import cn.xiaoxige.autonet.model.ITestEntity;
+import cn.xiaoxige.autonet.model.TestEntity;
 import cn.xiaoxige.autonet.model.TestRequestEntity;
 import cn.xiaoxige.autonet.model.TestResponseEntity;
 import cn.xiaoxige.autonet_api.data.responsentity.IResponseEntity;
@@ -20,10 +25,10 @@ public class MainActivity extends RxActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startSoftNet(null, bindUntilEvent(ActivityEvent.DESTROY), new TestCallback());
-        cn.xiaoxige.autonet.MainActivityTwoCallbackAutoProxy.startSoftNet(new TestRequestEntity("xiaoxige", 22), bindUntilEvent(ActivityEvent.DESTROY), new TwoCallback());
+        MainActivityTestCallbackAutoProxy.startSoftNet(new TestRequestEntity("xiaoxige", 22), bindUntilEvent(ActivityEvent.DESTROY), new TestCallback());
     }
 
+    @AutoNetResponseEntityClass(value = TestResponseEntity.class)
     @AutoNetEncryptionAnontation(value = false)
     @AutoNetBaseUrlKeyAnontation(value = "default")
     @AutoNetPatternAnontation(value = AutoNetPatternAnontation.NetPattern.GET)
