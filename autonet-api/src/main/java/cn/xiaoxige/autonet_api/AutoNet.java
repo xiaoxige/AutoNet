@@ -54,24 +54,24 @@ public class AutoNet {
 
     public void startNet(IRequestEntity requestEntity, long writeTime, long readTime, long connectOutTime,
                          AutoNetPatternAnontation.NetPattern pattern, IAutoNetDataCallback callback) {
-        startNet(requestEntity, "/", writeTime, readTime, connectOutTime, false, pattern, callback);
+        startNet(requestEntity, "/", writeTime, readTime, connectOutTime, false, 0, pattern, callback);
     }
 
     public void startNet(IRequestEntity requestEntity, String url,
-                         long writeTime, long readTime, long connectOutTime, boolean isEncryption,
+                         long writeTime, long readTime, long connectOutTime, boolean isEncryption, long encryptionKey,
                          AutoNetPatternAnontation.NetPattern pattern, IAutoNetDataCallback callback) {
-        startNet(requestEntity, null, "default", url, writeTime, readTime, connectOutTime, isEncryption, pattern, callback);
+        startNet(requestEntity, null, "default", url, writeTime, readTime, connectOutTime, isEncryption, encryptionKey, pattern, callback);
     }
 
     public void startNet(IRequestEntity requestEntity, Class responseEntityClass, String baseUrlKey, String url,
-                         long writeTime, long readTime, long connectOutTime, boolean isEncryption,
+                         long writeTime, long readTime, long connectOutTime, boolean isEncryption, long encryptionKey,
                          AutoNetPatternAnontation.NetPattern pattern, IAutoNetDataCallback callback) {
         startNet(requestEntity, null,
-                baseUrlKey, url, writeTime, readTime, connectOutTime, isEncryption, pattern, null, callback);
+                baseUrlKey, url, writeTime, readTime, connectOutTime, isEncryption, encryptionKey, pattern, null, callback);
     }
 
     public void startNet(IRequestEntity requestEntity, Class responseEntityClass, String baseUrlKey, String url,
-                         long writeTime, long readTime, long connectOutTime, boolean isEncryption,
+                         long writeTime, long readTime, long connectOutTime, boolean isEncryption, long encryptionKey,
                          AutoNetPatternAnontation.NetPattern pattern,
                          FlowableTransformer transformer,
                          IAutoNetDataCallback callback) {
@@ -83,7 +83,7 @@ public class AutoNet {
         AutoNetPresenter presenter = new AutoNetPresenter(
                 requestEntity, responseEntityClass, baseUrl, url,
                 writeTime, readTime, connectOutTime,
-                isEncryption,
+                isEncryption, encryptionKey,
                 transformer, mConfig, mAutoNetEncryptionCallback, callback
         );
 

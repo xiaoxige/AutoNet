@@ -16,11 +16,11 @@ import okhttp3.OkHttpClient;
 public class OkHttpUtil {
 
 
-    public static OkHttpClient start(boolean isencryption, AutoNetConfig config,
+    public static OkHttpClient start(boolean isencryption, long mencryptionkey, AutoNetConfig config,
                                      long writeTime, long readtime, long connectOutTime,
                                      IAutoNetEncryptionCallback autoNetEncryptionCallback) {
         OkHttpClient client = new OkHttpClient.Builder()
-                .addNetworkInterceptor(new BaseApplicationInterceptor(isencryption, config, autoNetEncryptionCallback))
+                .addNetworkInterceptor(new BaseApplicationInterceptor(isencryption, mencryptionkey, config, autoNetEncryptionCallback))
                 .addNetworkInterceptor(new StethoInterceptor())
                 .writeTimeout(writeTime, TimeUnit.SECONDS)
                 .readTimeout(readtime, TimeUnit.SECONDS)

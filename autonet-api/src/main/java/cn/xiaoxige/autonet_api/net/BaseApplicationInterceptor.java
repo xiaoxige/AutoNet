@@ -25,19 +25,21 @@ import okio.Buffer;
 public class BaseApplicationInterceptor implements Interceptor {
 
     private boolean mIsEncryption;
+    private long mEncryptionKey;
     private AutoNetConfig mConfig;
     private IAutoNetEncryptionCallback mAutoNetEncryption;
 
     public BaseApplicationInterceptor(boolean encryption) {
-        this(encryption, null, null);
+        this(encryption, 0, null, null);
     }
 
     public BaseApplicationInterceptor(boolean encryption, AutoNetConfig config) {
-        this(encryption, config, null);
+        this(encryption, 0, config, null);
     }
 
-    public BaseApplicationInterceptor(boolean encryption, AutoNetConfig config, IAutoNetEncryptionCallback autoNetEncryption) {
+    public BaseApplicationInterceptor(boolean encryption, long encryptionKey, AutoNetConfig config, IAutoNetEncryptionCallback autoNetEncryption) {
         this.mIsEncryption = encryption;
+        this.mEncryptionKey = encryptionKey;
         this.mConfig = config;
         this.mAutoNetEncryption = autoNetEncryption;
     }
@@ -99,7 +101,7 @@ public class BaseApplicationInterceptor implements Interceptor {
                 String[] urlSplit = uri.split("\\?");
                 if (urlSplit != null && urlSplit.length == 2) {
                     if (mAutoNetEncryption != null) {
-                        String encryption = mAutoNetEncryption.encryption(urlSplit[1]);
+                        String encryption = mAutoNetEncryption.encryption(mEncryptionKey, urlSplit[1]);
                         uri = urlSplit[0] + "?" + encryption;
                     }
                 }
@@ -121,7 +123,7 @@ public class BaseApplicationInterceptor implements Interceptor {
                 String badyContent = getBadyContent(body);
                 // body进行加密
                 if (mAutoNetEncryption != null && !TextUtils.isEmpty(badyContent)) {
-                    badyContent = mAutoNetEncryption.encryption(badyContent);
+                    badyContent = mAutoNetEncryption.encryption(mEncryptionKey, badyContent);
                 }
                 if (!TextUtils.isEmpty(badyContent)) {
                     RequestBody requestBody = RequestBody.create(body.contentType(), badyContent);

@@ -33,6 +33,8 @@ public class AutoNetPresenter {
     private long mConnectOutTime;
     //data
     private boolean mIsEncryption;
+    //date
+    private long mEncryptionKey;
     //data
     private FlowableTransformer mTransformer;
     //data
@@ -49,7 +51,7 @@ public class AutoNetPresenter {
 
     public AutoNetPresenter(IRequestEntity requestEntity, Class responseEntityClass, String baseUrl, String url,
                             long writeTime, long readTime, long connectOutTime, boolean isEncryption,
-                            FlowableTransformer transformer, AutoNetConfig config,
+                            long encryptionKey, FlowableTransformer transformer, AutoNetConfig config,
                             IAutoNetEncryptionCallback autoNetEncryptionCallback,
                             IAutoNetDataCallback callback) {
         this.mRequestEntity = requestEntity;
@@ -63,6 +65,7 @@ public class AutoNetPresenter {
         this.mReadTime = readTime;
         this.mConnectOutTime = connectOutTime;
         this.mIsEncryption = isEncryption;
+        this.mEncryptionKey = encryptionKey;
         this.mConfig = config;
         this.mAutoNetEncryptionCallback = autoNetEncryptionCallback;
 
@@ -70,7 +73,7 @@ public class AutoNetPresenter {
 
         this.mCallback = callback;
 
-        mRepo = new AutoNetRepoImpl(mConfig, mIsEncryption, mResultUrl, mWriteTime, mReadTime, mConnectOutTime, mAutoNetEncryptionCallback);
+        mRepo = new AutoNetRepoImpl(mConfig, mIsEncryption, mEncryptionKey, mResultUrl, mWriteTime, mReadTime, mConnectOutTime, mAutoNetEncryptionCallback);
     }
 
     public void doGet() {

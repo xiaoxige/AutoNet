@@ -32,11 +32,11 @@ public class AutoNetRepoImpl implements AutoNetRepo {
     private OkHttpClient mClient;
     private String mUrl;
 
-    public AutoNetRepoImpl(AutoNetConfig config, boolean isencryption, String url,
+    public AutoNetRepoImpl(AutoNetConfig config, boolean isencryption, long mencryptionkey, String url,
                            long writeTime, long readtime, long connectOutTime, IAutoNetEncryptionCallback autoNetEncryptionCallback) {
         mUrl = url;
         mClient
-                = OkHttpUtil.start(isencryption, config, writeTime, readtime, connectOutTime, autoNetEncryptionCallback);
+                = OkHttpUtil.start(isencryption, mencryptionkey, config, writeTime, readtime, connectOutTime, autoNetEncryptionCallback);
 
     }
 
@@ -46,13 +46,20 @@ public class AutoNetRepoImpl implements AutoNetRepo {
             @Override
             public void subscribe(@NonNull FlowableEmitter<AutoResponseEntity> emitter) throws Exception {
                 StringBuffer resultUrl = new StringBuffer();
-                resultUrl.append(mUrl).append("?");
+                resultUrl.append(mUrl);
                 if (entity != null) {
                     Map<String, String> map = DataConvertorUtils.convertEntityToMap(entity, true);
                     Set<String> keySet = map.keySet();
+                    int i = 0;
                     for (String key : keySet) {
+                        if (i == 0) {
+                            resultUrl.append("?");
+                        } else {
+                            resultUrl.append("&");
+                        }
                         String value = map.get(key);
                         resultUrl.append(key + "=" + value);
+                        i++;
                     }
                 }
 

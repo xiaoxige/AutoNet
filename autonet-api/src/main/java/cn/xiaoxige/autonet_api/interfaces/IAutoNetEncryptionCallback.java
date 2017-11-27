@@ -6,6 +6,6 @@ package cn.xiaoxige.autonet_api.interfaces;
 
 public interface IAutoNetEncryptionCallback {
 
-    String encryption(String beforeValue);
+    String encryption(long encryptionKey, String beforeValue);
 
 }

@@ -151,6 +151,8 @@ public class AnnotationProcessor extends AbstractProcessor {
 
     private void autoNetEncryptionProc(ProxyInfo proxyInfo, AutoNetEncryptionAnontation annotation) {
         boolean value = annotation.value();
+        long key = annotation.key();
+        proxyInfo.encryptionKey = key;
         proxyInfo.isEncryption = value;
     }
 

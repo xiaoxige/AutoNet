@@ -24,6 +24,7 @@ public class ProxyInfo {
 
     public String baseUrlKey;
 
+    public long encryptionKey;
     public boolean isEncryption;
 
     public AutoNetPatternAnontation.NetPattern netPattern;

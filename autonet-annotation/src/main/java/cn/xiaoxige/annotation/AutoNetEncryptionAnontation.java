@@ -11,5 +11,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 public @interface AutoNetEncryptionAnontation {
+
+    long key() default 0;
+
     boolean value() default false;
+
 }

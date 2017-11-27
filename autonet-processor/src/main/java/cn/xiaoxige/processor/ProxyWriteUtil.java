@@ -69,6 +69,7 @@ public class ProxyWriteUtil {
                 + info.readTime + ", "
                 + info.connectOutTime + ","
                 + info.isEncryption + ","
+                + info.encryptionKey + ", "
                 + info.netPattern + ", "
                 + "callback);\n");
 
@@ -85,6 +86,7 @@ public class ProxyWriteUtil {
                 + info.readTime + ", "
                 + info.connectOutTime + ","
                 + info.isEncryption + ","
+                + info.encryptionKey + ", "
                 + info.netPattern + ", "
                 + "transformer, callback);\n");
 
