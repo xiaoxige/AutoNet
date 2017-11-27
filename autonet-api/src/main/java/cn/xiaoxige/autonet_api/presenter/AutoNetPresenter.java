@@ -2,7 +2,7 @@ package cn.xiaoxige.autonet_api.presenter;
 
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.data.requestentity.IRequestEntity;
-import cn.xiaoxige.autonet_api.data.responsentity.IResponseEntity;
+import cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity;
 import cn.xiaoxige.autonet_api.interactors.DoDeleteUsecase;
 import cn.xiaoxige.autonet_api.interactors.DoGetUsecase;
 import cn.xiaoxige.autonet_api.interactors.DoPostUsecase;
@@ -76,9 +76,9 @@ public class AutoNetPresenter {
     public void doGet() {
 
         DoGetUsecase usecase = new DoGetUsecase(mRepo, mRequestEntity, mResponseEntityClass);
-        usecase.execute(new DefaultSubscriber<IResponseEntity>() {
+        usecase.execute(new DefaultSubscriber<AutoResponseEntity>() {
             @Override
-            public void DefaultOnNext(IResponseEntity data) {
+            public void DefaultOnNext(AutoResponseEntity data) {
                 super.DefaultOnNext(data);
                 mCallback.onSuccess(data);
             }
@@ -99,9 +99,9 @@ public class AutoNetPresenter {
 
     public void doPost() {
         DoPostUsecase usecase = new DoPostUsecase(mRepo, mRequestEntity, mResponseEntityClass);
-        usecase.execute(new DefaultSubscriber<IResponseEntity>() {
+        usecase.execute(new DefaultSubscriber<AutoResponseEntity>() {
             @Override
-            public void DefaultOnNext(IResponseEntity data) {
+            public void DefaultOnNext(AutoResponseEntity data) {
                 super.DefaultOnNext(data);
                 mCallback.onSuccess(data);
             }
@@ -122,9 +122,9 @@ public class AutoNetPresenter {
 
     public void doDelete() {
         DoDeleteUsecase usecase = new DoDeleteUsecase(mRepo, mRequestEntity, mResponseEntityClass);
-        usecase.execute(new DefaultSubscriber<IResponseEntity>() {
+        usecase.execute(new DefaultSubscriber<AutoResponseEntity>() {
             @Override
-            public void DefaultOnNext(IResponseEntity data) {
+            public void DefaultOnNext(AutoResponseEntity data) {
                 super.DefaultOnNext(data);
                 mCallback.onSuccess(data);
             }
@@ -145,9 +145,9 @@ public class AutoNetPresenter {
 
     public void doPut() {
         DoPutUsecase usecase = new DoPutUsecase(mRepo, mRequestEntity, mResponseEntityClass);
-        usecase.execute(new DefaultSubscriber<IResponseEntity>() {
+        usecase.execute(new DefaultSubscriber<AutoResponseEntity>() {
             @Override
-            public void DefaultOnNext(IResponseEntity data) {
+            public void DefaultOnNext(AutoResponseEntity data) {
                 super.DefaultOnNext(data);
                 mCallback.onSuccess(data);
             }

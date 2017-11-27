@@ -7,7 +7,7 @@ import java.util.Set;
 
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.data.requestentity.IRequestEntity;
-import cn.xiaoxige.autonet_api.data.responsentity.IResponseEntity;
+import cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity;
 import cn.xiaoxige.autonet_api.error.EmptyException;
 import cn.xiaoxige.autonet_api.flowable.DefaultFlowable;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
@@ -42,9 +42,9 @@ public class AutoNetRepoImpl implements AutoNetRepo {
 
     @Override
     public Flowable doGet(final IRequestEntity entity, final Class responseEntityClass) {
-        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
+        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe<AutoResponseEntity>() {
             @Override
-            public void subscribe(@NonNull FlowableEmitter emitter) throws Exception {
+            public void subscribe(@NonNull FlowableEmitter<AutoResponseEntity> emitter) throws Exception {
                 StringBuffer resultUrl = new StringBuffer();
                 resultUrl.append(mUrl).append("?");
                 if (entity != null) {
@@ -65,11 +65,17 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                     emitter.onError(new EmptyException());
                 }
                 String msg = response.body().string();
-                // TODO: 2017/11/27 onnext???
-
-                String json = "{name:\"xiaoxige\", age:100}";
-                IResponseEntity entity1 = (IResponseEntity) new Gson().fromJson(json, responseEntityClass);
-
+                AutoResponseEntity responseEntity = null;
+                try {
+                    responseEntity = (AutoResponseEntity) new Gson().fromJson(msg, responseEntityClass);
+                } catch (Exception e) {
+                }
+                if (responseEntity == null) {
+                    responseEntity = (AutoResponseEntity) responseEntityClass.newInstance();
+                    responseEntity.isJsonTransformationError = true;
+                }
+                responseEntity.autoResponseResult = msg;
+                emitter.onNext(responseEntity);
                 emitter.onComplete();
             }
         });
@@ -77,11 +83,11 @@ public class AutoNetRepoImpl implements AutoNetRepo {
     }
 
     @Override
-    public Flowable doPost(final IRequestEntity entity, Class responseEntityClass) {
+    public Flowable doPost(final IRequestEntity entity, final Class responseEntityClass) {
 
-        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
+        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe<AutoResponseEntity>() {
             @Override
-            public void subscribe(@NonNull FlowableEmitter emitter) throws Exception {
+            public void subscribe(@NonNull FlowableEmitter<AutoResponseEntity> emitter) throws Exception {
                 final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
                 Gson gson = new Gson();
                 String json = gson.toJson(entity);
@@ -95,8 +101,17 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                     emitter.onError(new EmptyException());
                 }
                 String msg = response.body().string();
-
-                // TODO: 2017/11/27 onnext ???
+                AutoResponseEntity responseEntity = null;
+                try {
+                    responseEntity = (AutoResponseEntity) new Gson().fromJson(msg, responseEntityClass);
+                } catch (Exception e) {
+                }
+                if (responseEntity == null) {
+                    responseEntity = (AutoResponseEntity) responseEntityClass.newInstance();
+                    responseEntity.isJsonTransformationError = true;
+                }
+                responseEntity.autoResponseResult = msg;
+                emitter.onNext(responseEntity);
                 emitter.onComplete();
             }
         });
@@ -105,10 +120,10 @@ public class AutoNetRepoImpl implements AutoNetRepo {
     }
 
     @Override
-    public Flowable doDelete(final IRequestEntity entity, Class responseEntityClass) {
-        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
+    public Flowable doDelete(final IRequestEntity entity, final Class responseEntityClass) {
+        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe<AutoResponseEntity>() {
             @Override
-            public void subscribe(@NonNull FlowableEmitter emitter) throws Exception {
+            public void subscribe(@NonNull FlowableEmitter<AutoResponseEntity> emitter) throws Exception {
                 StringBuffer resultUrl = new StringBuffer();
                 resultUrl.append(mUrl).append("?");
                 if (entity != null) {
@@ -129,7 +144,17 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                     emitter.onError(new EmptyException());
                 }
                 String msg = response.body().string();
-                // TODO: 2017/11/27 onnext???
+                AutoResponseEntity responseEntity = null;
+                try {
+                    responseEntity = (AutoResponseEntity) new Gson().fromJson(msg, responseEntityClass);
+                } catch (Exception e) {
+                }
+                if (responseEntity == null) {
+                    responseEntity = (AutoResponseEntity) responseEntityClass.newInstance();
+                    responseEntity.isJsonTransformationError = true;
+                }
+                responseEntity.autoResponseResult = msg;
+                emitter.onNext(responseEntity);
                 emitter.onComplete();
             }
         });
@@ -137,11 +162,11 @@ public class AutoNetRepoImpl implements AutoNetRepo {
     }
 
     @Override
-    public Flowable doPut(final IRequestEntity entity, Class responseEntityClass) {
+    public Flowable doPut(final IRequestEntity entity, final Class responseEntityClass) {
 
-        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
+        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe<AutoResponseEntity>() {
             @Override
-            public void subscribe(@NonNull FlowableEmitter emitter) throws Exception {
+            public void subscribe(@NonNull FlowableEmitter<AutoResponseEntity> emitter) throws Exception {
                 final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
                 Gson gson = new Gson();
                 String json = gson.toJson(entity);
@@ -155,7 +180,17 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                     emitter.onError(new EmptyException());
                 }
                 String msg = response.body().string();
-                // TODO: 2017/11/27 onnext ???
+                AutoResponseEntity responseEntity = null;
+                try {
+                    responseEntity = (AutoResponseEntity) new Gson().fromJson(msg, responseEntityClass);
+                } catch (Exception e) {
+                }
+                if (responseEntity == null) {
+                    responseEntity = (AutoResponseEntity) responseEntityClass.newInstance();
+                    responseEntity.isJsonTransformationError = true;
+                }
+                responseEntity.autoResponseResult = msg;
+                emitter.onNext(responseEntity);
                 emitter.onComplete();
             }
         });

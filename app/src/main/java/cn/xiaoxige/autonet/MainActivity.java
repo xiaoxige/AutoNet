@@ -1,8 +1,8 @@
 package cn.xiaoxige.autonet;
 
 import android.os.Bundle;
+import android.util.Log;
 
-import com.google.gson.Gson;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.trello.rxlifecycle2.components.RxActivity;
 
@@ -11,12 +11,9 @@ import cn.xiaoxige.annotation.AutoNetBaseUrlKeyAnontation;
 import cn.xiaoxige.annotation.AutoNetEncryptionAnontation;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
-import cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy;
-import cn.xiaoxige.autonet.model.ITestEntity;
-import cn.xiaoxige.autonet.model.TestEntity;
 import cn.xiaoxige.autonet.model.TestRequestEntity;
 import cn.xiaoxige.autonet.model.TestResponseEntity;
-import cn.xiaoxige.autonet_api.data.responsentity.IResponseEntity;
+import cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallback;
 
 public class MainActivity extends RxActivity {
@@ -25,7 +22,7 @@ public class MainActivity extends RxActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        MainActivityTestCallbackAutoProxy.startSoftNet(new TestRequestEntity("xiaoxige", 22), bindUntilEvent(ActivityEvent.DESTROY), new TestCallback());
+        cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startSoftNet(new TestRequestEntity("xiaoxige", 22), bindUntilEvent(ActivityEvent.DESTROY), new TestCallback());
     }
 
     @AutoNetResponseEntityClass(value = TestResponseEntity.class)
@@ -37,7 +34,7 @@ public class MainActivity extends RxActivity {
 
         @Override
         public void onSuccess(TestResponseEntity entity) {
-
+            Log.e("TAG", "成功");
         }
 
         @Override
@@ -58,7 +55,7 @@ public class MainActivity extends RxActivity {
     public class TwoCallback implements IAutoNetDataCallback {
 
         @Override
-        public void onSuccess(IResponseEntity entity) {
+        public void onSuccess(AutoResponseEntity entity) {
 
         }
 
