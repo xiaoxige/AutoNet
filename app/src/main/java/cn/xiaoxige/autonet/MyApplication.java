@@ -20,7 +20,7 @@ public class MyApplication extends Application {
         super.onCreate();
 
         Map head = new HashMap();
-        head.put("token", "zhuxiaoan");
+        head.put("token", "xxx");
         Map mapBaseUrl = new HashMap();
         mapBaseUrl.put("jsonTestBaseUrl", "http://api.news18a.com");
         AutoNetConfig config = new AutoNetConfig.Buidler()

@@ -17,17 +17,17 @@ public class ProxyInfo {
     public String fullPackageName;
     public String className;
 
-    public String url;
-    public long writeTime;
-    public long readTime;
-    public long connectOutTime;
+    public String url = "/";
+    public long writeTime = 5000;
+    public long readTime = 5000;
+    public long connectOutTime = 5000;
 
-    public String baseUrlKey;
+    public String baseUrlKey = "default";
 
-    public long encryptionKey;
-    public boolean isEncryption;
+    public long encryptionKey = 0;
+    public boolean isEncryption = false;
 
-    public AutoNetPatternAnontation.NetPattern netPattern;
+    public AutoNetPatternAnontation.NetPattern netPattern = AutoNetPatternAnontation.NetPattern.GET;
 
     public String responseClazzName;
 
