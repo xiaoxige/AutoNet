@@ -23,6 +23,27 @@ public class AutoNetConfig {
         this.mGetDelParams = buidler.mGetDelParams;
     }
 
+    public void updateOrInsertHeader(Map map) {
+        if (map == null) {
+            return;
+        }
+        if (this.mHeader == null) {
+            this.mHeader = new HashMap<>();
+        }
+
+        mHeader.putAll(map);
+    }
+
+    public void updateOrInsertGetDelParam(Map map) {
+        if (map == null) {
+            return;
+        }
+        if (this.mGetDelParams == null) {
+            this.mGetDelParams = new HashMap<>();
+        }
+        mGetDelParams.putAll(map);
+    }
+
     public Map<String, String> getBaseUrl() {
         return mBaseUrl;
     }

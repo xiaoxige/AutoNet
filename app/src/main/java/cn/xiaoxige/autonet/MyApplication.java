@@ -19,11 +19,14 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        Map head = new HashMap();
+        head.put("token", "zhuxiaoan");
         Map mapBaseUrl = new HashMap();
         mapBaseUrl.put("jsonTestBaseUrl", "http://api.news18a.com");
         AutoNetConfig config = new AutoNetConfig.Buidler()
                 .setBaseUrl("http://www.baidu.com")
                 .addBaseUrl(mapBaseUrl)
+                .setHeader(head)
                 .build();
         AutoNet.getInstance().init(this, config).setAutoNetEncryption(new IAutoNetEncryptionCallback() {
             @Override

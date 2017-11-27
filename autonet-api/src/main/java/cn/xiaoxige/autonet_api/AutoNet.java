@@ -5,6 +5,9 @@ import android.text.TextUtils;
 
 import com.facebook.stetho.Stetho;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.data.requestentity.IRequestEntity;
@@ -38,6 +41,26 @@ public class AutoNet {
         Stetho.initializeWithDefaults(config);
 
         return this;
+    }
+
+    public void updateOrInsertHeader(String key, String value) {
+        Map map = new HashMap();
+        map.put(key, value);
+        updateOrInsertHeader(map);
+    }
+
+    public void updateOrInsertHeader(Map mapHead) {
+        this.mConfig.updateOrInsertHeader(mapHead);
+    }
+
+    public void updateOrInsertGetDelParam(String key, String value) {
+        Map map = new HashMap();
+        map.put(key, value);
+        updateOrInsertGetDelParam(map);
+    }
+
+    public void updateOrInsertGetDelParam(Map map) {
+        this.mConfig.updateOrInsertGetDelParam(map);
     }
 
     public void setAutoNetEncryption(IAutoNetEncryptionCallback autoNetEncryptionCallback) {

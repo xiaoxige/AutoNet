@@ -6,6 +6,9 @@ import android.util.Log;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.trello.rxlifecycle2.components.RxActivity;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import cn.xiaoxige.annotation.AutoNetAnontation;
 import cn.xiaoxige.annotation.AutoNetBaseUrlKeyAnontation;
 import cn.xiaoxige.annotation.AutoNetEncryptionAnontation;
@@ -33,13 +36,12 @@ public class MainActivity extends RxActivity {
         entity.setM("ina_app");
         entity.setC("other");
         MainActivityTwoCallbackAutoProxy.startSoftNet(entity, bindUntilEvent(ActivityEvent.DESTROY), new TwoCallback());
-
     }
 
     @AutoNetResponseEntityClass(value = TestResponseEntity.class)
     @AutoNetEncryptionAnontation(value = false, key = 1)
     @AutoNetBaseUrlKeyAnontation(value = "default")
-    @AutoNetPatternAnontation(value = AutoNetPatternAnontation.NetPattern.GET)
+    @AutoNetPatternAnontation(value = AutoNetPatternAnontation.NetPattern.POST)
     @AutoNetAnontation(url = "/name")
     public class TestCallback implements IAutoNetDataCallback<TestResponseEntity> {
 
