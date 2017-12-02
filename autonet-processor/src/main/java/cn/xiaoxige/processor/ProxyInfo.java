@@ -16,6 +16,7 @@ public class ProxyInfo {
     // full fullPackageName
     public String fullPackageName;
     public String className;
+    public String outClassFullPackageName;
 
     public String url = "/";
     public long writeTime = 5000;

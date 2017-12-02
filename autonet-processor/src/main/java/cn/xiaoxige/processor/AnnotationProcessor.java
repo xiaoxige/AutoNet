@@ -126,6 +126,17 @@ public class AnnotationProcessor extends AbstractProcessor {
             proxyInfo.packageName = mElementUtils.getPackageOf(element).getQualifiedName().toString();
             proxyInfo.typeElement = typeElement;
 
+            if (packageName != null && packageName.length() > 0) {
+                String outClassFullName;
+                try {
+                    outClassFullName = packageName.substring(0, packageName.length() - className.length() - 1);
+                } catch (Exception e) {
+                    outClassFullName = "";
+                }
+                proxyInfo.outClassFullPackageName = outClassFullName;
+            }
+
+
             if (annotation instanceof AutoNetPatternAnontation) {
                 autoNetPatternProc(proxyInfo, (AutoNetPatternAnontation) annotation);
             } else if (annotation instanceof AutoNetEncryptionAnontation) {

@@ -52,8 +52,13 @@ public class ProxyWriteUtil {
                 .append("import static cn.xiaoxige.annotation.AutoNetPatternAnontation.NetPattern.PUT;\n")
                 .append("import cn.xiaoxige.autonet_api.data.requestentity.IRequestEntity;\n")
                 .append("import io.reactivex.*;\n")
-                .append("import io.reactivex.FlowableTransformer;\n")
-                .append("import cn.xiaoxige.annotation.AutoNetPatternAnontation;\n\n")
+                .append("import cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity;")
+                .append("import io.reactivex.FlowableTransformer;\n");
+
+        if (info.packageName != null && info.packageName.length() > 0) {
+            buffer.append("import " + info.packageName + ".*;\n");
+        }
+        buffer.append("import cn.xiaoxige.annotation.AutoNetPatternAnontation;\n\n")
         ;
 
         // class start
@@ -65,7 +70,10 @@ public class ProxyWriteUtil {
         buffer.append("public static void startUnSoftNet(IRequestEntity entity, IAutoNetDataCallback callback) {\n");
         buffer.append("AutoNet.getInstance().startNet("
                 + "entity" + ", "
-                + (info.responseClazzName == null ? "null, " : info.responseClazzName + ".class, ")
+                + (info.responseClazzName == null
+                ? "cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity.class, "
+                : info.responseClazzName + ".class, ")
+
                 + "\"" + info.baseUrlKey + "\"" + ", "
                 + "\"" + info.url + "\"" + ", "
                 + info.writeTime + ", "
@@ -84,7 +92,10 @@ public class ProxyWriteUtil {
         buffer.append("public static void startSoftNet(IRequestEntity entity, FlowableTransformer transformer, IAutoNetDataCallback callback) {\n");
         buffer.append("AutoNet.getInstance().startNet("
                 + "entity" + ", "
-                + (info.responseClazzName == null ? "null, " : info.responseClazzName + ".class, ")
+                + (info.responseClazzName == null
+                ? "cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity.class, "
+                : info.responseClazzName + ".class, ")
+
                 + "\"" + info.baseUrlKey + "\"" + ", "
                 + "\"" + info.url + "\"" + ", "
                 + info.writeTime + ", "
@@ -97,27 +108,15 @@ public class ProxyWriteUtil {
 
         buffer.append("\n}\n\n");
 
-        buffer.append("public static void startUnSoftNet(IRequestEntity entity) {\n");
+        buffer.append("public static void startUnSoftNet(Object object, IRequestEntity entity) {\n");
+
         buffer.append("AutoNet.getInstance().startNet("
                 + "entity" + ", "
-                + (info.fullPackageName == null ? "null, " : info.fullPackageName + ".class, ")
-                + (info.responseClazzName == null ? "null, " : info.responseClazzName + ".class, ")
-                + "\"" + info.baseUrlKey + "\"" + ", "
-                + "\"" + info.url + "\"" + ", "
-                + info.writeTime + ", "
-                + info.readTime + ", "
-                + info.connectOutTime + ","
-                + info.isEncryption + ","
-                + info.encryptionKey + ", "
-                + info.netPattern + ");\n");
 
-        buffer.append("\n}\n\n");
+                + (info.responseClazzName == null
+                ? "cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity.class, "
+                : info.responseClazzName + ".class, ")
 
-        buffer.append("public static void startSoftNet(IRequestEntity entity, FlowableTransformer transformer) {\n");
-        buffer.append("AutoNet.getInstance().startNet("
-                + "entity" + ", "
-                + (info.fullPackageName == null ? "null, " : info.fullPackageName + ".class, ")
-                + (info.responseClazzName == null ? "null, " : info.responseClazzName + ".class, ")
                 + "\"" + info.baseUrlKey + "\"" + ", "
                 + "\"" + info.url + "\"" + ", "
                 + info.writeTime + ", "
@@ -126,7 +125,33 @@ public class ProxyWriteUtil {
                 + info.isEncryption + ","
                 + info.encryptionKey + ", "
                 + info.netPattern + ", "
-                + "transformer);\n");
+                + (info.outClassFullPackageName == null ? "new " + info.fullPackageName + "(), "
+                : "((" + info.outClassFullPackageName + ")object).new " + info.className + "()")
+                + ");\n");
+
+        buffer.append("\n}\n\n");
+
+
+        buffer.append("public static void startSoftNet(Object object, IRequestEntity entity, FlowableTransformer transformer) {\n");
+        buffer.append("AutoNet.getInstance().startNet("
+                + "entity" + ", "
+
+                + (info.responseClazzName == null
+                ? "cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity.class, "
+                : info.responseClazzName + ".class, ")
+
+                + "\"" + info.baseUrlKey + "\"" + ", "
+                + "\"" + info.url + "\"" + ", "
+                + info.writeTime + ", "
+                + info.readTime + ", "
+                + info.connectOutTime + ","
+                + info.isEncryption + ","
+                + info.encryptionKey + ", "
+                + info.netPattern + ", "
+                + "transformer, "
+                + (info.outClassFullPackageName == null ? "new " + info.fullPackageName + "(), "
+                : "((" + info.outClassFullPackageName + ")object).new " + info.className + "()")
+                + ");\n");
 
         buffer.append("\n}\n\n");
 
