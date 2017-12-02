@@ -1,6 +1,6 @@
 package cn.xiaoxige.autonet;
 
-import android.util.Log;
+import android.widget.TextView;
 
 import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
 import cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity;
@@ -12,23 +12,32 @@ import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallback;
 
 public class NormalClassNet {
 
+    private TextView mTextView;
+
+    public NormalClassNet() {
+    }
+
+    public NormalClassNet(TextView textView) {
+        mTextView = textView;
+    }
 
     @AutoNetResponseEntityClass(value = AutoResponseEntity.class)
     public class TestCallback implements IAutoNetDataCallback<AutoResponseEntity> {
 
         @Override
         public void onSuccess(AutoResponseEntity entity) {
-            Log.e("TAG", "" + entity.toString());
+            mTextView.setText("返回：" + entity.autoResponseResult + "\n" + "是否转Json对象失败：" + entity.isJsonTransformationError);
+
         }
 
         @Override
         public void onEmpty() {
-            Log.e("TAG", "空");
+            mTextView.setText("Get请求为空");
         }
 
         @Override
         public void onError(Throwable throwable) {
-            Log.e("TAG", "" + throwable.toString());
+            mTextView.setText(throwable.toString());
         }
     }
 
