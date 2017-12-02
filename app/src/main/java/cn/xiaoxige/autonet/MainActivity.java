@@ -45,7 +45,7 @@ public class MainActivity extends RxActivity {
             @Override
             public void onClick(View v) {
                 tvResult.setText("正在请求");
-                cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startUnSoftNet(MainActivity.this);
+                cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startSoftNet(MainActivity.this, bindUntilEvent(ActivityEvent.DESTROY));
             }
         });
 

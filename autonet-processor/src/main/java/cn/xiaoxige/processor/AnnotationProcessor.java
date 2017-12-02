@@ -112,24 +112,28 @@ public class AnnotationProcessor extends AbstractProcessor {
                 return false;
             }
             TypeElement typeElement = (TypeElement) element;
-            String packageName = typeElement.getQualifiedName().toString();
+            String fullPackageName = typeElement.getQualifiedName().toString();
+            String packageName = mElementUtils.getPackageOf(element).getQualifiedName().toString();
             String className = typeElement.getSimpleName().toString();
             Annotation annotation = typeElement.getAnnotation(clazz);
 
-            ProxyInfo proxyInfo = mInfoMap.get(packageName);
+            ProxyInfo proxyInfo = mInfoMap.get(fullPackageName);
             if (proxyInfo == null) {
                 proxyInfo = new ProxyInfo();
-                mInfoMap.put(packageName, proxyInfo);
+                mInfoMap.put(fullPackageName, proxyInfo);
             }
-            proxyInfo.fullPackageName = packageName;
+            proxyInfo.fullPackageName = fullPackageName;
             proxyInfo.className = className;
-            proxyInfo.packageName = mElementUtils.getPackageOf(element).getQualifiedName().toString();
+            proxyInfo.packageName = packageName;
             proxyInfo.typeElement = typeElement;
 
-            if (packageName != null && packageName.length() > 0) {
+            if (fullPackageName != null && fullPackageName.length() > 0) {
                 String outClassFullName;
                 try {
-                    outClassFullName = packageName.substring(0, packageName.length() - className.length() - 1);
+                    outClassFullName = fullPackageName.substring(0, fullPackageName.length() - className.length() - 1);
+                    if (outClassFullName.equals(packageName)) {
+                        outClassFullName = fullPackageName;
+                    }
                 } catch (Exception e) {
                     outClassFullName = "";
                 }

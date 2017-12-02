@@ -125,7 +125,7 @@ public class ProxyWriteUtil {
                 + info.isEncryption + ","
                 + info.encryptionKey + ", "
                 + info.netPattern + ", "
-                + (info.outClassFullPackageName == null ? "new " + info.fullPackageName + "(), "
+                + (info.outClassFullPackageName == null || info.outClassFullPackageName.equals(info.fullPackageName) ? "new " + info.fullPackageName + "()"
                 : "((" + info.outClassFullPackageName + ")object).new " + info.className + "()")
                 + ");\n");
 
@@ -149,7 +149,7 @@ public class ProxyWriteUtil {
                 + info.encryptionKey + ", "
                 + info.netPattern + ", "
                 + "transformer, "
-                + (info.outClassFullPackageName == null ? "new " + info.fullPackageName + "(), "
+                + (info.outClassFullPackageName == null || info.outClassFullPackageName.equals(info.fullPackageName) ? "new " + info.fullPackageName + "()"
                 : "((" + info.outClassFullPackageName + ")object).new " + info.className + "()")
                 + ");\n");
 
@@ -173,7 +173,7 @@ public class ProxyWriteUtil {
                 + info.isEncryption + ","
                 + info.encryptionKey + ", "
                 + info.netPattern + ", "
-                + (info.outClassFullPackageName == null ? "new " + info.fullPackageName + "(), "
+                + (info.outClassFullPackageName == null || info.outClassFullPackageName.equals(info.fullPackageName) ? "new " + info.fullPackageName + "()"
                 : "((" + info.outClassFullPackageName + ")object).new " + info.className + "()")
                 + ");\n");
 
@@ -196,7 +196,7 @@ public class ProxyWriteUtil {
                 + info.encryptionKey + ", "
                 + info.netPattern + ", "
                 + "transformer, "
-                + (info.outClassFullPackageName == null ? "new " + info.fullPackageName + "(), "
+                + (info.outClassFullPackageName == null || info.outClassFullPackageName.equals(info.fullPackageName) ? "new " + info.fullPackageName + "()"
                 : "((" + info.outClassFullPackageName + ")object).new " + info.className + "()")
                 + ");\n");
 
