@@ -156,6 +156,53 @@ public class ProxyWriteUtil {
         buffer.append("\n}\n\n");
 
 
+        buffer.append("public static void startUnSoftNet(Object object) {\n");
+
+        buffer.append("AutoNet.getInstance().startNet("
+                + "null" + ", "
+
+                + (info.responseClazzName == null
+                ? "cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity.class, "
+                : info.responseClazzName + ".class, ")
+
+                + "\"" + info.baseUrlKey + "\"" + ", "
+                + "\"" + info.url + "\"" + ", "
+                + info.writeTime + ", "
+                + info.readTime + ", "
+                + info.connectOutTime + ","
+                + info.isEncryption + ","
+                + info.encryptionKey + ", "
+                + info.netPattern + ", "
+                + (info.outClassFullPackageName == null ? "new " + info.fullPackageName + "(), "
+                : "((" + info.outClassFullPackageName + ")object).new " + info.className + "()")
+                + ");\n");
+
+        buffer.append("\n}\n\n");
+
+        buffer.append("public static void startSoftNet(Object object, FlowableTransformer transformer) {\n");
+        buffer.append("AutoNet.getInstance().startNet("
+                + "null" + ", "
+
+                + (info.responseClazzName == null
+                ? "cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity.class, "
+                : info.responseClazzName + ".class, ")
+
+                + "\"" + info.baseUrlKey + "\"" + ", "
+                + "\"" + info.url + "\"" + ", "
+                + info.writeTime + ", "
+                + info.readTime + ", "
+                + info.connectOutTime + ","
+                + info.isEncryption + ","
+                + info.encryptionKey + ", "
+                + info.netPattern + ", "
+                + "transformer, "
+                + (info.outClassFullPackageName == null ? "new " + info.fullPackageName + "(), "
+                : "((" + info.outClassFullPackageName + ")object).new " + info.className + "()")
+                + ");\n");
+
+        buffer.append("\n}\n\n");
+
+
         // class end
         buffer.append("\n}");
 

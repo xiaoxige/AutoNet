@@ -45,7 +45,7 @@ public class MainActivity extends RxActivity {
             @Override
             public void onClick(View v) {
                 tvResult.setText("正在请求");
-                cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startUnSoftNet(MainActivity.this, null);
+                cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startUnSoftNet(MainActivity.this);
             }
         });
 
@@ -57,7 +57,7 @@ public class MainActivity extends RxActivity {
                 entity.setA("guidepage");
                 entity.setM("ina_app");
                 entity.setC("other");
-                cn.xiaoxige.autonet.MainActivityTwoCallbackAutoProxy.startSoftNet(entity, bindUntilEvent(ActivityEvent.DESTROY), new TwoCallback());
+                cn.xiaoxige.autonet.MainActivityTwoCallbackAutoProxy.startSoftNet(MainActivity.this, entity, bindUntilEvent(ActivityEvent.DESTROY));
             }
         });
     }
