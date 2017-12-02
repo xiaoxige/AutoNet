@@ -32,4 +32,19 @@
         android:layout_weight="1"
         android:text="Post请求， 请求的是Json对象" />
 
+
+    <Button
+        android:id="@+id/btnNormalNet"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Post请求, 平常类请求" />
+
+    <Button
+        android:id="@+id/btnImmediateNet"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="直接请求" />
+
 </LinearLayout>

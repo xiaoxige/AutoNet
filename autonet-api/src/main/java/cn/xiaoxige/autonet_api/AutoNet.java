@@ -67,32 +67,47 @@ public class AutoNet {
         this.mAutoNetEncryptionCallback = autoNetEncryptionCallback;
     }
 
-    public void startNet(IAutoNetDataCallback callback) {
-        startNet(null, AutoNetPatternAnontation.NetPattern.GET, callback);
-    }
-
-    public void startNet(IRequestEntity requestEntity, AutoNetPatternAnontation.NetPattern pattern, IAutoNetDataCallback callback) {
-        startNet(requestEntity, 5000, 5000, 5000, pattern, callback);
-    }
-
-    public void startNet(IRequestEntity requestEntity, long writeTime, long readTime, long connectOutTime,
-                         AutoNetPatternAnontation.NetPattern pattern, IAutoNetDataCallback callback) {
-        startNet(requestEntity, "/", writeTime, readTime, connectOutTime, false, 0, pattern, callback);
-    }
-
-    public void startNet(IRequestEntity requestEntity, String url,
-                         long writeTime, long readTime, long connectOutTime, boolean isEncryption, long encryptionKey,
-                         AutoNetPatternAnontation.NetPattern pattern, IAutoNetDataCallback callback) {
-        startNet(requestEntity, null, "default", url, writeTime, readTime, connectOutTime, isEncryption, encryptionKey, pattern, callback);
-    }
-
+    /**
+     * 不安全的请求
+     *
+     * @param requestEntity
+     * @param responseEntityClass
+     * @param baseUrlKey
+     * @param url
+     * @param writeTime
+     * @param readTime
+     * @param connectOutTime
+     * @param isEncryption
+     * @param encryptionKey
+     * @param pattern
+     * @param callback
+     */
     public void startNet(IRequestEntity requestEntity, Class responseEntityClass, String baseUrlKey, String url,
                          long writeTime, long readTime, long connectOutTime, boolean isEncryption, long encryptionKey,
-                         AutoNetPatternAnontation.NetPattern pattern, IAutoNetDataCallback callback) {
-        startNet(requestEntity, null,
-                baseUrlKey, url, writeTime, readTime, connectOutTime, isEncryption, encryptionKey, pattern, null, callback);
+                         AutoNetPatternAnontation.NetPattern pattern,
+                         IAutoNetDataCallback callback) {
+
+        startNet(requestEntity, responseEntityClass, baseUrlKey, url,
+                writeTime, readTime, connectOutTime, isEncryption, encryptionKey, pattern, null, callback);
+
     }
 
+    /**
+     * 安全的请求
+     *
+     * @param requestEntity
+     * @param responseEntityClass
+     * @param baseUrlKey
+     * @param url
+     * @param writeTime
+     * @param readTime
+     * @param connectOutTime
+     * @param isEncryption
+     * @param encryptionKey
+     * @param pattern
+     * @param transformer
+     * @param callback
+     */
     public void startNet(IRequestEntity requestEntity, Class responseEntityClass, String baseUrlKey, String url,
                          long writeTime, long readTime, long connectOutTime, boolean isEncryption, long encryptionKey,
                          AutoNetPatternAnontation.NetPattern pattern,
@@ -102,7 +117,6 @@ public class AutoNet {
         if (TextUtils.isEmpty(baseUrl)) {
             throw new NullPointerException("BaseUrl is NULL.");
         }
-
         AutoNetPresenter presenter = new AutoNetPresenter(
                 requestEntity, responseEntityClass, baseUrl, url,
                 writeTime, readTime, connectOutTime,

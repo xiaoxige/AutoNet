@@ -1,7 +1,6 @@
 package cn.xiaoxige.autonet;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -15,8 +14,6 @@ import cn.xiaoxige.annotation.AutoNetBaseUrlKeyAnontation;
 import cn.xiaoxige.annotation.AutoNetEncryptionAnontation;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
-import cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy;
-import cn.xiaoxige.autonet.MainActivityTwoCallbackAutoProxy;
 import cn.xiaoxige.autonet.model.JsonTestRequestEntity;
 import cn.xiaoxige.autonet.model.JsonTestResponseEntity;
 import cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity;
@@ -27,6 +24,8 @@ public class MainActivity extends RxActivity {
     private TextView tvResult;
     private Button btnGet;
     private Button btnPost;
+    private Button btnNormalNet;
+    private Button btnImmediateNet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +40,8 @@ public class MainActivity extends RxActivity {
         tvResult = (TextView) findViewById(R.id.tvResult);
         btnGet = (Button) findViewById(R.id.btnGet);
         btnPost = (Button) findViewById(R.id.btnPost);
+        btnNormalNet = (Button)findViewById(R.id.btnNormalNet);
+        btnImmediateNet = (Button)findViewById(R.id.btnImmediateNet);
     }
 
     private void registerListener() {
@@ -48,7 +49,7 @@ public class MainActivity extends RxActivity {
             @Override
             public void onClick(View v) {
                 tvResult.setText("正在请求");
-                MainActivityTestCallbackAutoProxy.startSoftNet(null, bindUntilEvent(ActivityEvent.DESTROY), new TestCallback());
+                cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startSoftNet(MainActivity.this, bindUntilEvent(ActivityEvent.DESTROY));
             }
         });
 
@@ -60,7 +61,26 @@ public class MainActivity extends RxActivity {
                 entity.setA("guidepage");
                 entity.setM("ina_app");
                 entity.setC("other");
-                MainActivityTwoCallbackAutoProxy.startSoftNet(entity, bindUntilEvent(ActivityEvent.DESTROY), new TwoCallback());
+                cn.xiaoxige.autonet.MainActivityTwoCallbackAutoProxy.startSoftNet(MainActivity.this, entity, bindUntilEvent(ActivityEvent.DESTROY));
+            }
+        });
+
+        btnNormalNet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tvResult.setText("正在请求");
+                NormalClassNet normalClassNet = new NormalClassNet(tvResult);
+                cn.xiaoxige.autonet.NormalClassNetTestCallbackAutoProxy.startUnSoftNet(normalClassNet);
+            }
+        });
+
+        btnImmediateNet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tvResult.setText("正在请求");
+                ImmediateNet immediateNet = new ImmediateNet();
+                immediateNet.setmTextView(tvResult);
+                cn.xiaoxige.autonet.autonetImmediateNetAutoProxy.startUnSoftNet(immediateNet);
             }
         });
     }

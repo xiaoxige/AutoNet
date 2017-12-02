@@ -83,19 +83,25 @@ public class AutoNetPresenter {
             @Override
             public void DefaultOnNext(AutoResponseEntity data) {
                 super.DefaultOnNext(data);
-                mCallback.onSuccess(data);
+                if (mCallback != null) {
+                    mCallback.onSuccess(data);
+                }
             }
 
             @Override
             public void DefaultOnError(Throwable throwable) {
                 super.DefaultOnError(throwable);
-                mCallback.onError(throwable);
+                if (mCallback != null) {
+                    mCallback.onError(throwable);
+                }
             }
 
             @Override
             public void DefaultOnEmpty() {
                 super.DefaultOnEmpty();
-                mCallback.onEmpty();
+                if (mCallback != null) {
+                    mCallback.onEmpty();
+                }
             }
         }, mTransformer);
     }
@@ -106,19 +112,25 @@ public class AutoNetPresenter {
             @Override
             public void DefaultOnNext(AutoResponseEntity data) {
                 super.DefaultOnNext(data);
-                mCallback.onSuccess(data);
+                if (mCallback != null) {
+                    mCallback.onSuccess(data);
+                }
             }
 
             @Override
             public void DefaultOnError(Throwable throwable) {
                 super.DefaultOnError(throwable);
-                mCallback.onError(throwable);
+                if (mCallback != null) {
+                    mCallback.onError(throwable);
+                }
             }
 
             @Override
             public void DefaultOnEmpty() {
                 super.DefaultOnEmpty();
-                mCallback.onEmpty();
+                if (mCallback != null) {
+                    mCallback.onEmpty();
+                }
             }
         }, mTransformer);
     }
@@ -129,19 +141,25 @@ public class AutoNetPresenter {
             @Override
             public void DefaultOnNext(AutoResponseEntity data) {
                 super.DefaultOnNext(data);
-                mCallback.onSuccess(data);
+                if (mCallback != null) {
+                    mCallback.onSuccess(data);
+                }
             }
 
             @Override
             public void DefaultOnError(Throwable throwable) {
                 super.DefaultOnError(throwable);
-                mCallback.onError(throwable);
+                if (mCallback != null) {
+                    mCallback.onError(throwable);
+                }
             }
 
             @Override
             public void DefaultOnEmpty() {
                 super.DefaultOnEmpty();
-                mCallback.onEmpty();
+                if (mCallback != null) {
+                    mCallback.onEmpty();
+                }
             }
         }, mTransformer);
     }
@@ -152,19 +170,25 @@ public class AutoNetPresenter {
             @Override
             public void DefaultOnNext(AutoResponseEntity data) {
                 super.DefaultOnNext(data);
-                mCallback.onSuccess(data);
+                if (mCallback != null) {
+                    mCallback.onSuccess(data);
+                }
             }
 
             @Override
             public void DefaultOnError(Throwable throwable) {
                 super.DefaultOnError(throwable);
-                mCallback.onError(throwable);
+                if (mCallback != null) {
+                    mCallback.onError(throwable);
+                }
             }
 
             @Override
             public void DefaultOnEmpty() {
                 super.DefaultOnEmpty();
-                mCallback.onEmpty();
+                if (mCallback != null) {
+                    mCallback.onEmpty();
+                }
             }
         }, mTransformer);
     }
