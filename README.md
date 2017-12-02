@@ -14,13 +14,21 @@
 	* 封装OkHttp网络框架
 	* 封装RxJava, RxLife, 可以使用网络请求防止内存泄漏
 	* 支持请求网络直接返回Json对象
+	* 支持了直接请求网络
+	* 支持了普通类也能请求网络
 
 
 #待加功能：
 
 	* 支持数据库操作
 
+#更新说明：
+        更新的版本在release中查看（当前版本为1.0.2）
+        增加的功能用法在最后给出最新的用法
+#新版特色：
+        使用起来更加简单， 在请求网络时只需要传入当前类， 有参数可以传参数，没有不传即可， 不在需要多余的写入要返回的类。
 
+#注：具体用法请看Demo
 
 #使用：
 1.注解介绍：
@@ -35,8 +43,9 @@
 
 	* 在项目的Gradle中加入依赖：
 
-compile 'cn.xiaoxige:autonet-api:1.0.1'
-annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.1'
+compile 'cn.xiaoxige:autonet-api:1.0.2'
+
+annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.2'
 
 如果请求不下依赖， 请在项目的Gradle中加入仓库地址：
 maven { url "https://dl.bintray.com/xiaoxige/autonet"; }
@@ -169,6 +178,84 @@ head/getdelparams/baseurl都提供了set和add的方法， set会把以前的清
     }
 
 其中就在Application的加密回调中，判断type用什么样的加密方法，把加密后的字符串返回即可。
+
+支持了在普通类中进行网络请求：
+如：
+
+    public class NormalClassNet {
+
+        private TextView mTextView;
+
+        public NormalClassNet() {
+        }
+
+        public NormalClassNet(TextView textView) {
+            mTextView = textView;
+        }
+
+        @AutoNetResponseEntityClass(value = AutoResponseEntity.class)
+        public class TestCallback implements IAutoNetDataCallback<AutoResponseEntity> {
+
+            @Override
+            public void onSuccess(AutoResponseEntity entity) {
+                mTextView.setText("返回：" + entity.autoResponseResult + "\n" + "是否转Json对象失败：" + entity.isJsonTransformationError);
+
+            }
+
+            @Override
+            public void onEmpty() {
+                mTextView.setText("Get请求为空");
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                mTextView.setText(throwable.toString());
+            }
+        }
+
+    }
+
+在使用的时候更加的简单：
+
+     NormalClassNet normalClassNet = new NormalClassNet(tvResult);
+     cn.xiaoxige.autonet.NormalClassNetTestCallbackAutoProxy.startUnSoftNet(normalClassNet);
+     注：tvResult 只要是为了显示
+
+可以直接请求网络数据：
+
+    @AutoNetResponseEntityClass(value = AutoResponseEntity.class)
+    public class ImmediateNet implements IAutoNetDataCallback<AutoResponseEntity> {
+        private TextView mTextView;
+
+        public ImmediateNet() {
+        }
+
+
+        @Override
+        public void onSuccess(AutoResponseEntity entity) {
+            mTextView.setText("返回：" + entity.autoResponseResult + "\n" + "是否转Json对象失败：" + entity.isJsonTransformationError);
+        }
+
+        @Override
+        public void onEmpty() {
+            mTextView.setText("Get请求为空");
+        }
+
+        @Override
+        public void onError(Throwable throwable) {
+            mTextView.setText(throwable.toString());
+        }
+
+        public void setmTextView(TextView mTextView) {
+            this.mTextView = mTextView;
+        }
+    }
+
+使用更加简单：
+     ImmediateNet immediateNet = new ImmediateNet();
+     immediateNet.setmTextView(tvResult);
+     cn.xiaoxige.autonet.autonetImmediateNetAutoProxy.startUnSoftNet(immediateNet);
+     注：tvResult 只要是为了显示
 
 
 注意： 在返回的数据中， 每一个请求请求通了，就会吧字符串放到AutoResponseEntity的autoResponseResult中记录， 是否正确的转换成Json对象是在AutoResponseEntity的isJsonTransformationError字段记录。
