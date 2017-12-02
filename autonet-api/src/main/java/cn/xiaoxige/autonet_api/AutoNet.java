@@ -89,11 +89,37 @@ public class AutoNet {
     public void startNet(IRequestEntity requestEntity, Class responseEntityClass, String baseUrlKey, String url,
                          long writeTime, long readTime, long connectOutTime, boolean isEncryption, long encryptionKey,
                          AutoNetPatternAnontation.NetPattern pattern, IAutoNetDataCallback callback) {
-        startNet(requestEntity, null,
+        startNet(requestEntity, responseEntityClass,
                 baseUrlKey, url, writeTime, readTime, connectOutTime, isEncryption, encryptionKey, pattern, null, callback);
     }
 
     public void startNet(IRequestEntity requestEntity, Class responseEntityClass, String baseUrlKey, String url,
+                         long writeTime, long readTime, long connectOutTime, boolean isEncryption, long encryptionKey,
+                         AutoNetPatternAnontation.NetPattern pattern, FlowableTransformer transformer, IAutoNetDataCallback callback) {
+        startNet(requestEntity, null, responseEntityClass,
+                baseUrlKey, url, writeTime, readTime, connectOutTime, isEncryption, encryptionKey, pattern, transformer, callback);
+    }
+
+
+    public void startNet(IRequestEntity requestEntity, Class callBackClass, Class responseEntityClass, String baseUrlKey, String url,
+                         long writeTime, long readTime, long connectOutTime, boolean isEncryption, long encryptionKey,
+                         AutoNetPatternAnontation.NetPattern pattern) {
+        startNet(requestEntity, callBackClass, responseEntityClass, baseUrlKey, url, writeTime, readTime, connectOutTime,
+                isEncryption, encryptionKey, pattern, null);
+    }
+
+    public void startNet(IRequestEntity requestEntity, Class callBackClass, Class responseEntityClass, String baseUrlKey, String url,
+                         long writeTime, long readTime, long connectOutTime, boolean isEncryption, long encryptionKey,
+                         AutoNetPatternAnontation.NetPattern pattern,
+                         FlowableTransformer transformer) {
+        if (callBackClass == null) {
+            throw new NullPointerException("CallBackClass is NULL");
+        }
+        startNet(requestEntity, callBackClass, responseEntityClass, baseUrlKey, url,
+                writeTime, readTime, connectOutTime, isEncryption, encryptionKey, pattern, transformer, null);
+    }
+
+    public void startNet(IRequestEntity requestEntity, Class callBackClass, Class responseEntityClass, String baseUrlKey, String url,
                          long writeTime, long readTime, long connectOutTime, boolean isEncryption, long encryptionKey,
                          AutoNetPatternAnontation.NetPattern pattern,
                          FlowableTransformer transformer,
@@ -102,9 +128,8 @@ public class AutoNet {
         if (TextUtils.isEmpty(baseUrl)) {
             throw new NullPointerException("BaseUrl is NULL.");
         }
-
         AutoNetPresenter presenter = new AutoNetPresenter(
-                requestEntity, responseEntityClass, baseUrl, url,
+                requestEntity, callBackClass, responseEntityClass, baseUrl, url,
                 writeTime, readTime, connectOutTime,
                 isEncryption, encryptionKey,
                 transformer, mConfig, mAutoNetEncryptionCallback, callback

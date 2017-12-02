@@ -45,11 +45,12 @@ public class AutoNetPresenter {
 
     private String mBaseUrl;
     private String mUrl;
+    private IAutoNetDataCallback mAutoCallback;
     private IAutoNetDataCallback mCallback;
 
     private AutoNetRepo mRepo;
 
-    public AutoNetPresenter(IRequestEntity requestEntity, Class responseEntityClass, String baseUrl, String url,
+    public AutoNetPresenter(IRequestEntity requestEntity, Class callBackClass, Class responseEntityClass, String baseUrl, String url,
                             long writeTime, long readTime, long connectOutTime, boolean isEncryption,
                             long encryptionKey, FlowableTransformer transformer, AutoNetConfig config,
                             IAutoNetEncryptionCallback autoNetEncryptionCallback,
@@ -71,6 +72,13 @@ public class AutoNetPresenter {
 
         this.mTransformer = transformer;
 
+        if (callBackClass != null) {
+            try {
+                mAutoCallback = (IAutoNetDataCallback) callBackClass.newInstance();
+            } catch (Exception e) {
+                throw new RuntimeException("Place check Your callBack is implements IAutoNetDataCallback!");
+            }
+        }
         this.mCallback = callback;
 
         mRepo = new AutoNetRepoImpl(mConfig, mIsEncryption, mEncryptionKey, mResultUrl, mWriteTime, mReadTime, mConnectOutTime, mAutoNetEncryptionCallback);
@@ -83,19 +91,34 @@ public class AutoNetPresenter {
             @Override
             public void DefaultOnNext(AutoResponseEntity data) {
                 super.DefaultOnNext(data);
-                mCallback.onSuccess(data);
+                if (mCallback != null) {
+                    mCallback.onSuccess(data);
+                }
+                if (mAutoCallback != null) {
+                    mAutoCallback.onSuccess(data);
+                }
             }
 
             @Override
             public void DefaultOnError(Throwable throwable) {
                 super.DefaultOnError(throwable);
-                mCallback.onError(throwable);
+                if (mCallback != null) {
+                    mCallback.onError(throwable);
+                }
+                if (mAutoCallback != null) {
+                    mAutoCallback.onError(throwable);
+                }
             }
 
             @Override
             public void DefaultOnEmpty() {
                 super.DefaultOnEmpty();
-                mCallback.onEmpty();
+                if (mCallback != null) {
+                    mCallback.onEmpty();
+                }
+                if (mAutoCallback != null) {
+                    mAutoCallback.onEmpty();
+                }
             }
         }, mTransformer);
     }
@@ -106,19 +129,34 @@ public class AutoNetPresenter {
             @Override
             public void DefaultOnNext(AutoResponseEntity data) {
                 super.DefaultOnNext(data);
-                mCallback.onSuccess(data);
+                if (mCallback != null) {
+                    mCallback.onSuccess(data);
+                }
+                if (mAutoCallback != null) {
+                    mAutoCallback.onSuccess(data);
+                }
             }
 
             @Override
             public void DefaultOnError(Throwable throwable) {
                 super.DefaultOnError(throwable);
-                mCallback.onError(throwable);
+                if (mCallback != null) {
+                    mCallback.onError(throwable);
+                }
+                if (mAutoCallback != null) {
+                    mAutoCallback.onError(throwable);
+                }
             }
 
             @Override
             public void DefaultOnEmpty() {
                 super.DefaultOnEmpty();
-                mCallback.onEmpty();
+                if (mCallback != null) {
+                    mCallback.onEmpty();
+                }
+                if (mAutoCallback != null) {
+                    mAutoCallback.onEmpty();
+                }
             }
         }, mTransformer);
     }
@@ -129,19 +167,34 @@ public class AutoNetPresenter {
             @Override
             public void DefaultOnNext(AutoResponseEntity data) {
                 super.DefaultOnNext(data);
-                mCallback.onSuccess(data);
+                if (mCallback != null) {
+                    mCallback.onSuccess(data);
+                }
+                if (mAutoCallback != null) {
+                    mAutoCallback.onSuccess(data);
+                }
             }
 
             @Override
             public void DefaultOnError(Throwable throwable) {
                 super.DefaultOnError(throwable);
-                mCallback.onError(throwable);
+                if (mCallback != null) {
+                    mCallback.onError(throwable);
+                }
+                if (mAutoCallback != null) {
+                    mAutoCallback.onError(throwable);
+                }
             }
 
             @Override
             public void DefaultOnEmpty() {
                 super.DefaultOnEmpty();
-                mCallback.onEmpty();
+                if (mCallback != null) {
+                    mCallback.onEmpty();
+                }
+                if (mAutoCallback != null) {
+                    mAutoCallback.onEmpty();
+                }
             }
         }, mTransformer);
     }
@@ -152,19 +205,34 @@ public class AutoNetPresenter {
             @Override
             public void DefaultOnNext(AutoResponseEntity data) {
                 super.DefaultOnNext(data);
-                mCallback.onSuccess(data);
+                if (mCallback != null) {
+                    mCallback.onSuccess(data);
+                }
+                if (mAutoCallback != null) {
+                    mAutoCallback.onSuccess(data);
+                }
             }
 
             @Override
             public void DefaultOnError(Throwable throwable) {
                 super.DefaultOnError(throwable);
-                mCallback.onError(throwable);
+                if (mCallback != null) {
+                    mCallback.onError(throwable);
+                }
+                if (mAutoCallback != null) {
+                    mAutoCallback.onError(throwable);
+                }
             }
 
             @Override
             public void DefaultOnEmpty() {
                 super.DefaultOnEmpty();
-                mCallback.onEmpty();
+                if (mCallback != null) {
+                    mCallback.onEmpty();
+                }
+                if (mAutoCallback != null) {
+                    mAutoCallback.onEmpty();
+                }
             }
         }, mTransformer);
     }

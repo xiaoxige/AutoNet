@@ -59,6 +59,9 @@ public class ProxyWriteUtil {
         // class start
         buffer.append("public class " + (newClassName) + " { \n");
 
+
+        // 过时
+        buffer.append("@Deprecated\n");
         buffer.append("public static void startUnSoftNet(IRequestEntity entity, IAutoNetDataCallback callback) {\n");
         buffer.append("AutoNet.getInstance().startNet("
                 + "entity" + ", "
@@ -76,6 +79,8 @@ public class ProxyWriteUtil {
         buffer.append("\n}\n\n");
 
 
+        // 过时
+        buffer.append("@Deprecated\n");
         buffer.append("public static void startSoftNet(IRequestEntity entity, FlowableTransformer transformer, IAutoNetDataCallback callback) {\n");
         buffer.append("AutoNet.getInstance().startNet("
                 + "entity" + ", "
@@ -89,6 +94,39 @@ public class ProxyWriteUtil {
                 + info.encryptionKey + ", "
                 + info.netPattern + ", "
                 + "transformer, callback);\n");
+
+        buffer.append("\n}\n\n");
+
+        buffer.append("public static void startUnSoftNet(IRequestEntity entity) {\n");
+        buffer.append("AutoNet.getInstance().startNet("
+                + "entity" + ", "
+                + (info.fullPackageName == null ? "null, " : info.fullPackageName + ".class, ")
+                + (info.responseClazzName == null ? "null, " : info.responseClazzName + ".class, ")
+                + "\"" + info.baseUrlKey + "\"" + ", "
+                + "\"" + info.url + "\"" + ", "
+                + info.writeTime + ", "
+                + info.readTime + ", "
+                + info.connectOutTime + ","
+                + info.isEncryption + ","
+                + info.encryptionKey + ", "
+                + info.netPattern + ");\n");
+
+        buffer.append("\n}\n\n");
+
+        buffer.append("public static void startSoftNet(IRequestEntity entity, FlowableTransformer transformer) {\n");
+        buffer.append("AutoNet.getInstance().startNet("
+                + "entity" + ", "
+                + (info.fullPackageName == null ? "null, " : info.fullPackageName + ".class, ")
+                + (info.responseClazzName == null ? "null, " : info.responseClazzName + ".class, ")
+                + "\"" + info.baseUrlKey + "\"" + ", "
+                + "\"" + info.url + "\"" + ", "
+                + info.writeTime + ", "
+                + info.readTime + ", "
+                + info.connectOutTime + ","
+                + info.isEncryption + ","
+                + info.encryptionKey + ", "
+                + info.netPattern + ", "
+                + "transformer);\n");
 
         buffer.append("\n}\n\n");
 
