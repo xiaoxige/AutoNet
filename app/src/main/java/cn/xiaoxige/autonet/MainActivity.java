@@ -80,7 +80,7 @@ public class MainActivity extends RxActivity {
                 tvResult.setText("正在请求");
                 ImmediateNet immediateNet = new ImmediateNet();
                 immediateNet.setmTextView(tvResult);
-                cn.xiaoxige.autonet.autonetImmediateNetAutoProxy.startUnSoftNet(immediateNet);
+                cn.xiaoxige.autonet.AutonetImmediateNetAutoProxy.startUnSoftNet(immediateNet);
             }
         });
     }
