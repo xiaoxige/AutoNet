@@ -1,5 +1,7 @@
 package cn.xiaoxige.autonet_api.presenter;
 
+import android.text.TextUtils;
+
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.data.requestentity.IRequestEntity;
 import cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity;
@@ -49,7 +51,7 @@ public class AutoNetPresenter {
 
     private AutoNetRepo mRepo;
 
-    public AutoNetPresenter(IRequestEntity requestEntity, Class responseEntityClass, String baseUrl, String url,
+    public AutoNetPresenter(IRequestEntity requestEntity, Class responseEntityClass, String baseUrl, String url, String extraParam,
                             long writeTime, long readTime, long connectOutTime, boolean isEncryption,
                             long encryptionKey, FlowableTransformer transformer, AutoNetConfig config,
                             IAutoNetEncryptionCallback autoNetEncryptionCallback,
@@ -60,6 +62,15 @@ public class AutoNetPresenter {
         this.mBaseUrl = baseUrl;
         this.mUrl = url;
         this.mResultUrl = this.mBaseUrl + this.mUrl;
+
+        if (!TextUtils.isEmpty(extraParam)) {
+            if (!extraParam.startsWith("/") && !this.mResultUrl.endsWith("/")) {
+                extraParam = "/" + extraParam;
+            } else if (extraParam.startsWith("/") && this.mResultUrl.endsWith("/")) {
+                extraParam = extraParam.replaceFirst("/", "");
+            }
+            this.mResultUrl += extraParam;
+        }
 
         this.mWriteTime = writeTime;
         this.mReadTime = readTime;

@@ -87,7 +87,7 @@ public class AutoNet {
                          AutoNetPatternAnontation.NetPattern pattern,
                          IAutoNetDataCallback callback) {
 
-        startNet(requestEntity, responseEntityClass, baseUrlKey, url,
+        startNet(requestEntity, responseEntityClass, baseUrlKey, url, null,
                 writeTime, readTime, connectOutTime, isEncryption, encryptionKey, pattern, null, callback);
 
     }
@@ -108,7 +108,7 @@ public class AutoNet {
      * @param transformer
      * @param callback
      */
-    public void startNet(IRequestEntity requestEntity, Class responseEntityClass, String baseUrlKey, String url,
+    public void startNet(IRequestEntity requestEntity, Class responseEntityClass, String baseUrlKey, String url, String extraParam,
                          long writeTime, long readTime, long connectOutTime, boolean isEncryption, long encryptionKey,
                          AutoNetPatternAnontation.NetPattern pattern,
                          FlowableTransformer transformer,
@@ -118,7 +118,7 @@ public class AutoNet {
             throw new NullPointerException("BaseUrl is NULL.");
         }
         AutoNetPresenter presenter = new AutoNetPresenter(
-                requestEntity, responseEntityClass, baseUrl, url,
+                requestEntity, responseEntityClass, baseUrl, url, extraParam,
                 writeTime, readTime, connectOutTime,
                 isEncryption, encryptionKey,
                 transformer, mConfig, mAutoNetEncryptionCallback, callback

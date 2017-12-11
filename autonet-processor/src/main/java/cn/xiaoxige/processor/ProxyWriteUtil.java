@@ -73,7 +73,6 @@ public class ProxyWriteUtil {
         // class start
         buffer.append("public class " + (newClassName) + " { \n");
 
-
         // 过时
         buffer.append("@Deprecated\n");
         buffer.append("public static void startUnSoftNet(IRequestEntity entity, IAutoNetDataCallback callback) {\n");
@@ -96,7 +95,6 @@ public class ProxyWriteUtil {
 
         buffer.append("\n}\n\n");
 
-
         // 过时
         buffer.append("@Deprecated\n");
         buffer.append("public static void startSoftNet(IRequestEntity entity, FlowableTransformer transformer, IAutoNetDataCallback callback) {\n");
@@ -108,6 +106,7 @@ public class ProxyWriteUtil {
 
                 + "\"" + info.baseUrlKey + "\"" + ", "
                 + "\"" + info.url + "\"" + ", "
+                + "null" + ", "
                 + info.writeTime + ", "
                 + info.readTime + ", "
                 + info.connectOutTime + ","
@@ -123,27 +122,43 @@ public class ProxyWriteUtil {
         buffer.append("startSoftNet(object, entity, null);");
         buffer.append("\n}\n\n");
 
-
         buffer.append("public static void startUnSoftNet(Object object) {\n");
-        buffer.append("startSoftNet(object, null, null);");
+        buffer.append("startSoftNet(object, null, null, null);");
         buffer.append("\n}\n\n");
 
 
         buffer.append("public static void startSoftNet(Object object, FlowableTransformer transformer) {\n");
-        buffer.append("startSoftNet(object, null, transformer);");
+        buffer.append("startSoftNet(object, null, null, transformer);");
         buffer.append("\n}\n\n");
 
-
         buffer.append("public static void startSoftNet(Object object, IRequestEntity entity, FlowableTransformer transformer) {\n");
+        buffer.append("startSoftNet(object, entity, null, transformer);");
+        buffer.append("\n}\n\n");
+
+        buffer.append("public static void startUnSoftNet(Object object, IRequestEntity entity, String extraParam) {\n");
+        buffer.append("startSoftNet(object, entity, extraParam, null);");
+        buffer.append("\n}\n\n");
+
+        buffer.append("public static void startUnSoftNet(Object object, String extraParam) {\n");
+        buffer.append("startSoftNet(object, null, extraParam, null);");
+        buffer.append("\n}\n\n");
+
+        buffer.append("public static void startSoftNet(Object object, String extraParam, FlowableTransformer transformer) {\n");
+        buffer.append("startSoftNet(object, null, extraParam, transformer);");
+        buffer.append("\n}\n\n");
+
+        /**
+         * 母体
+         */
+        buffer.append("public static void startSoftNet(Object object, IRequestEntity entity, String extraParam, FlowableTransformer transformer) {\n");
         buffer.append("AutoNet.getInstance().startNet("
                 + "entity" + ", "
-
                 + (info.responseClazzName == null
                 ? "cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity.class, "
                 : info.responseClazzName + ".class, ")
-
                 + "\"" + info.baseUrlKey + "\"" + ", "
                 + "\"" + info.url + "\"" + ", "
+                + "extraParam" + ", "
                 + info.writeTime + ", "
                 + info.readTime + ", "
                 + info.connectOutTime + ","
@@ -154,7 +169,6 @@ public class ProxyWriteUtil {
                 + (info.outClassFullPackageName == null || info.outClassFullPackageName.equals(info.fullPackageName) ? "(IAutoNetDataCallback)object"
                 : "((" + info.outClassFullPackageName + ")object).new " + info.className + "()")
                 + ");\n");
-
         buffer.append("\n}\n\n");
 
 
