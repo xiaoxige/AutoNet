@@ -2,6 +2,7 @@ package cn.xiaoxige.autonet_api.presenter;
 
 import android.text.TextUtils;
 
+import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.data.requestentity.IRequestEntity;
 import cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity;
@@ -44,6 +45,8 @@ public class AutoNetPresenter {
     //data
     private IAutoNetEncryptionCallback mAutoNetEncryptionCallback;
 
+    AutoNetTypeAnontation.Type mReqType;
+    AutoNetTypeAnontation.Type mResType;
 
     private String mBaseUrl;
     private String mUrl;
@@ -53,7 +56,8 @@ public class AutoNetPresenter {
 
     public AutoNetPresenter(IRequestEntity requestEntity, Class responseEntityClass, String baseUrl, String url, String extraParam,
                             long writeTime, long readTime, long connectOutTime, boolean isEncryption,
-                            long encryptionKey, FlowableTransformer transformer, AutoNetConfig config,
+                            long encryptionKey, AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType,
+                            FlowableTransformer transformer, AutoNetConfig config,
                             IAutoNetEncryptionCallback autoNetEncryptionCallback,
                             IAutoNetDataCallback callback) {
         this.mRequestEntity = requestEntity;
@@ -79,6 +83,9 @@ public class AutoNetPresenter {
         this.mEncryptionKey = encryptionKey;
         this.mConfig = config;
         this.mAutoNetEncryptionCallback = autoNetEncryptionCallback;
+
+        this.mReqType = reqType;
+        this.mResType = resType;
 
         this.mTransformer = transformer;
 

@@ -123,7 +123,7 @@ public class AutoNet {
         AutoNetPresenter presenter = new AutoNetPresenter(
                 requestEntity, responseEntityClass, baseUrl, url, extraParam,
                 writeTime, readTime, connectOutTime,
-                isEncryption, encryptionKey,
+                isEncryption, encryptionKey, reqType, resType,
                 transformer, mConfig, mAutoNetEncryptionCallback, callback
         );
 
