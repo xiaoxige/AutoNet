@@ -10,11 +10,23 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
-public @interface AutoNetReqTypeAnontation {
-    enum ReqType {
+public @interface AutoNetTypeAnontation {
+    enum Type {
         JSON,
         STREAM
     }
 
-    ReqType value() default ReqType.JSON;
+    /**
+     * 请求类型
+     *
+     * @return
+     */
+    Type reqType() default Type.JSON;
+
+    /**
+     * 接受类型
+     *
+     * @return
+     */
+    Type resType() default Type.JSON;
 }

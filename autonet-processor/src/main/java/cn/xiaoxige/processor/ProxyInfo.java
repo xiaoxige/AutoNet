@@ -3,6 +3,7 @@ package cn.xiaoxige.processor;
 import javax.lang.model.element.TypeElement;
 
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
+import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 
 /**
  * Created by zhuxiaoan on 2017/11/26.
@@ -29,6 +30,10 @@ public class ProxyInfo {
     public boolean isEncryption = false;
 
     public AutoNetPatternAnontation.NetPattern netPattern = AutoNetPatternAnontation.NetPattern.GET;
+
+    public AutoNetTypeAnontation.Type reqType = AutoNetTypeAnontation.Type.JSON;
+
+    public AutoNetTypeAnontation.Type resType = AutoNetTypeAnontation.Type.JSON;
 
     public String responseClazzName;
 

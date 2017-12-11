@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
+import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.data.requestentity.IRequestEntity;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallback;
@@ -88,7 +89,9 @@ public class AutoNet {
                          IAutoNetDataCallback callback) {
 
         startNet(requestEntity, responseEntityClass, baseUrlKey, url, null,
-                writeTime, readTime, connectOutTime, isEncryption, encryptionKey, pattern, null, callback);
+                writeTime, readTime, connectOutTime, isEncryption, encryptionKey,
+                pattern, AutoNetTypeAnontation.Type.JSON, AutoNetTypeAnontation.Type.JSON,
+                null, callback);
 
     }
 
@@ -110,7 +113,7 @@ public class AutoNet {
      */
     public void startNet(IRequestEntity requestEntity, Class responseEntityClass, String baseUrlKey, String url, String extraParam,
                          long writeTime, long readTime, long connectOutTime, boolean isEncryption, long encryptionKey,
-                         AutoNetPatternAnontation.NetPattern pattern,
+                         AutoNetPatternAnontation.NetPattern pattern, AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType,
                          FlowableTransformer transformer,
                          IAutoNetDataCallback callback) {
         String baseUrl = mConfig.getBaseUrl().get(baseUrlKey);

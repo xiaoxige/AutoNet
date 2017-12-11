@@ -26,6 +26,7 @@ import cn.xiaoxige.annotation.AutoNetAnontation;
 import cn.xiaoxige.annotation.AutoNetBaseUrlKeyAnontation;
 import cn.xiaoxige.annotation.AutoNetEncryptionAnontation;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
+import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
 
 /**
@@ -60,6 +61,8 @@ public class AnnotationProcessor extends AbstractProcessor {
         set.add(AutoNetPatternAnontation.class.getCanonicalName());
         set.add(AutoNetEncryptionAnontation.class.getCanonicalName());
         set.add(AutoNetBaseUrlKeyAnontation.class.getCanonicalName());
+        set.add(AutoNetResponseEntityClass.class.getCanonicalName());
+        set.add(AutoNetTypeAnontation.class.getCanonicalName());
         set.add(AutoNetAnontation.class.getCanonicalName());
         return set;
     }
@@ -88,6 +91,10 @@ public class AnnotationProcessor extends AbstractProcessor {
         }
 
         if (!isAnnotatedWithClass(roundEnvironment, AutoNetResponseEntityClass.class)) {
+            return false;
+        }
+
+        if (!isAnnotatedWithClass(roundEnvironment, AutoNetTypeAnontation.class)) {
             return false;
         }
 
@@ -151,11 +158,20 @@ public class AnnotationProcessor extends AbstractProcessor {
                 autoNetProc(proxyInfo, (AutoNetAnontation) annotation);
             } else if (annotation instanceof AutoNetResponseEntityClass) {
                 autoNetResponseEntityClassProc(proxyInfo, (AutoNetResponseEntityClass) annotation, element);
+            } else if (annotation instanceof AutoNetTypeAnontation) {
+                autoNetReqTypeProc(proxyInfo, (AutoNetTypeAnontation) annotation);
             } else {
                 return false;
             }
         }
         return true;
+    }
+
+    private void autoNetReqTypeProc(ProxyInfo proxyInfo, AutoNetTypeAnontation annotation) {
+        AutoNetTypeAnontation.Type reqType = annotation.reqType();
+        AutoNetTypeAnontation.Type resType = annotation.resType();
+        proxyInfo.reqType = reqType;
+        proxyInfo.resType = resType;
     }
 
 

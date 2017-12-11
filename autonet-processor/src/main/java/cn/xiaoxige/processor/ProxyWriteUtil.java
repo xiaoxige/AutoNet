@@ -59,6 +59,8 @@ public class ProxyWriteUtil {
                 .append("import static cn.xiaoxige.annotation.AutoNetPatternAnontation.NetPattern.POST;\n")
                 .append("import static cn.xiaoxige.annotation.AutoNetPatternAnontation.NetPattern.DELETE;\n")
                 .append("import static cn.xiaoxige.annotation.AutoNetPatternAnontation.NetPattern.PUT;\n")
+                .append("import static cn.xiaoxige.annotation.AutoNetTypeAnontation.Type.JSON;\n")
+                .append("import static cn.xiaoxige.annotation.AutoNetTypeAnontation.Type.STREAM;\n")
                 .append("import cn.xiaoxige.autonet_api.data.requestentity.IRequestEntity;\n")
                 .append("import io.reactivex.*;\n")
                 .append("import cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity;")
@@ -113,6 +115,8 @@ public class ProxyWriteUtil {
                 + info.isEncryption + ","
                 + info.encryptionKey + ", "
                 + info.netPattern + ", "
+                + info.reqType + ", "
+                + info.resType + ", "
                 + "transformer, callback);\n");
 
         buffer.append("\n}\n\n");
@@ -165,6 +169,8 @@ public class ProxyWriteUtil {
                 + info.isEncryption + ","
                 + info.encryptionKey + ", "
                 + info.netPattern + ", "
+                + info.reqType + ", "
+                + info.resType + ", "
                 + "transformer, "
                 + (info.outClassFullPackageName == null || info.outClassFullPackageName.equals(info.fullPackageName) ? "(IAutoNetDataCallback)object"
                 : "((" + info.outClassFullPackageName + ")object).new " + info.className + "()")
