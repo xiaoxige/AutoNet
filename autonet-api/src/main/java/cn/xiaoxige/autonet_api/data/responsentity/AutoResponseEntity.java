@@ -5,7 +5,7 @@ package cn.xiaoxige.autonet_api.data.responsentity;
  * Created by zhuxiaoan on 2017/11/26.
  */
 
-public class AutoResponseEntity {
+public class AutoResponseEntity implements IResponseEntity {
     /**
      * JSONS是否转换错误
      */
