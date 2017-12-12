@@ -237,12 +237,15 @@ public class AutoNetRepoImpl implements AutoNetRepo {
 
     @Override
     public Flowable doPullStreamPost(final File file) {
+
         Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
             @Override
             public void subscribe(FlowableEmitter emitter) throws Exception {
+                final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+                RequestBody body = RequestBody.create(JSON, "");
                 Request request = new Request.Builder()
                         .url(mUrl)
-                        .post(null)
+                        .post(body)
                         .build();
                 Response response = mClient.newCall(request).execute();
                 if (response == null) {
