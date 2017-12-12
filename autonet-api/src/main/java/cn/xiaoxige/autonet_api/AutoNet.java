@@ -122,7 +122,7 @@ public class AutoNet {
                 pattern, reqType, resType, transformer, callback);
     }
 
-    public void startStream(String path, String fileName, String baseUrlKey, String url,
+    public void startStream(IRequestEntity requestEntity, String path, String fileName, String baseUrlKey, String url,
                             long writeTime, long readTime, long connectOutTime,
                             AutoNetPatternAnontation.NetPattern pattern, AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType,
                             FlowableTransformer transformer,
@@ -165,7 +165,7 @@ public class AutoNet {
             }
         }
 
-        start(null, null, baseUrlKey, url, null, file,
+        start(requestEntity, null, baseUrlKey, url, null, file,
                 writeTime, readTime, connectOutTime, false, 0, pattern, reqType, resType, transformer, callback);
     }
 
