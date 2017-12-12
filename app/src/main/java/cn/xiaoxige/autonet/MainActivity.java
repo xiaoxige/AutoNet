@@ -156,7 +156,6 @@ public class MainActivity extends RxActivity {
     @AutoNetBaseUrlKeyAnontation(value = "BaseFileUrl")
     @AutoNetTypeAnontation(resType = AutoNetTypeAnontation.Type.STREAM)
     @AutoNetAnontation(url = "/APK/DownLoad/PangPangPig_102.apk")
-    @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.POST)
     public class downFileCallback extends AAutoNetStreamCallback {
 
         @Override

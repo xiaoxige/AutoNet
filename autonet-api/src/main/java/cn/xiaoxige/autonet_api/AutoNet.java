@@ -140,8 +140,9 @@ public class AutoNet {
 
         if (resType == AutoNetTypeAnontation.Type.STREAM &&
                 (pattern == AutoNetPatternAnontation.NetPattern.DELETE
-                        || pattern == AutoNetPatternAnontation.NetPattern.PUT)) {
-            throw new IllegalStateException("resType -> stream type must get or post.");
+                        || pattern == AutoNetPatternAnontation.NetPattern.PUT
+                        || pattern == AutoNetPatternAnontation.NetPattern.POST)) {
+            throw new IllegalStateException("resType -> stream type must get");
         }
 
         File file = null;
