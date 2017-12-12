@@ -19,12 +19,12 @@ public interface AutoNetRepo {
 
     Flowable doPut(IRequestEntity entity, Class responseEntityClass);
 
-    Flowable doPullStreamGet(File file);
+    Flowable doPullStreamGet(IRequestEntity requestEntity, File file);
 
-    Flowable doPullStreamPost(File file);
+    Flowable doPullStreamPost(IRequestEntity requestEntity, File file);
 
-    Flowable doPushStreamGet(File file);
+    Flowable doPushStreamGet(IRequestEntity requestEntity, File file);
 
-    Flowable doPushStreamPost(File file);
+    Flowable doPushStreamPost(IRequestEntity requestEntity, File file);
 
 }

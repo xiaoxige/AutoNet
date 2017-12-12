@@ -237,7 +237,7 @@ public class AutoNetPresenter {
      * ------------------------
      */
     public void doPullStreamGet() {
-        DoPullStreamGetUsecase usecase = new DoPullStreamGetUsecase(mRepo, mFile);
+        DoPullStreamGetUsecase usecase = new DoPullStreamGetUsecase(mRepo, mRequestEntity, mFile);
 
         final AAutoNetStreamCallback callback = (AAutoNetStreamCallback) mCallback;
 
@@ -279,7 +279,7 @@ public class AutoNetPresenter {
 
     public void doPullStreamPost() {
 
-        DoPullStreamPostUsecase usecase = new DoPullStreamPostUsecase(mRepo, mFile);
+        DoPullStreamPostUsecase usecase = new DoPullStreamPostUsecase(mRepo, mRequestEntity, mFile);
         final AAutoNetStreamCallback callback = (AAutoNetStreamCallback) mCallback;
         usecase.execute(new DefaultSubscriber<Float>() {
             @Override
@@ -318,7 +318,7 @@ public class AutoNetPresenter {
     }
 
     public void doPushGet() {
-        DoPushStreamGetUsecase usecase = new DoPushStreamGetUsecase(mRepo, mFile);
+        DoPushStreamGetUsecase usecase = new DoPushStreamGetUsecase(mRepo, mRequestEntity, mFile);
         final AAutoNetStreamCallback callback = (AAutoNetStreamCallback) mCallback;
         usecase.execute(new DefaultSubscriber<Integer>() {
             @Override
@@ -356,7 +356,7 @@ public class AutoNetPresenter {
     }
 
     public void doPushPost() {
-        DoPushStreamPostUsecase usecase = new DoPushStreamPostUsecase(mRepo, mFile);
+        DoPushStreamPostUsecase usecase = new DoPushStreamPostUsecase(mRepo, mRequestEntity, mFile);
         final AAutoNetStreamCallback callback = (AAutoNetStreamCallback) mCallback;
         usecase.execute(new DefaultSubscriber<Integer>() {
             @Override

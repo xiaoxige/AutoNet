@@ -3,7 +3,6 @@ package cn.xiaoxige.autonet_api.repository;
 import com.google.gson.Gson;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Map;
@@ -21,13 +20,11 @@ import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.annotations.NonNull;
-import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 /**
  * Created by zhuxiaoan on 2017/11/26.
@@ -140,13 +137,20 @@ public class AutoNetRepoImpl implements AutoNetRepo {
             @Override
             public void subscribe(@NonNull FlowableEmitter<AutoResponseEntity> emitter) throws Exception {
                 StringBuffer resultUrl = new StringBuffer();
-                resultUrl.append(mUrl).append("?");
+                resultUrl.append(mUrl);
                 if (entity != null) {
                     Map<String, String> map = DataConvertorUtils.convertEntityToMap(entity, true);
                     Set<String> keySet = map.keySet();
+                    int i = 0;
                     for (String key : keySet) {
+                        if (i == 0) {
+                            resultUrl.append("?");
+                        } else {
+                            resultUrl.append("&");
+                        }
                         String value = map.get(key);
                         resultUrl.append(key + "=" + value);
+                        i++;
                     }
                 }
 
@@ -215,12 +219,29 @@ public class AutoNetRepoImpl implements AutoNetRepo {
     }
 
     @Override
-    public Flowable doPullStreamGet(final File file) {
+    public Flowable doPullStreamGet(final IRequestEntity requestEntity, final File file) {
         Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
             @Override
             public void subscribe(FlowableEmitter emitter) throws Exception {
+                StringBuffer resultUrl = new StringBuffer();
+                resultUrl.append(mUrl);
+                if (requestEntity != null) {
+                    Map<String, String> map = DataConvertorUtils.convertEntityToMap(requestEntity, true);
+                    Set<String> keySet = map.keySet();
+                    int i = 0;
+                    for (String key : keySet) {
+                        if (i == 0) {
+                            resultUrl.append("?");
+                        } else {
+                            resultUrl.append("&");
+                        }
+                        String value = map.get(key);
+                        resultUrl.append(key + "=" + value);
+                        i++;
+                    }
+                }
                 Request request = new Request.Builder()
-                        .url(mUrl)
+                        .url(resultUrl.toString())
                         .get()
                         .build();
                 Response response = mClient.newCall(request).execute();
@@ -236,13 +257,15 @@ public class AutoNetRepoImpl implements AutoNetRepo {
     }
 
     @Override
-    public Flowable doPullStreamPost(final File file) {
+    public Flowable doPullStreamPost(final IRequestEntity requestEntity, final File file) {
 
         Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
             @Override
             public void subscribe(FlowableEmitter emitter) throws Exception {
                 final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-                RequestBody body = RequestBody.create(JSON, "");
+                Gson gson = new Gson();
+                String json = gson.toJson(requestEntity);
+                RequestBody body = RequestBody.create(JSON, json);
                 Request request = new Request.Builder()
                         .url(mUrl)
                         .post(body)
@@ -260,12 +283,12 @@ public class AutoNetRepoImpl implements AutoNetRepo {
     }
 
     @Override
-    public Flowable doPushStreamGet(File file) {
+    public Flowable doPushStreamGet(IRequestEntity requestEntity, File file) {
         return null;
     }
 
     @Override
-    public Flowable doPushStreamPost(File file) {
+    public Flowable doPushStreamPost(IRequestEntity requestEntity, File file) {
         return null;
     }
 
