@@ -38,4 +38,6 @@ public class ProxyInfo {
     public String responseClazzName;
 
     public TypeElement typeElement;
+
+    public String mediaType = "application/octet-stream";
 }

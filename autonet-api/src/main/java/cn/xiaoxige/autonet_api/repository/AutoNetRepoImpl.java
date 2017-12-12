@@ -290,12 +290,12 @@ public class AutoNetRepoImpl implements AutoNetRepo {
     }
 
     @Override
-    public Flowable doPushStreamGet(IRequestEntity requestEntity, File file) {
-        return doPushStreamPost(requestEntity, file);
+    public Flowable doPushStreamGet(IRequestEntity requestEntity, String mediaType, String fileKey, File file) {
+        return doPushStreamPost(requestEntity, mediaType, fileKey, file);
     }
 
     @Override
-    public Flowable doPushStreamPost(final IRequestEntity requestEntity, final File file) {
+    public Flowable doPushStreamPost(final IRequestEntity requestEntity, final String mediaType, final String fileKey, final File file) {
         final Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
             @Override
             public void subscribe(@NonNull final FlowableEmitter emitter) throws Exception {
@@ -309,27 +309,28 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                         builder.addFormDataPart(key, map.get(key));
                     }
                 }
-                builder.addFormDataPart("", file.getName(), createProgressRequestBody(null, file, new AAutoNetStreamCallback() {
-                    @Override
-                    public void onComplete(File file) {
-                        emitter.onComplete();
-                    }
+                builder.addFormDataPart(fileKey, file.getName(),
+                        createProgressRequestBody(MediaType.parse(mediaType), file, new AAutoNetStreamCallback() {
+                            @Override
+                            public void onComplete(File file) {
+                                emitter.onComplete();
+                            }
 
-                    @Override
-                    public void onPregress(float progress) {
-                        emitter.onNext(progress);
-                    }
+                            @Override
+                            public void onPregress(float progress) {
+                                emitter.onNext(progress);
+                            }
 
-                    @Override
-                    public void onEmpty() {
-                        emitter.onError(new EmptyException());
-                    }
+                            @Override
+                            public void onEmpty() {
+                                emitter.onError(new EmptyException());
+                            }
 
-                    @Override
-                    public void onError(Throwable throwable) {
-                        emitter.onError(throwable);
-                    }
-                }));
+                            @Override
+                            public void onError(Throwable throwable) {
+                                emitter.onError(throwable);
+                            }
+                        }));
             }
         });
         return flowable;

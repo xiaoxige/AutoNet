@@ -25,9 +25,10 @@ import javax.tools.Diagnostic;
 import cn.xiaoxige.annotation.AutoNetAnontation;
 import cn.xiaoxige.annotation.AutoNetBaseUrlKeyAnontation;
 import cn.xiaoxige.annotation.AutoNetEncryptionAnontation;
+import cn.xiaoxige.annotation.AutoNetMediaTypeAnontation;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
-import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
+import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 
 /**
  * Created by zhuxiaoan on 2017/11/26.
@@ -63,6 +64,7 @@ public class AnnotationProcessor extends AbstractProcessor {
         set.add(AutoNetBaseUrlKeyAnontation.class.getCanonicalName());
         set.add(AutoNetResponseEntityClass.class.getCanonicalName());
         set.add(AutoNetTypeAnontation.class.getCanonicalName());
+        set.add(AutoNetMediaTypeAnontation.class.getCanonicalName());
         set.add(AutoNetAnontation.class.getCanonicalName());
         return set;
     }
@@ -93,6 +95,11 @@ public class AnnotationProcessor extends AbstractProcessor {
         if (!isAnnotatedWithClass(roundEnvironment, AutoNetResponseEntityClass.class)) {
             return false;
         }
+
+        if (!isAnnotatedWithClass(roundEnvironment, AutoNetMediaTypeAnontation.class)) {
+            return false;
+        }
+
 
         if (!isAnnotatedWithClass(roundEnvironment, AutoNetTypeAnontation.class)) {
             return false;
@@ -160,11 +167,18 @@ public class AnnotationProcessor extends AbstractProcessor {
                 autoNetResponseEntityClassProc(proxyInfo, (AutoNetResponseEntityClass) annotation, element);
             } else if (annotation instanceof AutoNetTypeAnontation) {
                 autoNetReqTypeProc(proxyInfo, (AutoNetTypeAnontation) annotation);
+            } else if (annotation instanceof AutoNetMediaTypeAnontation) {
+                autoNetMediaTypeProc(proxyInfo, (AutoNetMediaTypeAnontation) annotation);
             } else {
                 return false;
             }
         }
         return true;
+    }
+
+    private void autoNetMediaTypeProc(ProxyInfo proxyInfo, AutoNetMediaTypeAnontation annotation) {
+        String mediaType = annotation.value();
+        proxyInfo.mediaType = mediaType;
     }
 
     private void autoNetReqTypeProc(ProxyInfo proxyInfo, AutoNetTypeAnontation annotation) {

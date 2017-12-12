@@ -53,6 +53,10 @@ public class AutoNetPresenter {
     private IAutoNetEncryptionCallback mAutoNetEncryptionCallback;
     // data
     private File mFile;
+    //data
+    private String mMediaType;
+    //data
+    private String mFileKey;
 
     @Deprecated
     AutoNetTypeAnontation.Type mReqType;
@@ -66,7 +70,9 @@ public class AutoNetPresenter {
 
     private AutoNetRepo mRepo;
 
-    public AutoNetPresenter(IRequestEntity requestEntity, Class responseEntityClass, String baseUrl, String url, String extraParam, File file,
+    public AutoNetPresenter(IRequestEntity requestEntity, Class responseEntityClass,
+                            String baseUrl, String url, String extraParam,
+                            String mediaType, String fileKey, File file,
                             long writeTime, long readTime, long connectOutTime, boolean isEncryption,
                             long encryptionKey, AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType,
                             FlowableTransformer transformer, AutoNetConfig config,
@@ -96,6 +102,8 @@ public class AutoNetPresenter {
         this.mConfig = config;
         this.mAutoNetEncryptionCallback = autoNetEncryptionCallback;
 
+        this.mMediaType = mediaType;
+        this.mFileKey = fileKey;
         this.mFile = file;
 
         this.mReqType = reqType;
@@ -318,7 +326,7 @@ public class AutoNetPresenter {
     }
 
     public void doPushGet() {
-        DoPushStreamGetUsecase usecase = new DoPushStreamGetUsecase(mRepo, mRequestEntity, mFile);
+        DoPushStreamGetUsecase usecase = new DoPushStreamGetUsecase(mRepo, mRequestEntity, mMediaType, mFileKey, mFile);
         final AAutoNetStreamCallback callback = (AAutoNetStreamCallback) mCallback;
         usecase.execute(new DefaultSubscriber<Integer>() {
             @Override
@@ -356,7 +364,7 @@ public class AutoNetPresenter {
     }
 
     public void doPushPost() {
-        DoPushStreamPostUsecase usecase = new DoPushStreamPostUsecase(mRepo, mRequestEntity, mFile);
+        DoPushStreamPostUsecase usecase = new DoPushStreamPostUsecase(mRepo, mRequestEntity, mMediaType, mFileKey, mFile);
         final AAutoNetStreamCallback callback = (AAutoNetStreamCallback) mCallback;
         usecase.execute(new DefaultSubscriber<Integer>() {
             @Override

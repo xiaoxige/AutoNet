@@ -118,11 +118,11 @@ public class AutoNet {
                          AutoNetPatternAnontation.NetPattern pattern, AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType,
                          FlowableTransformer transformer,
                          IAutoNetDataCallback callback) {
-        start(requestEntity, responseEntityClass, baseUrlKey, url, extraParam, null, writeTime, readTime, connectOutTime, isEncryption, encryptionKey,
+        start(requestEntity, responseEntityClass, baseUrlKey, url, extraParam, null, null, null, writeTime, readTime, connectOutTime, isEncryption, encryptionKey,
                 pattern, reqType, resType, transformer, callback);
     }
 
-    public void startStream(IRequestEntity requestEntity, String path, String fileName, String baseUrlKey, String url,
+    public void startStream(IRequestEntity requestEntity, String mediaType, String fileKey, String path, String fileName, String baseUrlKey, String url,
                             long writeTime, long readTime, long connectOutTime,
                             AutoNetPatternAnontation.NetPattern pattern, AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType,
                             FlowableTransformer transformer,
@@ -166,7 +166,7 @@ public class AutoNet {
             }
         }
 
-        start(requestEntity, null, baseUrlKey, url, null, file,
+        start(requestEntity, null, baseUrlKey, url, null, mediaType, fileKey, file,
                 writeTime, readTime, connectOutTime, false, 0, pattern, reqType, resType, transformer, callback);
     }
 
@@ -192,7 +192,7 @@ public class AutoNet {
      * @param callback
      */
     private void start(IRequestEntity requestEntity, Class responseEntityClass, String baseUrlKey, String url, String extraParam,
-                       File file,
+                       String mediaType, String fileKey, File file,
                        long writeTime, long readTime, long connectOutTime, boolean isEncryption, long encryptionKey,
                        AutoNetPatternAnontation.NetPattern pattern, AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType,
                        FlowableTransformer transformer,
@@ -203,7 +203,8 @@ public class AutoNet {
         }
 
         AutoNetPresenter presenter = new AutoNetPresenter(
-                requestEntity, responseEntityClass, baseUrl, url, extraParam, file,
+                requestEntity, responseEntityClass, baseUrl, url, extraParam,
+                mediaType, fileKey, file,
                 writeTime, readTime, connectOutTime,
                 isEncryption, encryptionKey, reqType, resType,
                 transformer, mConfig, mAutoNetEncryptionCallback, callback
