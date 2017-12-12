@@ -9,6 +9,8 @@ import android.widget.Toast;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.trello.rxlifecycle2.components.RxActivity;
 
+import java.io.File;
+
 import cn.xiaoxige.annotation.AutoNetAnontation;
 import cn.xiaoxige.annotation.AutoNetBaseUrlKeyAnontation;
 import cn.xiaoxige.annotation.AutoNetEncryptionAnontation;
@@ -18,6 +20,7 @@ import cn.xiaoxige.autonet.model.JsonTestRequestEntity;
 import cn.xiaoxige.autonet.model.JsonTestResponseEntity;
 import cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallback;
+import cn.xiaoxige.autonet_api.interfaces.AAutoNetStreamCallback;
 
 public class MainActivity extends RxActivity {
 
@@ -40,8 +43,8 @@ public class MainActivity extends RxActivity {
         tvResult = (TextView) findViewById(R.id.tvResult);
         btnGet = (Button) findViewById(R.id.btnGet);
         btnPost = (Button) findViewById(R.id.btnPost);
-        btnNormalNet = (Button)findViewById(R.id.btnNormalNet);
-        btnImmediateNet = (Button)findViewById(R.id.btnImmediateNet);
+        btnNormalNet = (Button) findViewById(R.id.btnNormalNet);
+        btnImmediateNet = (Button) findViewById(R.id.btnImmediateNet);
     }
 
     private void registerListener() {
@@ -140,6 +143,31 @@ public class MainActivity extends RxActivity {
         public void onError(Throwable throwable) {
             Toast.makeText(MainActivity.this, "Post数据出错", Toast.LENGTH_SHORT).show();
             tvResult.setText(throwable.toString());
+        }
+    }
+
+
+
+    public class downFileCallback extends AAutoNetStreamCallback {
+
+        @Override
+        public void onComplete(File file) {
+
+        }
+
+        @Override
+        public void onPregress(float progress) {
+
+        }
+
+        @Override
+        public void onEmpty() {
+
+        }
+
+        @Override
+        public void onError(Throwable throwable) {
+
         }
     }
 }

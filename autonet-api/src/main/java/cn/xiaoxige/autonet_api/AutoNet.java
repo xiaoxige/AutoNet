@@ -122,7 +122,6 @@ public class AutoNet {
                 pattern, reqType, resType, transformer, callback);
     }
 
-
     public void startStream(String path, String fileName, String baseUrlKey, String url,
                             long writeTime, long readTime, long connectOutTime,
                             AutoNetPatternAnontation.NetPattern pattern, AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType,
@@ -203,12 +202,59 @@ public class AutoNet {
         }
 
         AutoNetPresenter presenter = new AutoNetPresenter(
-                requestEntity, responseEntityClass, baseUrl, url, extraParam,
+                requestEntity, responseEntityClass, baseUrl, url, extraParam, file,
                 writeTime, readTime, connectOutTime,
                 isEncryption, encryptionKey, reqType, resType,
                 transformer, mConfig, mAutoNetEncryptionCallback, callback
         );
 
+        if (reqType == AutoNetTypeAnontation.Type.STREAM) {
+            startPushStream(presenter, pattern);
+        } else if (resType == AutoNetTypeAnontation.Type.STREAM) {
+            startPullStream(presenter, pattern);
+        } else {
+            startJson(presenter, pattern);
+        }
+    }
+
+    /**
+     * 发送文件
+     *
+     * @param presenter
+     * @param pattern
+     */
+    private void startPushStream(AutoNetPresenter presenter, AutoNetPatternAnontation.NetPattern pattern) {
+
+        if (pattern == AutoNetPatternAnontation.NetPattern.GET) {
+            presenter.doPushGet();
+        } else if (pattern == AutoNetPatternAnontation.NetPattern.POST) {
+            presenter.doPushPost();
+        }
+    }
+
+    /**
+     * 接受文件
+     *
+     * @param presenter
+     * @param pattern
+     */
+    private void startPullStream(AutoNetPresenter presenter, AutoNetPatternAnontation.NetPattern pattern) {
+
+        if (pattern == AutoNetPatternAnontation.NetPattern.GET) {
+            presenter.doPullStreamGet();
+        } else if (pattern == AutoNetPatternAnontation.NetPattern.POST) {
+            presenter.doPullStreamPost();
+        }
+
+    }
+
+    /**
+     * 发送Json请求
+     *
+     * @param presenter
+     * @param pattern
+     */
+    private void startJson(AutoNetPresenter presenter, AutoNetPatternAnontation.NetPattern pattern) {
         if (pattern == AutoNetPatternAnontation.NetPattern.GET) {
             presenter.doGet();
         } else if (pattern == AutoNetPatternAnontation.NetPattern.POST) {

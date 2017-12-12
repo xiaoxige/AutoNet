@@ -2,6 +2,10 @@ package cn.xiaoxige.autonet_api.repository;
 
 import com.google.gson.Gson;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Set;
 
@@ -70,6 +74,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                 Response response = mClient.newCall(request).execute();
                 if (response == null) {
                     emitter.onError(new EmptyException());
+                    return;
                 }
                 String msg = response.body().string();
                 AutoResponseEntity responseEntity = null;
@@ -106,6 +111,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                 Response response = mClient.newCall(request).execute();
                 if (response == null) {
                     emitter.onError(new EmptyException());
+                    return;
                 }
                 String msg = response.body().string();
                 AutoResponseEntity responseEntity = null;
@@ -149,6 +155,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                 Response response = mClient.newCall(request).execute();
                 if (response == null) {
                     emitter.onError(new EmptyException());
+                    return;
                 }
                 String msg = response.body().string();
                 AutoResponseEntity responseEntity = null;
@@ -185,6 +192,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                 Response response = mClient.newCall(request).execute();
                 if (response == null) {
                     emitter.onError(new EmptyException());
+                    return;
                 }
                 String msg = response.body().string();
                 AutoResponseEntity responseEntity = null;
@@ -202,5 +210,84 @@ public class AutoNetRepoImpl implements AutoNetRepo {
             }
         });
         return flowable;
+    }
+
+    @Override
+    public Flowable doPullStreamGet(final File file) {
+        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
+            @Override
+            public void subscribe(FlowableEmitter emitter) throws Exception {
+                Request request = new Request.Builder()
+                        .url(mUrl)
+                        .get()
+                        .build();
+                Response response = mClient.newCall(request).execute();
+                if (response == null) {
+                    emitter.onError(new EmptyException());
+                    return;
+                }
+                recvFile(emitter, response, file);
+                emitter.onComplete();
+            }
+        });
+        return flowable;
+    }
+
+    @Override
+    public Flowable doPullStreamPost(final File file) {
+        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
+            @Override
+            public void subscribe(FlowableEmitter emitter) throws Exception {
+                Request request = new Request.Builder()
+                        .url(mUrl)
+                        .post(null)
+                        .build();
+                Response response = mClient.newCall(request).execute();
+                if (response == null) {
+                    emitter.onError(new EmptyException());
+                    return;
+                }
+                recvFile(emitter, response, file);
+                emitter.onComplete();
+            }
+        });
+        return flowable;
+    }
+
+    @Override
+    public Flowable doPushStreamGet(File file) {
+        return null;
+    }
+
+    @Override
+    public Flowable doPushStreamPost(File file) {
+        return null;
+    }
+
+    /**
+     * 下载文件
+     *
+     * @param emitter
+     * @param response
+     * @param file
+     * @throws Exception
+     */
+    private void recvFile(FlowableEmitter emitter, Response response, File file) throws Exception {
+        long fileSize = response.body().contentLength();
+        InputStream is =
+                response.body().byteStream();
+
+        FileOutputStream fos = new FileOutputStream(file);
+        int pullLength = 0;
+        byte[] b = new byte[1024];
+        int len;
+        while ((len = is.read(b)) != -1) {
+            fos.write(b, 0, len);
+            pullLength += len;
+            emitter.onNext(pullLength * 100 / fileSize);
+        }
+        fos.flush();
+        fos.close();
+        is.close();
     }
 }

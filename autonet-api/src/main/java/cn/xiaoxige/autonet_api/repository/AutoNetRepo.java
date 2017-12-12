@@ -1,5 +1,7 @@
 package cn.xiaoxige.autonet_api.repository;
 
+import java.io.File;
+
 import cn.xiaoxige.autonet_api.data.requestentity.IRequestEntity;
 import io.reactivex.Flowable;
 
@@ -16,5 +18,13 @@ public interface AutoNetRepo {
     Flowable doDelete(IRequestEntity entity, Class responseEntityClass);
 
     Flowable doPut(IRequestEntity entity, Class responseEntityClass);
+
+    Flowable doPullStreamGet(File file);
+
+    Flowable doPullStreamPost(File file);
+
+    Flowable doPushStreamGet(File file);
+
+    Flowable doPushStreamPost(File file);
 
 }
