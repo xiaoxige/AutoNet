@@ -11,6 +11,7 @@ import java.util.Set;
 
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.data.requestentity.IRequestEntity;
+import cn.xiaoxige.autonet_api.data.responsentity.AutoProgressEntity;
 import cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity;
 import cn.xiaoxige.autonet_api.error.EmptyException;
 import cn.xiaoxige.autonet_api.flowable.DefaultFlowable;
@@ -290,12 +291,12 @@ public class AutoNetRepoImpl implements AutoNetRepo {
     }
 
     @Override
-    public Flowable doPushStreamGet(IRequestEntity requestEntity, String mediaType, String fileKey, File file) {
-        return doPushStreamPost(requestEntity, mediaType, fileKey, file);
+    public Flowable doPushStreamGet(IRequestEntity requestEntity, Class responseEntityClass, String mediaType, String fileKey, File file) {
+        return doPushStreamPost(requestEntity, responseEntityClass, mediaType, fileKey, file);
     }
 
     @Override
-    public Flowable doPushStreamPost(final IRequestEntity requestEntity, final String mediaType, final String fileKey, final File file) {
+    public Flowable doPushStreamPost(final IRequestEntity requestEntity, final Class responseEntityClass, final String mediaType, final String fileKey, final File file) {
         final Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
             @Override
             public void subscribe(@NonNull final FlowableEmitter emitter) throws Exception {
@@ -310,15 +311,18 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                     }
                 }
 
+                final AutoProgressEntity progressEntity = new AutoProgressEntity(0);
                 builder.addFormDataPart(fileKey, file.getName(),
                         createProgressRequestBody(MediaType.parse(mediaType), file, new AAutoNetStreamCallback() {
                             @Override
                             public void onComplete(File file) {
+//                                emitter.onComplete();
                             }
 
                             @Override
                             public void onPregress(float progress) {
-                                emitter.onNext(progress);
+                                progressEntity.progress = progress;
+                                emitter.onNext(progressEntity);
                             }
 
                             @Override
@@ -341,20 +345,19 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                     emitter.onError(new EmptyException());
                     return;
                 }
-//                String msg = response.body().string();
-//                AutoResponseEntity responseEntity = null;
-//                try {
-////                    responseEntity = (AutoResponseEntity) new Gson().fromJson(msg, responseEntityClass);
-//                } catch (Exception e) {
-//                }
-//                if (responseEntity == null) {
-////                    responseEntity = (AutoResponseEntity) responseEntityClass.newInstance();
-////                    responseEntity.isJsonTransformationError = true;
-//                }
-//                responseEntity.autoResponseResult = msg;
-//                emitter.onNext(responseEntity);
+                String msg = response.body().string();
+                AutoResponseEntity responseEntity = null;
+                try {
+                    responseEntity = (AutoResponseEntity) new Gson().fromJson(msg, responseEntityClass);
+                } catch (Exception e) {
+                }
+                if (responseEntity == null) {
+                    responseEntity = (AutoResponseEntity) responseEntityClass.newInstance();
+                    responseEntity.isJsonTransformationError = true;
+                }
+                responseEntity.autoResponseResult = msg;
+                emitter.onNext(responseEntity);
 //                emitter.onComplete();
-
             }
         });
         return flowable;

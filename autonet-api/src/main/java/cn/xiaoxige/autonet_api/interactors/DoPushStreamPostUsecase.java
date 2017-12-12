@@ -14,14 +14,16 @@ import io.reactivex.Flowable;
 public class DoPushStreamPostUsecase extends BaseUsecase {
     private AutoNetRepo mRepo;
     private IRequestEntity mRequestEntity;
+    private Class mResponseEntityClass;
     private String mMediaType;
     private String mFileKey;
     private File mFile;
 
-    public DoPushStreamPostUsecase(AutoNetRepo repo, IRequestEntity requestEntity,
+    public DoPushStreamPostUsecase(AutoNetRepo repo, IRequestEntity requestEntity, Class responseEntityClass,
                                    String mediaType, String fileKey, File file) {
         this.mRepo = repo;
         this.mRequestEntity = requestEntity;
+        this.mResponseEntityClass = responseEntityClass;
         this.mMediaType = mediaType;
         this.mFileKey = fileKey;
         this.mFile = file;
@@ -29,6 +31,6 @@ public class DoPushStreamPostUsecase extends BaseUsecase {
 
     @Override
     public Flowable getFlowable() {
-        return mRepo.doPushStreamPost(mRequestEntity, mMediaType, mFileKey, mFile);
+        return mRepo.doPushStreamPost(mRequestEntity, mResponseEntityClass, mMediaType, mFileKey, mFile);
     }
 }

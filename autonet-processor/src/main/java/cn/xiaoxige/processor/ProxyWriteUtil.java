@@ -252,6 +252,9 @@ public class ProxyWriteUtil {
         buffer.append("private static void stream(Object object, IRequestEntity entity, String fileKey, String path, String fileName, FlowableTransformer transformer) {\n");
         buffer.append("AutoNet.getInstance().startStream("
                 + "entity" + ", "
+                + (info.responseClazzName == null
+                ? "cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity.class, "
+                : info.responseClazzName + ".class, ")
                 + "\"" + info.mediaType + "\"" + ", "
                 + "fileKey, "
                 + "path" + ", "

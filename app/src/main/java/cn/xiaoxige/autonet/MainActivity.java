@@ -208,5 +208,13 @@ public class MainActivity extends RxActivity {
         public void onError(Throwable throwable) {
             Log.e("TAG", "File pull error");
         }
+
+        @Override
+        public void onSuccess(AutoResponseEntity entity) {
+            super.onSuccess(entity);
+            Log.e("TAG", "返回：" + entity.autoResponseResult + "\n" + "是否转Json对象失败："
+                    + entity.isJsonTransformationError + "\n\n"
+                    + "json： " + entity.toString());
+        }
     }
 }

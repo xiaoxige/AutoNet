@@ -7,7 +7,9 @@ import java.io.File;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.data.requestentity.IRequestEntity;
+import cn.xiaoxige.autonet_api.data.responsentity.AutoProgressEntity;
 import cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity;
+import cn.xiaoxige.autonet_api.data.responsentity.IResponseEntity;
 import cn.xiaoxige.autonet_api.interactors.DoDeleteUsecase;
 import cn.xiaoxige.autonet_api.interactors.DoGetUsecase;
 import cn.xiaoxige.autonet_api.interactors.DoPostUsecase;
@@ -325,8 +327,9 @@ public class AutoNetPresenter {
         }, mTransformer);
     }
 
+    // TODO: 2017/12/12
     public void doPushGet() {
-        DoPushStreamGetUsecase usecase = new DoPushStreamGetUsecase(mRepo, mRequestEntity, mMediaType, mFileKey, mFile);
+        DoPushStreamGetUsecase usecase = new DoPushStreamGetUsecase(mRepo, mRequestEntity, mResponseEntityClass, mMediaType, mFileKey, mFile);
         final AAutoNetStreamCallback callback = (AAutoNetStreamCallback) mCallback;
         usecase.execute(new DefaultSubscriber<Integer>() {
             @Override
@@ -364,14 +367,22 @@ public class AutoNetPresenter {
     }
 
     public void doPushPost() {
-        DoPushStreamPostUsecase usecase = new DoPushStreamPostUsecase(mRepo, mRequestEntity, mMediaType, mFileKey, mFile);
+        DoPushStreamPostUsecase usecase = new DoPushStreamPostUsecase(mRepo, mRequestEntity, mResponseEntityClass, mMediaType, mFileKey, mFile);
         final AAutoNetStreamCallback callback = (AAutoNetStreamCallback) mCallback;
-        usecase.execute(new DefaultSubscriber<Float>() {
+        usecase.execute(new DefaultSubscriber<IResponseEntity>() {
             @Override
-            public void DefaultOnNext(Float data) {
+            public void DefaultOnNext(IResponseEntity data) {
                 super.DefaultOnNext(data);
                 if (callback != null) {
-                    callback.onPregress(data);
+                    if (data instanceof AutoProgressEntity) {
+                        AutoProgressEntity entity = (AutoProgressEntity) data;
+                        callback.onPregress(entity.progress);
+                        if (entity.progress == 100) {
+                            callback.onComplete(mFile);
+                        }
+                    } else if (data instanceof AutoResponseEntity) {
+                        callback.onSuccess((AutoResponseEntity) data);
+                    }
                 }
             }
 
@@ -395,7 +406,7 @@ public class AutoNetPresenter {
             public void DefaultOnComplete() {
                 super.DefaultOnComplete();
                 if (callback != null) {
-                    callback.onComplete(mFile);
+//                    callback.onComplete(mFile);
                 }
             }
         }, mTransformer);

@@ -23,8 +23,8 @@ public interface AutoNetRepo {
 
     Flowable doPullStreamPost(IRequestEntity requestEntity, File file);
 
-    Flowable doPushStreamGet(IRequestEntity requestEntity, String mediaType, String fileKey, File file);
+    Flowable doPushStreamGet(IRequestEntity requestEntity, Class responseEntityClass, String mediaType, String fileKey, File file);
 
-    Flowable doPushStreamPost(IRequestEntity requestEntity, String mediaType, String fileKey, File file);
+    Flowable doPushStreamPost(IRequestEntity requestEntity, Class responseEntityClass, String mediaType, String fileKey, File file);
 
 }
