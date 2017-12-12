@@ -22,6 +22,7 @@ public class MyApplication extends Application {
         Map head = new HashMap();
         head.put("token", "xxx");
         Map mapBaseUrl = new HashMap();
+        mapBaseUrl.put("BaseFileUrl", "http://www.pangpangpig.com");
         mapBaseUrl.put("jsonTestBaseUrl", "http://api.news18a.com");
         AutoNetConfig config = new AutoNetConfig.Buidler()
                 .setBaseUrl("http://www.baidu.com")

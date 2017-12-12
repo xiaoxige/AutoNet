@@ -1,6 +1,8 @@
 package cn.xiaoxige.autonet;
 
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,6 +18,8 @@ import cn.xiaoxige.annotation.AutoNetBaseUrlKeyAnontation;
 import cn.xiaoxige.annotation.AutoNetEncryptionAnontation;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
+import cn.xiaoxige.annotation.AutoNetTypeAnontation;
+import cn.xiaoxige.autonet.MainActivitydownFileCallbackAutoProxy;
 import cn.xiaoxige.autonet.model.JsonTestRequestEntity;
 import cn.xiaoxige.autonet.model.JsonTestResponseEntity;
 import cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity;
@@ -51,8 +55,10 @@ public class MainActivity extends RxActivity {
         btnGet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tvResult.setText("正在请求");
-                cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startSoftNet(MainActivity.this, "5002002", bindUntilEvent(ActivityEvent.DESTROY));
+//                tvResult.setText("正在请求");
+//                cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startSoftNet(MainActivity.this, "5002002", bindUntilEvent(ActivityEvent.DESTROY));
+                String path = getExternalFilesDir(null).toString();
+                MainActivitydownFileCallbackAutoProxy.pullFile(MainActivity.this, path, "xiaoxige.apk");
             }
         });
 
@@ -147,27 +153,30 @@ public class MainActivity extends RxActivity {
     }
 
 
-
+    @AutoNetBaseUrlKeyAnontation(value = "BaseFileUrl")
+    @AutoNetTypeAnontation(resType = AutoNetTypeAnontation.Type.STREAM)
+    @AutoNetAnontation(url = "/APK/DownLoad/PangPangPig_102.apk")
+    @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.POST)
     public class downFileCallback extends AAutoNetStreamCallback {
 
         @Override
         public void onComplete(File file) {
-
+            Log.e("TAG", "文件下载完成");
         }
 
         @Override
         public void onPregress(float progress) {
-
+            Log.e("TAG", "progress" + progress);
         }
 
         @Override
         public void onEmpty() {
-
+            Log.e("TAG", "File pull empty");
         }
 
         @Override
         public void onError(Throwable throwable) {
-
+            Log.e("TAG", "File pull error");
         }
     }
 }

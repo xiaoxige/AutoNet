@@ -241,9 +241,9 @@ public class AutoNetPresenter {
 
         final AAutoNetStreamCallback callback = (AAutoNetStreamCallback) mCallback;
 
-        usecase.execute(new DefaultSubscriber<Integer>() {
+        usecase.execute(new DefaultSubscriber<Float>() {
             @Override
-            public void DefaultOnNext(Integer data) {
+            public void DefaultOnNext(Float data) {
                 super.DefaultOnNext(data);
                 if (callback != null) {
                     callback.onPregress(data);
@@ -281,9 +281,9 @@ public class AutoNetPresenter {
 
         DoPullStreamPostUsecase usecase = new DoPullStreamPostUsecase(mRepo, mFile);
         final AAutoNetStreamCallback callback = (AAutoNetStreamCallback) mCallback;
-        usecase.execute(new DefaultSubscriber<Integer>() {
+        usecase.execute(new DefaultSubscriber<Float>() {
             @Override
-            public void DefaultOnNext(Integer data) {
+            public void DefaultOnNext(Float data) {
                 super.DefaultOnNext(data);
                 if (callback != null) {
                     callback.onPregress(data);

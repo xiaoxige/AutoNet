@@ -21,11 +21,13 @@ import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.annotations.NonNull;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * Created by zhuxiaoan on 2017/11/26.
@@ -277,6 +279,8 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         InputStream is =
                 response.body().byteStream();
 
+        float preProgress = 0;
+        float progress = 0;
         FileOutputStream fos = new FileOutputStream(file);
         int pullLength = 0;
         byte[] b = new byte[1024];
@@ -284,7 +288,11 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         while ((len = is.read(b)) != -1) {
             fos.write(b, 0, len);
             pullLength += len;
-            emitter.onNext(pullLength * 100 / fileSize);
+            progress = (float) (pullLength * 100 / fileSize);
+            if (preProgress != progress) {
+                emitter.onNext(progress);
+            }
+            preProgress = progress;
         }
         fos.flush();
         fos.close();
