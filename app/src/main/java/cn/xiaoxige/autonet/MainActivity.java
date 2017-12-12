@@ -31,6 +31,8 @@ public class MainActivity extends RxActivity {
     private Button btnPost;
     private Button btnNormalNet;
     private Button btnImmediateNet;
+    private Button btnSendFile;
+    private Button btnRecvFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,19 +49,16 @@ public class MainActivity extends RxActivity {
         btnPost = (Button) findViewById(R.id.btnPost);
         btnNormalNet = (Button) findViewById(R.id.btnNormalNet);
         btnImmediateNet = (Button) findViewById(R.id.btnImmediateNet);
+        btnSendFile = (Button) findViewById(R.id.btnSendFile);
+        btnRecvFile = (Button) findViewById(R.id.btnRecvFile);
     }
 
     private void registerListener() {
         btnGet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                tvResult.setText("正在请求");
-//                cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startSoftNet(MainActivity.this, "5002002", bindUntilEvent(ActivityEvent.DESTROY));
-                String path = getExternalFilesDir(null).toString();
-//                cn.xiaoxige.autonet.MainActivityDownFileCallbackAutoProxy.pullFile(MainActivity.this, path, "xiaoxige.apk");
-
-                cn.xiaoxige.autonet.MainActivitySendFileCallbackAutoProxy.pushFile(MainActivity.this, "photo1", path + File.separator + "xiaoxige.apk");
-
+                tvResult.setText("正在请求");
+                cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startSoftNet(MainActivity.this, "5002002", bindUntilEvent(ActivityEvent.DESTROY));
             }
         });
 
@@ -91,6 +90,23 @@ public class MainActivity extends RxActivity {
                 ImmediateNet immediateNet = new ImmediateNet();
                 immediateNet.setmTextView(tvResult);
                 cn.xiaoxige.autonet.AutonetImmediateNetAutoProxy.startUnSoftNet(immediateNet);
+            }
+        });
+
+        btnSendFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String path = getExternalFilesDir(null).toString();
+                cn.xiaoxige.autonet.MainActivitySendFileCallbackAutoProxy.pushFile(MainActivity.this, "photo1", path + File.separator + "xiaoxige.apk");
+            }
+        });
+
+        btnRecvFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String path = getExternalFilesDir(null).toString();
+                cn.xiaoxige.autonet.MainActivityDownFileCallbackAutoProxy.pullFile(MainActivity.this, path, "xiaoxige.apk");
+
             }
         });
     }
@@ -154,6 +170,9 @@ public class MainActivity extends RxActivity {
     }
 
 
+    /**
+     * 下载文件
+     */
     @AutoNetBaseUrlKeyAnontation(value = "BaseFileUrl")
     @AutoNetTypeAnontation(resType = AutoNetTypeAnontation.Type.STREAM)
     @AutoNetAnontation(url = "/APK/DownLoad/PangPangPig_102.apk")
@@ -162,22 +181,23 @@ public class MainActivity extends RxActivity {
 
         @Override
         public void onComplete(File file) {
-            Log.e("TAG", "文件下载完成");
+            tvResult.setText("文件下载完成");
         }
 
         @Override
         public void onPregress(float progress) {
             Log.e("TAG", "progress" + progress);
+            tvResult.setText("下载进度" + progress + "%");
         }
 
         @Override
         public void onEmpty() {
-            Log.e("TAG", "File pull empty");
+            tvResult.setText("数据为空");
         }
 
         @Override
         public void onError(Throwable throwable) {
-            Log.e("TAG", "File pull error");
+            tvResult.setText(throwable.toString());
         }
     }
 
@@ -191,28 +211,29 @@ public class MainActivity extends RxActivity {
     public class SendFileCallback extends AAutoNetStreamCallback {
         @Override
         public void onComplete(File file) {
-            Log.e("TAG", "文件上传完成");
+            tvResult.setText("文件上传完成");
         }
 
         @Override
         public void onPregress(float progress) {
             Log.e("TAG", "progress" + progress);
+            tvResult.setText("上传进度" + progress + "%");
         }
 
         @Override
         public void onEmpty() {
-            Log.e("TAG", "File pull empty");
+            tvResult.setText("数据为空");
         }
 
         @Override
         public void onError(Throwable throwable) {
-            Log.e("TAG", "File pull error");
+            tvResult.setText(throwable.toString());
         }
 
         @Override
         public void onSuccess(AutoResponseEntity entity) {
             super.onSuccess(entity);
-            Log.e("TAG", "返回：" + entity.autoResponseResult + "\n" + "是否转Json对象失败："
+            tvResult.setText("返回：" + entity.autoResponseResult + "\n" + "是否转Json对象失败："
                     + entity.isJsonTransformationError + "\n\n"
                     + "json： " + entity.toString());
         }

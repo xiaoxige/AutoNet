@@ -47,4 +47,18 @@
         android:layout_weight="1"
         android:text="直接请求" />
 
+    <Button
+        android:id="@+id/btnSendFile"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="发送文件" />
+
+    <Button
+        android:id="@+id/btnRecvFile"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="接受文件" />
+
 </LinearLayout>
