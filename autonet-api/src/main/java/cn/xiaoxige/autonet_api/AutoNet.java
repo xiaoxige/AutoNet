@@ -5,6 +5,8 @@ import android.text.TextUtils;
 
 import com.facebook.stetho.Stetho;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -116,10 +118,90 @@ public class AutoNet {
                          AutoNetPatternAnontation.NetPattern pattern, AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType,
                          FlowableTransformer transformer,
                          IAutoNetDataCallback callback) {
+        start(requestEntity, responseEntityClass, baseUrlKey, url, extraParam, null, writeTime, readTime, connectOutTime, isEncryption, encryptionKey,
+                pattern, reqType, resType, transformer, callback);
+    }
+
+
+    public void startStream(String path, String fileName, String baseUrlKey, String url,
+                            long writeTime, long readTime, long connectOutTime,
+                            AutoNetPatternAnontation.NetPattern pattern, AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType,
+                            FlowableTransformer transformer,
+                            IAutoNetDataCallback callback) {
+
+        if (reqType == AutoNetTypeAnontation.Type.STREAM && resType == AutoNetTypeAnontation.Type.STREAM) {
+            throw new RuntimeException("sorry, AutoNet cann't know push or pull.");
+        }
+
+        if (reqType == AutoNetTypeAnontation.Type.STREAM &&
+                (pattern == AutoNetPatternAnontation.NetPattern.DELETE
+                        || pattern == AutoNetPatternAnontation.NetPattern.PUT)) {
+            throw new IllegalStateException("reqType -> stream type must get or post.");
+        }
+
+        if (resType == AutoNetTypeAnontation.Type.STREAM &&
+                (pattern == AutoNetPatternAnontation.NetPattern.DELETE
+                        || pattern == AutoNetPatternAnontation.NetPattern.PUT)) {
+            throw new IllegalStateException("resType -> stream type must get or post.");
+        }
+
+        File file = null;
+        // 上传文件
+        if (reqType == AutoNetTypeAnontation.Type.STREAM) {
+            file = new File(path);
+            if (!(file.exists() && file.isFile())) {
+                throw new RuntimeException("pushFile is not exists or is not file.");
+            }
+        }
+
+        // 下载文件
+        if (resType == AutoNetTypeAnontation.Type.STREAM) {
+            file = new File(path + File.separator + fileName);
+            if (!file.exists()) {
+                try {
+                    file.createNewFile();
+                } catch (IOException e) {
+                    throw new RuntimeException("pull file is create error.\n" + e.getMessage());
+                }
+            }
+        }
+
+        start(null, null, baseUrlKey, url, null, file,
+                writeTime, readTime, connectOutTime, false, 0, pattern, reqType, resType, transformer, callback);
+    }
+
+
+    /**
+     * 母体
+     *
+     * @param requestEntity
+     * @param responseEntityClass
+     * @param baseUrlKey
+     * @param url
+     * @param extraParam
+     * @param file
+     * @param writeTime
+     * @param readTime
+     * @param connectOutTime
+     * @param isEncryption
+     * @param encryptionKey
+     * @param pattern
+     * @param reqType
+     * @param resType
+     * @param transformer
+     * @param callback
+     */
+    private void start(IRequestEntity requestEntity, Class responseEntityClass, String baseUrlKey, String url, String extraParam,
+                       File file,
+                       long writeTime, long readTime, long connectOutTime, boolean isEncryption, long encryptionKey,
+                       AutoNetPatternAnontation.NetPattern pattern, AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType,
+                       FlowableTransformer transformer,
+                       IAutoNetDataCallback callback) {
         String baseUrl = mConfig.getBaseUrl().get(baseUrlKey);
         if (TextUtils.isEmpty(baseUrl)) {
             throw new NullPointerException("BaseUrl is NULL.");
         }
+
         AutoNetPresenter presenter = new AutoNetPresenter(
                 requestEntity, responseEntityClass, baseUrl, url, extraParam,
                 writeTime, readTime, connectOutTime,

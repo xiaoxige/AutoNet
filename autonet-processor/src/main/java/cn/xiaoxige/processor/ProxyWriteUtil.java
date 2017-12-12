@@ -123,38 +123,80 @@ public class ProxyWriteUtil {
 
 
         buffer.append("public static void startUnSoftNet(Object object, IRequestEntity entity) {\n");
-        buffer.append("startSoftNet(object, entity, null);");
+        buffer.append("startSoftNet(object, entity, null);\n");
         buffer.append("\n}\n\n");
 
         buffer.append("public static void startUnSoftNet(Object object) {\n");
-        buffer.append("startSoftNet(object, null, null, null);");
+        buffer.append("startSoftNet(object, null, null, null);\n");
         buffer.append("\n}\n\n");
 
 
         buffer.append("public static void startSoftNet(Object object, FlowableTransformer transformer) {\n");
-        buffer.append("startSoftNet(object, null, null, transformer);");
+        buffer.append("startSoftNet(object, null, null, transformer);\n");
         buffer.append("\n}\n\n");
 
         buffer.append("public static void startSoftNet(Object object, IRequestEntity entity, FlowableTransformer transformer) {\n");
-        buffer.append("startSoftNet(object, entity, null, transformer);");
+        buffer.append("startSoftNet(object, entity, null, transformer);\n");
         buffer.append("\n}\n\n");
 
         buffer.append("public static void startUnSoftNet(Object object, IRequestEntity entity, String extraParam) {\n");
-        buffer.append("startSoftNet(object, entity, extraParam, null);");
+        buffer.append("startSoftNet(object, entity, extraParam, null);\n");
         buffer.append("\n}\n\n");
 
         buffer.append("public static void startUnSoftNet(Object object, String extraParam) {\n");
-        buffer.append("startSoftNet(object, null, extraParam, null);");
+        buffer.append("startSoftNet(object, null, extraParam, null);\n");
         buffer.append("\n}\n\n");
 
         buffer.append("public static void startSoftNet(Object object, String extraParam, FlowableTransformer transformer) {\n");
-        buffer.append("startSoftNet(object, null, extraParam, transformer);");
+        buffer.append("startSoftNet(object, null, extraParam, transformer);\n");
+        buffer.append("\n}\n\n");
+
+        buffer.append("public static void startSoftNet(Object object, IRequestEntity entity, String extraParam, FlowableTransformer transformer) {\n");
+        buffer.append("json(object, entity, extraParam, transformer);\n");
         buffer.append("\n}\n\n");
 
         /**
-         * 母体
+         * ----------------------------------
+         * File opration
+         * ----------------------------------
          */
-        buffer.append("public static void startSoftNet(Object object, IRequestEntity entity, String extraParam, FlowableTransformer transformer) {\n");
+        /**
+         * SendFile
+         */
+        buffer.append("public static void pushFile(Object object, String path) {\n");
+        buffer.append("pushFile(object, path, null);");
+        buffer.append("\n}\n\n");
+        /**
+         * RecFile
+         */
+        buffer.append("public static void pullFile(Object object, String path, String fileName) {\n");
+        buffer.append("pullFile(object, path, fileName, null);");
+        buffer.append("\n}\n\n");
+
+
+        /**
+         * SendFile
+         */
+        buffer.append("public static void pushFile(Object object, String path, FlowableTransformer transformer) {\n");
+        buffer.append("stream(object, path, null, transformer);\n");
+        buffer.append("\n}\n\n");
+        /**
+         * RecFIle
+         */
+        buffer.append("public static void pullFile(Object object, String path, String fileName, FlowableTransformer transformer) {\n");
+        buffer.append("stream(object, path, fileName, transformer);\n");
+        buffer.append("\n}\n\n");
+
+
+        /**
+         * --------------------------------
+         * Mather
+         * --------------------------------
+         */
+        /**
+         * Json Mather
+         */
+        buffer.append("private static void json(Object object, IRequestEntity entity, String extraParam, FlowableTransformer transformer) {\n");
         buffer.append("AutoNet.getInstance().startNet("
                 + "entity" + ", "
                 + (info.responseClazzName == null
@@ -177,6 +219,26 @@ public class ProxyWriteUtil {
                 + ");\n");
         buffer.append("\n}\n\n");
 
+        /**
+         * stream Mather
+         */
+        buffer.append("private static void stream(Object object, String path, String fileName, FlowableTransformer transformer) {\n");
+        buffer.append("AutoNet.getInstance().startStream("
+                + "path" + ", "
+                + "fileName" + ", "
+                + "\"" + info.baseUrlKey + "\"" + ", "
+                + "\"" + info.url + "\"" + ", "
+                + info.writeTime + ", "
+                + info.readTime + ", "
+                + info.connectOutTime + ","
+                + info.netPattern + ", "
+                + info.reqType + ", "
+                + info.resType + ", "
+                + "transformer, "
+                + (info.outClassFullPackageName == null || info.outClassFullPackageName.equals(info.fullPackageName) ? "(IAutoNetDataCallback)object"
+                : "((" + info.outClassFullPackageName + ")object).new " + info.className + "()")
+                + ");\n");
+        buffer.append("\n}\n\n");
 
         // class end
         buffer.append("\n}");
