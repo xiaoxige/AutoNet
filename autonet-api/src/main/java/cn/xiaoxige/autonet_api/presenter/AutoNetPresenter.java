@@ -15,12 +15,11 @@ import cn.xiaoxige.autonet_api.interactors.DoGetUsecase;
 import cn.xiaoxige.autonet_api.interactors.DoPostUsecase;
 import cn.xiaoxige.autonet_api.interactors.DoPullStreamGetUsecase;
 import cn.xiaoxige.autonet_api.interactors.DoPullStreamPostUsecase;
-import cn.xiaoxige.autonet_api.interactors.DoPushStreamGetUsecase;
 import cn.xiaoxige.autonet_api.interactors.DoPushStreamPostUsecase;
 import cn.xiaoxige.autonet_api.interactors.DoPutUsecase;
+import cn.xiaoxige.autonet_api.interfaces.AAutoNetStreamCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
-import cn.xiaoxige.autonet_api.interfaces.AAutoNetStreamCallback;
 import cn.xiaoxige.autonet_api.repository.AutoNetRepo;
 import cn.xiaoxige.autonet_api.repository.AutoNetRepoImpl;
 import cn.xiaoxige.autonet_api.subscriber.DefaultSubscriber;
@@ -327,43 +326,8 @@ public class AutoNetPresenter {
         }, mTransformer);
     }
 
-    // TODO: 2017/12/12
     public void doPushGet() {
-        DoPushStreamGetUsecase usecase = new DoPushStreamGetUsecase(mRepo, mRequestEntity, mResponseEntityClass, mMediaType, mFileKey, mFile);
-        final AAutoNetStreamCallback callback = (AAutoNetStreamCallback) mCallback;
-        usecase.execute(new DefaultSubscriber<Integer>() {
-            @Override
-            public void DefaultOnNext(Integer data) {
-                super.DefaultOnNext(data);
-                if (callback != null) {
-                    callback.onPregress(data);
-                }
-            }
-
-            @Override
-            public void DefaultOnError(Throwable throwable) {
-                super.DefaultOnError(throwable);
-                if (callback != null) {
-                    callback.onError(throwable);
-                }
-            }
-
-            @Override
-            public void DefaultOnEmpty() {
-                super.DefaultOnEmpty();
-                if (callback != null) {
-                    callback.onEmpty();
-                }
-            }
-
-            @Override
-            public void DefaultOnComplete() {
-                super.DefaultOnComplete();
-                if (callback != null) {
-                    callback.onComplete(mFile);
-                }
-            }
-        }, mTransformer);
+        doPushPost();
     }
 
     public void doPushPost() {
