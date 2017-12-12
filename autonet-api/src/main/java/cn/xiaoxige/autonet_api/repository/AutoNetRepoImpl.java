@@ -309,11 +309,11 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                         builder.addFormDataPart(key, map.get(key));
                     }
                 }
+
                 builder.addFormDataPart(fileKey, file.getName(),
                         createProgressRequestBody(MediaType.parse(mediaType), file, new AAutoNetStreamCallback() {
                             @Override
                             public void onComplete(File file) {
-                                emitter.onComplete();
                             }
 
                             @Override
@@ -331,6 +331,30 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                                 emitter.onError(throwable);
                             }
                         }));
+
+                Request request = new Request.Builder()
+                        .url(mUrl)
+                        .post(builder.build())
+                        .build();
+                Response response = mClient.newCall(request).execute();
+                if (response == null) {
+                    emitter.onError(new EmptyException());
+                    return;
+                }
+//                String msg = response.body().string();
+//                AutoResponseEntity responseEntity = null;
+//                try {
+////                    responseEntity = (AutoResponseEntity) new Gson().fromJson(msg, responseEntityClass);
+//                } catch (Exception e) {
+//                }
+//                if (responseEntity == null) {
+////                    responseEntity = (AutoResponseEntity) responseEntityClass.newInstance();
+////                    responseEntity.isJsonTransformationError = true;
+//                }
+//                responseEntity.autoResponseResult = msg;
+//                emitter.onNext(responseEntity);
+//                emitter.onComplete();
+
             }
         });
         return flowable;

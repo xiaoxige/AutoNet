@@ -1,7 +1,6 @@
 package cn.xiaoxige.autonet;
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,12 +18,11 @@ import cn.xiaoxige.annotation.AutoNetEncryptionAnontation;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
-import cn.xiaoxige.autonet.MainActivitySendFileCallbackAutoProxy;
 import cn.xiaoxige.autonet.model.JsonTestRequestEntity;
 import cn.xiaoxige.autonet.model.JsonTestResponseEntity;
 import cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity;
-import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallback;
 import cn.xiaoxige.autonet_api.interfaces.AAutoNetStreamCallback;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallback;
 
 public class MainActivity extends RxActivity {
 
@@ -58,9 +56,9 @@ public class MainActivity extends RxActivity {
 //                tvResult.setText("正在请求");
 //                cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startSoftNet(MainActivity.this, "5002002", bindUntilEvent(ActivityEvent.DESTROY));
                 String path = getExternalFilesDir(null).toString();
-                cn.xiaoxige.autonet.MainActivityDownFileCallbackAutoProxy.pullFile(MainActivity.this, path, "xiaoxige.apk");
+//                cn.xiaoxige.autonet.MainActivityDownFileCallbackAutoProxy.pullFile(MainActivity.this, path, "xiaoxige.apk");
 
-//                MainActivitySendFileCallbackAutoProxy.pushFile(MainActivity.this, path + File.separator + "xiaoxige.apk");
+                cn.xiaoxige.autonet.MainActivitySendFileCallbackAutoProxy.pushFile(MainActivity.this, "photo1", path + File.separator + "xiaoxige.apk");
 
             }
         });
@@ -183,8 +181,13 @@ public class MainActivity extends RxActivity {
         }
     }
 
-    @AutoNetBaseUrlKeyAnontation(value = "BaseFileUrl")
+    /**
+     * 上传文件
+     */
+    @AutoNetBaseUrlKeyAnontation(value = "BaseFilePushUrl")
     @AutoNetTypeAnontation(reqType = AutoNetTypeAnontation.Type.STREAM)
+    @AutoNetAnontation(url = "/FileUpload/FileUploadServlet")
+    @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.POST)
     public class SendFileCallback extends AAutoNetStreamCallback {
         @Override
         public void onComplete(File file) {
