@@ -163,8 +163,8 @@ public class ProxyWriteUtil {
         /**
          * SendFile
          */
-        buffer.append("public static void pushFile(Object object, String path) {\n");
-        buffer.append("pushFile(object, path, null);");
+        buffer.append("public static void pushFile(Object object, String fileKey, String path) {\n");
+        buffer.append("pushFile(object, fileKey, path, null);");
         buffer.append("\n}\n\n");
         /**
          * RecFile
@@ -176,42 +176,42 @@ public class ProxyWriteUtil {
         /**
          * SendFile
          */
-        buffer.append("public static void pushFile(Object object, IRequestEntity entity, String path) {\n");
-        buffer.append("stream(object, entity, path, null, null);\n");
+        buffer.append("public static void pushFile(Object object, IRequestEntity entity, String fileKey, String path) {\n");
+        buffer.append("stream(object, entity, fileKey, path, null, null);\n");
         buffer.append("\n}\n\n");
         /**
          * RecFile
          */
         buffer.append("public static void pullFile(Object object, IRequestEntity entity, String path, String fileName) {\n");
-        buffer.append("stream(object, null, path, fileName, null);\n");
+        buffer.append("stream(object, null, null, path, fileName, null);\n");
         buffer.append("\n}\n\n");
 
 
         /**
          * SendFile
          */
-        buffer.append("public static void pushFile(Object object, String path, FlowableTransformer transformer) {\n");
-        buffer.append("stream(object, null, path, null, transformer);\n");
+        buffer.append("public static void pushFile(Object object, String fileKey, String path, FlowableTransformer transformer) {\n");
+        buffer.append("stream(object, null, fileKey, path, null, transformer);\n");
         buffer.append("\n}\n\n");
         /**
          * RecFIle
          */
         buffer.append("public static void pullFile(Object object, String path, String fileName, FlowableTransformer transformer) {\n");
-        buffer.append("stream(object, null, path, fileName, transformer);\n");
+        buffer.append("stream(object, null, null, path, fileName, transformer);\n");
         buffer.append("\n}\n\n");
 
 
         /**
          * SendFile
          */
-        buffer.append("public static void pushFile(Object object, IRequestEntity entity, String path, FlowableTransformer transformer) {\n");
-        buffer.append("stream(object, entity, path, null, transformer);\n");
+        buffer.append("public static void pushFile(Object object, IRequestEntity entity, String fileKey, String path, FlowableTransformer transformer) {\n");
+        buffer.append("stream(object, entity, fileKey, path, null, transformer);\n");
         buffer.append("\n}\n\n");
         /**
          * RecFIle
          */
         buffer.append("public static void pullFile(Object object, IRequestEntity entity, String path, String fileName, FlowableTransformer transformer) {\n");
-        buffer.append("stream(object, entity, path, fileName, transformer);\n");
+        buffer.append("stream(object, entity, null, path, fileName, transformer);\n");
         buffer.append("\n}\n\n");
 
 
@@ -249,7 +249,7 @@ public class ProxyWriteUtil {
         /**
          * stream Mather
          */
-        buffer.append("private static void stream(Object object, IRequestEntity entity, String path, String fileName, FlowableTransformer transformer) {\n");
+        buffer.append("private static void stream(Object object, IRequestEntity entity, String fileKey, String path, String fileName, FlowableTransformer transformer) {\n");
         buffer.append("AutoNet.getInstance().startStream("
                 + "entity" + ", "
                 + "path" + ", "

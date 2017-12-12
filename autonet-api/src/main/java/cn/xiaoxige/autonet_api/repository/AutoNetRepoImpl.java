@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +14,7 @@ import cn.xiaoxige.autonet_api.data.requestentity.IRequestEntity;
 import cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity;
 import cn.xiaoxige.autonet_api.error.EmptyException;
 import cn.xiaoxige.autonet_api.flowable.DefaultFlowable;
+import cn.xiaoxige.autonet_api.interfaces.AAutoNetStreamCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import cn.xiaoxige.autonet_api.util.DataConvertorUtils;
 import cn.xiaoxige.autonet_api.util.OkHttpUtil;
@@ -21,10 +23,15 @@ import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okio.Buffer;
+import okio.BufferedSink;
+import okio.Okio;
+import okio.Source;
 
 /**
  * Created by zhuxiaoan on 2017/11/26.
@@ -284,12 +291,48 @@ public class AutoNetRepoImpl implements AutoNetRepo {
 
     @Override
     public Flowable doPushStreamGet(IRequestEntity requestEntity, File file) {
-        return null;
+        return doPushStreamPost(requestEntity, file);
     }
 
     @Override
-    public Flowable doPushStreamPost(IRequestEntity requestEntity, File file) {
-        return null;
+    public Flowable doPushStreamPost(final IRequestEntity requestEntity, final File file) {
+        final Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
+            @Override
+            public void subscribe(@NonNull final FlowableEmitter emitter) throws Exception {
+                MultipartBody.Builder builder = new MultipartBody.Builder();
+                //设置类型
+                builder.setType(MultipartBody.FORM);
+                if (requestEntity != null) {
+                    Map<String, String> map = DataConvertorUtils.convertEntityToMap(requestEntity, true);
+                    Set<String> keySet = map.keySet();
+                    for (String key : keySet) {
+                        builder.addFormDataPart(key, map.get(key));
+                    }
+                }
+                builder.addFormDataPart("", file.getName(), createProgressRequestBody(null, file, new AAutoNetStreamCallback() {
+                    @Override
+                    public void onComplete(File file) {
+                        emitter.onComplete();
+                    }
+
+                    @Override
+                    public void onPregress(float progress) {
+                        emitter.onNext(progress);
+                    }
+
+                    @Override
+                    public void onEmpty() {
+                        emitter.onError(new EmptyException());
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        emitter.onError(throwable);
+                    }
+                }));
+            }
+        });
+        return flowable;
     }
 
     /**
@@ -324,4 +367,50 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         fos.close();
         is.close();
     }
+
+    /**
+     * 创建带进度的RequestBody
+     *
+     * @param contentType MediaType
+     * @param file        准备上传的文件
+     * @param callBack    回调
+     * @return
+     */
+    private RequestBody createProgressRequestBody(final MediaType contentType, final File file, final AAutoNetStreamCallback callBack) {
+
+        return new RequestBody() {
+            @Override
+            public MediaType contentType() {
+                return contentType;
+            }
+
+            @Override
+            public long contentLength() {
+                return file.length();
+            }
+
+            @Override
+            public void writeTo(BufferedSink sink) throws IOException {
+                Source source;
+                source = Okio.source(file);
+                Buffer buf = new Buffer();
+                long remaining = contentLength();
+                long current = 0;
+                float preProgress = 0;
+                float progress = 0;
+                for (long readCount; (readCount = source.read(buf, 2048)) != -1; ) {
+                    sink.write(buf, readCount);
+                    current += readCount;
+                    progress = current * 100 / remaining;
+                    if (preProgress != progress) {
+                        callBack.onPregress(progress);
+                    }
+                    preProgress = progress;
+                }
+                callBack.onSuccess(null);
+                callBack.onComplete(file);
+            }
+        };
+    }
+
 }

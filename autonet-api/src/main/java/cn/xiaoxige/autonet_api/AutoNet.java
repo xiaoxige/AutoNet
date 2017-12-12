@@ -134,8 +134,9 @@ public class AutoNet {
 
         if (reqType == AutoNetTypeAnontation.Type.STREAM &&
                 (pattern == AutoNetPatternAnontation.NetPattern.DELETE
-                        || pattern == AutoNetPatternAnontation.NetPattern.PUT)) {
-            throw new IllegalStateException("reqType -> stream type must get or post.");
+                        || pattern == AutoNetPatternAnontation.NetPattern.PUT
+                        || pattern == AutoNetPatternAnontation.NetPattern.GET)) {
+            throw new IllegalStateException("reqType -> stream type must post.");
         }
 
         if (resType == AutoNetTypeAnontation.Type.STREAM &&
@@ -226,6 +227,9 @@ public class AutoNet {
     private void startPushStream(AutoNetPresenter presenter, AutoNetPatternAnontation.NetPattern pattern) {
 
         if (pattern == AutoNetPatternAnontation.NetPattern.GET) {
+            /**
+             * 上传文件暂不会走到get请求中...(上面已经做判断)
+             */
             presenter.doPushGet();
         } else if (pattern == AutoNetPatternAnontation.NetPattern.POST) {
             presenter.doPushPost();
