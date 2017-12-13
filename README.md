@@ -63,12 +63,14 @@ annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.3'
 简单初始化入下：
 
         Map head = new HashMap();
-        head.put("token", "xxxxxx");
+        head.put("token", "xxx");
         Map mapBaseUrl = new HashMap();
-        mapBaseUrl.put("jsonTestBaseUrl", "http://xxxjson.com";);
+        mapBaseUrl.put("BaseFileUrl", "http://www.pangpangpig.com");
+        mapBaseUrl.put("BaseFilePushUrl", "http://192.168.199.238:8080");
+        mapBaseUrl.put("jsonTestBaseUrl", "http://api.news18a.com");
         AutoNetConfig config = new AutoNetConfig.Buidler()
                 .setBaseUrl("http://www.baidu.com")
-                .setBaseUrl(mapBaseUrl)
+                .addBaseUrl(mapBaseUrl)
                 .setHeader(head)
                 .build();
         AutoNet.getInstance().init(this, config).setAutoNetEncryption(new IAutoNetEncryptionCallback() {
