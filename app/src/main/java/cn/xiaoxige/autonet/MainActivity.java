@@ -96,7 +96,17 @@ public class MainActivity extends RxActivity {
         btnSendFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /**
+                 * 文件可能不存在哦， 这只是测试
+                 * （你可以先下载后在上传）
+                 * 改下载的地址及fileKey是本地Tomcat上的，在这里只是指明了一个使用方式而已
+                 */
                 String path = getExternalFilesDir(null).toString();
+                /**
+                 * @param object 最外层类实例
+                 * @param fileKey 发布文件的key， 需要和后台约定好
+                 * @param path 要发送的文件的路径
+                 */
                 cn.xiaoxige.autonet.MainActivitySendFileCallbackAutoProxy.pushFile(MainActivity.this, "photo1", path + File.separator + "xiaoxige.apk");
             }
         });
@@ -105,6 +115,11 @@ public class MainActivity extends RxActivity {
             @Override
             public void onClick(View v) {
                 String path = getExternalFilesDir(null).toString();
+                /**
+                 * @param object 最外层类实例
+                 * @param path 文件保存的路径
+                 * @param fileName 文件保存的名字
+                 */
                 cn.xiaoxige.autonet.MainActivityDownFileCallbackAutoProxy.pullFile(MainActivity.this, path, "xiaoxige.apk");
 
             }
