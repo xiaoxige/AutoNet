@@ -36,6 +36,9 @@
 
 #注：具体用法请看Demo
 
+#联系方式：
+如果在使用的过程中， 出现什么问题欢迎在GitHub上issues，也可以给我发邮件：xiaoxigexiaoan@outlook.com
+
 #使用：
 1.注解介绍：
 
