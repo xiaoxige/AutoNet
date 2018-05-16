@@ -41,7 +41,6 @@ public class ProxyWriteUtil {
         MethodSpec matrix = createMatrix(info);
 
 
-
     }
 
     /**
@@ -74,7 +73,8 @@ public class ProxyWriteUtil {
                 .addParameter(String.class, "filePath")
                 .addParameter(String.class, "fileName")
 
-                .addParameter(FlowableTransformer.class, "transformer");
+                .addParameter(FlowableTransformer.class, "transformer")
+        ;
 
         specBuilder.addStatement("");
 

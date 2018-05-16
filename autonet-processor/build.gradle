@@ -8,8 +8,6 @@ dependencies {
     compile 'com.squareup:javapoet:1.11.0'
 
     compile 'com.trello.rxlifecycle2:rxlifecycle:2.2.0'
-    compile 'com.trello.rxlifecycle2:rxlifecycle-android:2.2.0'
-    compile 'com.trello.rxlifecycle2:rxlifecycle-components:2.2.0'
 }
 
 sourceCompatibility = "1.7"
