@@ -7,9 +7,12 @@ import java.lang.annotation.Target;
 
 /**
  * @author by zhuxiaoan on 2018/5/16 0016.
- *         加密注解
- *         key: 标识哪一个请求需要加密
- *         value: 是否启动加密
+ *         <p>
+ *         desc: encrypted annotation
+ *         <p>
+ *         <p>
+ *         key: identifies which request needs to be encrypted
+ *         value: whether to start encryption
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)

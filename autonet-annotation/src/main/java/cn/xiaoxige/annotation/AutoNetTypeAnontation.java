@@ -7,23 +7,28 @@ import java.lang.annotation.Target;
 
 /**
  * @author by zhuxiaoan on 2017/12/11 0011.
- *         请求类型和返回类型
- *         reqType： 请求类型
- *         resType： 接受类型
+ *         <p>
+ *         desc: request type and return type
+ *         <p>
+ *         <p>
+ *         reqType: request type
+ *         resType: type of acceptance
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 public @interface AutoNetTypeAnontation {
 
     /**
-     * 请求和接受的类型(主要为了标志请求的参数， 另一方面也在一定程度上对应了MediaType)
-     * eg：
+     * <p>
+     * the type of request and acceptance (mainly for marking the parameters of the request, and on the other hand, to a certain extent, it corresponds to MediaType).
+     * <p>
+     * eg:
      * 1.post->body->json
      * 2.post->body->form
      * 3.post->body->stream
      * 4.get->url->form
-     * ......
-     * other: 暂没意义
+     * ...
+     * other: is temporarily meaningless
      */
     enum Type {
         JSON,
@@ -33,14 +38,14 @@ public @interface AutoNetTypeAnontation {
     }
 
     /**
-     * 请求类型
+     * request Type
      *
      * @return
      */
     Type reqType() default Type.JSON;
 
     /**
-     * 接受类型
+     * response Type
      *
      * @return
      */

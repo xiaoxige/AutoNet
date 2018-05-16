@@ -28,10 +28,12 @@ import cn.xiaoxige.annotation.AutoNetEncryptionAnontation;
 import cn.xiaoxige.annotation.AutoNetMediaTypeAnontation;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
+import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 
 /**
- * Created by zhuxiaoan on 2017/11/26.
+ * @author by zhuxiaoan on 2018/5/16 0016.
+ *         Annotate the processor, collect the content of the annotations and handle
  */
 @AutoService(Processor.class)
 public class AnnotationProcessor extends AbstractProcessor {
@@ -58,7 +60,7 @@ public class AnnotationProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        Set set = new HashSet();
+        Set<String> set = new HashSet<>(8);
         set.add(AutoNetPatternAnontation.class.getCanonicalName());
         set.add(AutoNetEncryptionAnontation.class.getCanonicalName());
         set.add(AutoNetBaseUrlKeyAnontation.class.getCanonicalName());
@@ -66,6 +68,7 @@ public class AnnotationProcessor extends AbstractProcessor {
         set.add(AutoNetTypeAnontation.class.getCanonicalName());
         set.add(AutoNetMediaTypeAnontation.class.getCanonicalName());
         set.add(AutoNetAnontation.class.getCanonicalName());
+        set.add(AutoNetStrategyAnontation.class.getCanonicalName());
         return set;
     }
 
@@ -112,12 +115,15 @@ public class AnnotationProcessor extends AbstractProcessor {
         } finally {
             mInfoMap.clear();
         }
+
         return true;
     }
 
     private boolean isAnnotatedWithClass(RoundEnvironment roundEnvironment,
                                          Class<? extends Annotation> clazz) {
+
         Set<? extends Element> elements = roundEnvironment.getElementsAnnotatedWith(clazz);
+
         for (Element element : elements) {
             if (isValid(element)) {
                 return false;
@@ -125,10 +131,12 @@ public class AnnotationProcessor extends AbstractProcessor {
             if (!element.getKind().isClass()) {
                 return false;
             }
+
             TypeElement typeElement = (TypeElement) element;
             String fullPackageName = typeElement.getQualifiedName().toString();
             String packageName = mElementUtils.getPackageOf(element).getQualifiedName().toString();
             String className = typeElement.getSimpleName().toString();
+
             Annotation annotation = typeElement.getAnnotation(clazz);
 
             ProxyInfo proxyInfo = mInfoMap.get(fullPackageName);
@@ -207,7 +215,7 @@ public class AnnotationProcessor extends AbstractProcessor {
     }
 
     private void autoNetProc(ProxyInfo proxyInfo, AutoNetAnontation annotation) {
-        String url = annotation.url();
+        String url = annotation.value();
         long writeTime = annotation.writeTime();
         long readTime = annotation.readTime();
         long connectOutTime = annotation.connectOutTime();
@@ -240,7 +248,6 @@ public class AnnotationProcessor extends AbstractProcessor {
             printError(element.getSimpleName() + "must could not be abstract or private");
             return true;
         }
-
         return false;
     }
 

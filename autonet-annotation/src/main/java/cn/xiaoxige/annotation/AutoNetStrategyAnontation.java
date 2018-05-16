@@ -7,19 +7,24 @@ import java.lang.annotation.Target;
 
 /**
  * @author by zhuxiaoan on 2018/5/16 0016.
- *         网络请求的策略
- *         value: 策略
+ *         <p>
+ *         desc: network request strategy
+ *         <p>
+ *         <p>
+ *         value: strategy
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 public @interface AutoNetStrategyAnontation {
 
     /**
-     * 网络策略
-     * LOCAL: 本地请求
-     * NET: 网络请求
-     * LOCAL_NET： 先本地后网络
-     * NET_LOCAL: 先网络后本地
+     * <p>
+     * network strategy
+     * <p>
+     * LOCAL: local request
+     * NET: network request
+     * LOCAL_NET: first local back network
+     * NET_LOCAL: first network after the local
      */
     enum NetStrategy {
         LOCAL,

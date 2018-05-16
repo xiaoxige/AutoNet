@@ -7,7 +7,10 @@ import java.lang.annotation.Target;
 
 /**
  * @author by zhuxiaoan on 2018/5/16 0016.
- *         设置请求的MediaType
+ *         <p>
+ *         desc:setting the request MediaType
+ *         <p>
+ *         <p>
  *         value: MediaType
  */
 @Retention(RetentionPolicy.CLASS)

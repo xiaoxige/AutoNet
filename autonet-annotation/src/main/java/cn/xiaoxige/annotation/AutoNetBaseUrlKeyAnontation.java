@@ -7,8 +7,11 @@ import java.lang.annotation.Target;
 
 /**
  * @author by zhuxiaoan on 2018/5/16 0016.
- *         value: 域名(协议://Ip:Port)的选择key
- *         根据不同的key可以选择对应的域名
+ *         <p>
+ *         desc: can choose the corresponding domain name according to different key.
+ *         <p>
+ *         <p>
+ *         value: domain name (protocol: //Ip:Port) key
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)

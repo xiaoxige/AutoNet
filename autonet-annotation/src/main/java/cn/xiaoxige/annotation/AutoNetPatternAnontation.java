@@ -7,20 +7,27 @@ import java.lang.annotation.Target;
 
 /**
  * @author by zhuxiaoan on 2018/5/16 0016.
- *         NetPattern: 网络的请求类型
- *         value: 请求类型
+ *         <p>
+ *         desc: network request type
+ *         <p>
+ *         <p>
+ *         NetPattern: network
+ *         value: request type
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 public @interface AutoNetPatternAnontation {
 
     /**
-     * 网络请求的类型
-     * get: get请求
-     * post: post请求
-     * delete: delete请求
-     * put： put请求
-     * other: 暂无意义
+     * <p>
+     * type of network request
+     * <p>
+     * <p>
+     * get: get request
+     * post: post request
+     * delete: delete request
+     * put:put request
+     * other: has no significance for the time being
      */
     enum NetPattern {
         GET,
