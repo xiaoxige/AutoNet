@@ -1,8 +1,11 @@
 package cn.xiaoxige.processor;
 
 
+import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeSpec;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,7 +26,7 @@ public class ProxyWriteUtil {
 
     private static final String AUTO_NET_METHOD_MATRIX = "proxy";
 
-    public static void write(Map<String, ProxyInfo> infoMap, Filer filer) {
+    public static void write(Map<String, ProxyInfo> infoMap, Filer filer) throws IOException {
         if (infoMap == null || infoMap.isEmpty()) {
             return;
         }
@@ -36,11 +39,50 @@ public class ProxyWriteUtil {
     }
 
 
-    public static void write(ProxyInfo info, Filer filer) {
+    public static void write(ProxyInfo info, Filer filer) throws IOException {
         // Matrix
         MethodSpec matrix = createMatrix(info);
+        // Class
+        TypeSpec autoClass = createAutoClass(info, matrix);
+        // file
+        JavaFile javaFile = JavaFile.builder(info.targetPackage, autoClass).build();
+        javaFile.writeTo(filer);
+    }
+
+    private static TypeSpec createAutoClass(ProxyInfo info, MethodSpec... methods) {
+        String fullTargetPath = info.fullTargetPath;
+        String targetPackage = info.targetPackage;
+        String targetClassSimpleName = info.targetClassSimpleName;
+
+        String prefixClassName = getExternalClassName(fullTargetPath, targetPackage, targetClassSimpleName);
+
+        String className = prefixClassName + targetClassSimpleName + ProxyInfo.PROXY_CLASS_SUFFIX;
+
+        TypeSpec.Builder specBuilder = TypeSpec.classBuilder(className)
+                .addJavadoc("This class is a AutoNet transfer center class.\n which is automatically generated. Please do not make any changes.\n")
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
+
+        if (methods != null) {
+            for (MethodSpec method : methods) {
+                specBuilder.addMethod(method);
+            }
+        }
+
+        return specBuilder.build();
+    }
+
+    private static String getExternalClassName(String fullTargetPath, String targetPackage, String targetClassSimpleName) {
+        boolean isSelf = isCallBackSelf(fullTargetPath, targetPackage, targetClassSimpleName);
+        if (isSelf) {
+            return "";
+        }
 
 
+        return "";
+    }
+
+    private static boolean isCallBackSelf(String fullTargetPath, String targetPackage, String targetClassSimpleName) {
+        return targetPackage == null || targetPackage.length() <= 0 || fullTargetPath.equals(targetPackage + "." + targetClassSimpleName);
     }
 
     /**
@@ -51,10 +93,12 @@ public class ProxyWriteUtil {
 
         // method name
         MethodSpec.Builder specBuilder = MethodSpec.methodBuilder(AUTO_NET_METHOD_MATRIX)
-                .addModifiers(Modifier.PRIVATE, Modifier.STATIC);
+                .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL);
 
         // param
-        specBuilder.addParameter(Object.class, "object")
+        specBuilder
+                .addJavadoc("matrix of autoNet\n")
+                .addParameter(Object.class, "object")
                 .addParameter(String.class, "domainNameKey")
                 .addParameter(String.class, "suffixUrl")
                 .addParameter(String.class, "mediaType")
