@@ -1,7 +1,5 @@
 package cn.xiaoxige.processor;
 
-import javax.lang.model.element.TypeElement;
-
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
@@ -11,7 +9,12 @@ import cn.xiaoxige.annotation.AutoNetTypeAnontation;
  *         All the information entity classes of a request
  */
 
-public class ProxyInfo {
+public final class ProxyInfo {
+
+    /**
+     * Automatically generating the suffix of the class
+     */
+    public static final String PROXY_CLASS_SUFFIX = "AutoProxy";
 
     /**
      * Unique identity of a class

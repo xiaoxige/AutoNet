@@ -1,6 +1,19 @@
 package cn.xiaoxige.processor;
 
 
+import com.squareup.javapoet.MethodSpec;
+
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.processing.Filer;
+import javax.lang.model.element.Modifier;
+
+import cn.xiaoxige.annotation.AutoNetPatternAnontation;
+import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
+import cn.xiaoxige.annotation.AutoNetTypeAnontation;
+import io.reactivex.FlowableTransformer;
+
 /**
  * @author by zhuxiaoan on 2018/5/16 0016.
  *         Write the collected data to the tool class of Java source file.
@@ -8,7 +21,65 @@ package cn.xiaoxige.processor;
 
 public class ProxyWriteUtil {
 
+    private static final String AUTO_NET_METHOD_MATRIX = "proxy";
 
+    public static void write(Map<String, ProxyInfo> infoMap, Filer filer) {
+        if (infoMap == null || infoMap.isEmpty()) {
+            return;
+        }
+
+        Set<String> keys = infoMap.keySet();
+        for (String key : keys) {
+            ProxyInfo info = infoMap.get(key);
+            write(info, filer);
+        }
+    }
+
+
+    public static void write(ProxyInfo info, Filer filer) {
+        // Matrix
+        MethodSpec matrix = createMatrix(info);
+
+
+
+    }
+
+    /**
+     * @param info
+     * @return
+     */
+    private static MethodSpec createMatrix(ProxyInfo info) {
+
+        // method name
+        MethodSpec.Builder specBuilder = MethodSpec.methodBuilder(AUTO_NET_METHOD_MATRIX)
+                .addModifiers(Modifier.PRIVATE, Modifier.STATIC);
+
+        // param
+        specBuilder.addParameter(Object.class, "object")
+                .addParameter(String.class, "domainNameKey")
+                .addParameter(String.class, "suffixUrl")
+                .addParameter(String.class, "mediaType")
+                .addParameter(Long.class, "writeOutTime")
+                .addParameter(Long.class, "readOutTime")
+                .addParameter(Long.class, "connectOutTime")
+                .addParameter(Long.class, "encryptionKey")
+                .addParameter(Boolean.class, "isEncryption")
+                .addParameter(AutoNetPatternAnontation.NetPattern.class, "netPattern")
+                .addParameter(AutoNetTypeAnontation.Type.class, "reqType")
+                .addParameter(AutoNetTypeAnontation.Type.class, "resType")
+                .addParameter(AutoNetStrategyAnontation.NetStrategy.class, "netStrategy")
+
+                .addParameter(String.class, "responseClazzName")
+                .addParameter(String.class, "pushFileKey")
+                .addParameter(String.class, "filePath")
+                .addParameter(String.class, "fileName")
+
+                .addParameter(FlowableTransformer.class, "transformer");
+
+        specBuilder.addStatement("");
+
+        return specBuilder.build();
+    }
 
 //    public static void write(Map<String, ProxyInfo> infoMap, Filer filer) throws IOException {
 //

@@ -115,14 +115,13 @@ public class AnnotationProcessor extends AbstractProcessor {
             return false;
         }
 
-//        try {
-//            ProxyWriteUtil.write(mInfoMap, mFiler);
-//        } catch (Exception e) {
-//            printError(e.toString());
-//        } finally {
-//            mInfoMap.clear();
-//        }
-
+        try {
+            ProxyWriteUtil.write(mInfoMap, mFiler);
+        } catch (Exception e) {
+            printError(e.toString());
+        } finally {
+            mInfoMap.clear();
+        }
 
         return true;
     }
