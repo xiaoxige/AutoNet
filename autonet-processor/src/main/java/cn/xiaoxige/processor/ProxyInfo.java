@@ -3,41 +3,97 @@ package cn.xiaoxige.processor;
 import javax.lang.model.element.TypeElement;
 
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
+import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 
 /**
- * Created by zhuxiaoan on 2017/11/26.
+ * @author by zhuxiaoan on 2018/5/16 0016.
+ *         All the information entity classes of a request
  */
 
 public class ProxyInfo {
 
-    public static final String AUTONETPROXY = "AutoProxy";
+    /**
+     * Unique identity of a class
+     * full path
+     */
+    public String fullTargetPath = "";
 
-    public String packageName;
-    // full fullPackageName
-    public String fullPackageName;
-    public String className;
-    public String outClassFullPackageName;
+    /**
+     * package' name of target
+     */
+    public String targetPackage = "";
 
-    public String url = "/";
-    public long writeTime = 5000;
-    public long readTime = 5000;
+    /**
+     * class' name of terget
+     */
+    public String targetClassSimpleName = "";
+
+    /**
+     * domain name key of request
+     * eg:
+     * url is https://www.xiaoxige.cn:8080/index.jsp
+     * this param is https://www.xiaoxige.com:8080
+     */
+    public String domainNameKey = "default";
+
+    /**
+     * suffix of url
+     * eg:
+     * url is https://www.xiaoxige.cn:8080/index.jsp
+     * this param is /index.jsp
+     */
+    public String suffixUrl = "/";
+
+    /**
+     * out time of write with net
+     */
+    public long writeOutTime = 5000;
+    /**
+     * out time of read with net
+     */
+    public long readOutTime = 5000;
+    /**
+     * out time of connect with net
+     */
     public long connectOutTime = 5000;
 
-    public String baseUrlKey = "default";
-
+    /**
+     * Unique identity of data with net encryption
+     */
     public long encryptionKey = 0;
+    /**
+     * is open encryption
+     */
     public boolean isEncryption = false;
 
+    /**
+     * mediaType of request
+     */
+    public String mediaType = "application/json; charset=utf-8";
+
+    /**
+     * type of network request
+     */
     public AutoNetPatternAnontation.NetPattern netPattern = AutoNetPatternAnontation.NetPattern.GET;
 
+    /**
+     * class of response
+     */
+    public String responseClazzName = "";
+
+    /**
+     * strategy of net
+     */
+    public AutoNetStrategyAnontation.NetStrategy netStrategy = AutoNetStrategyAnontation.NetStrategy.NET;
+
+    /**
+     * request Type
+     */
     public AutoNetTypeAnontation.Type reqType = AutoNetTypeAnontation.Type.JSON;
 
+    /**
+     * response Type
+     */
     public AutoNetTypeAnontation.Type resType = AutoNetTypeAnontation.Type.JSON;
-
-    public String responseClazzName;
-
-    public TypeElement typeElement;
-
-    public String mediaType = "application/octet-stream";
 }

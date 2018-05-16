@@ -1,7 +1,11 @@
 package cn.xiaoxige.processor;
 
 import com.google.auto.service.AutoService;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeSpec;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -103,18 +107,22 @@ public class AnnotationProcessor extends AbstractProcessor {
             return false;
         }
 
-
         if (!isAnnotatedWithClass(roundEnvironment, AutoNetTypeAnontation.class)) {
             return false;
         }
 
-        try {
-            ProxyWriteUtil.write(mInfoMap, mFiler);
-        } catch (Exception e) {
-            printError(e.toString());
-        } finally {
-            mInfoMap.clear();
+        if (!isAnnotatedWithClass(roundEnvironment, AutoNetStrategyAnontation.class)) {
+            return false;
         }
+
+//        try {
+//            ProxyWriteUtil.write(mInfoMap, mFiler);
+//        } catch (Exception e) {
+//            printError(e.toString());
+//        } finally {
+//            mInfoMap.clear();
+//        }
+
 
         return true;
     }
@@ -133,36 +141,22 @@ public class AnnotationProcessor extends AbstractProcessor {
             }
 
             TypeElement typeElement = (TypeElement) element;
-            String fullPackageName = typeElement.getQualifiedName().toString();
-            String packageName = mElementUtils.getPackageOf(element).getQualifiedName().toString();
-            String className = typeElement.getSimpleName().toString();
 
-            Annotation annotation = typeElement.getAnnotation(clazz);
+            String fullTargetPath = typeElement.getQualifiedName().toString();
+            String targetPackage = mElementUtils.getPackageOf(element).getQualifiedName().toString();
+            String targetClassSimpleName = typeElement.getSimpleName().toString();
 
-            ProxyInfo proxyInfo = mInfoMap.get(fullPackageName);
+            ProxyInfo proxyInfo = mInfoMap.get(fullTargetPath);
             if (proxyInfo == null) {
                 proxyInfo = new ProxyInfo();
-                mInfoMap.put(fullPackageName, proxyInfo);
-            }
-            proxyInfo.fullPackageName = fullPackageName;
-            proxyInfo.className = className;
-            proxyInfo.packageName = packageName;
-            proxyInfo.typeElement = typeElement;
-
-            if (fullPackageName != null && fullPackageName.length() > 0) {
-                String outClassFullName;
-                try {
-                    outClassFullName = fullPackageName.substring(0, fullPackageName.length() - className.length() - 1);
-                    if (outClassFullName.equals(packageName)) {
-                        outClassFullName = fullPackageName;
-                    }
-                } catch (Exception e) {
-                    outClassFullName = "";
-                }
-                proxyInfo.outClassFullPackageName = outClassFullName;
+                mInfoMap.put(fullTargetPath, proxyInfo);
             }
 
+            proxyInfo.fullTargetPath = fullTargetPath;
+            proxyInfo.targetPackage = targetPackage;
+            proxyInfo.targetClassSimpleName = targetClassSimpleName;
 
+            Annotation annotation = typeElement.getAnnotation(clazz);
             if (annotation instanceof AutoNetPatternAnontation) {
                 autoNetPatternProc(proxyInfo, (AutoNetPatternAnontation) annotation);
             } else if (annotation instanceof AutoNetEncryptionAnontation) {
@@ -177,11 +171,18 @@ public class AnnotationProcessor extends AbstractProcessor {
                 autoNetReqTypeProc(proxyInfo, (AutoNetTypeAnontation) annotation);
             } else if (annotation instanceof AutoNetMediaTypeAnontation) {
                 autoNetMediaTypeProc(proxyInfo, (AutoNetMediaTypeAnontation) annotation);
+            } else if (annotation instanceof AutoNetStrategyAnontation) {
+                autoNetStrategyProc(proxyInfo, (AutoNetStrategyAnontation) annotation);
             } else {
                 return false;
             }
         }
         return true;
+    }
+
+    private void autoNetStrategyProc(ProxyInfo proxyInfo, AutoNetStrategyAnontation annotation) {
+        AutoNetStrategyAnontation.NetStrategy netStrategy = annotation.value();
+        proxyInfo.netStrategy = netStrategy;
     }
 
     private void autoNetMediaTypeProc(ProxyInfo proxyInfo, AutoNetMediaTypeAnontation annotation) {
@@ -211,17 +212,17 @@ public class AnnotationProcessor extends AbstractProcessor {
 
     private void autoNetBaseUrlKeyProc(ProxyInfo proxyInfo, AutoNetBaseUrlKeyAnontation annotation) {
         String value = annotation.value();
-        proxyInfo.baseUrlKey = value;
+        proxyInfo.domainNameKey = value;
     }
 
     private void autoNetProc(ProxyInfo proxyInfo, AutoNetAnontation annotation) {
-        String url = annotation.value();
-        long writeTime = annotation.writeTime();
-        long readTime = annotation.readTime();
+        String suffixUrl = annotation.value();
+        long writeOutTime = annotation.writeTime();
+        long readOutTime = annotation.readTime();
         long connectOutTime = annotation.connectOutTime();
-        proxyInfo.url = url;
-        proxyInfo.writeTime = writeTime;
-        proxyInfo.readTime = readTime;
+        proxyInfo.suffixUrl = suffixUrl;
+        proxyInfo.writeOutTime = writeOutTime;
+        proxyInfo.readOutTime = readOutTime;
         proxyInfo.connectOutTime = connectOutTime;
     }
 
