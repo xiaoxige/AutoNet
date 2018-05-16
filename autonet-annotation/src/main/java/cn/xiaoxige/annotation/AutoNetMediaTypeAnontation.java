@@ -6,12 +6,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by zhuxiaoan on 2017/12/12.
+ * @author by zhuxiaoan on 2018/5/16 0016.
+ *         设置请求的MediaType
+ *         value: MediaType
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 public @interface AutoNetMediaTypeAnontation {
 
-    String value() default "application/octet-stream";
+    String value() default "application/json; charset=utf-8";
 
 }

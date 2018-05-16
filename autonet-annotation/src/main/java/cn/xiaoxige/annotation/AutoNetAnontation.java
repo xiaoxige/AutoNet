@@ -6,13 +6,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by zhuxiaoan on 2017/11/26.
+ * @author by zhuxiaoan on 2018/5/16 0016.
+ *         设置网络访问链接的基本信息
+ *         value: 网址除了域名的部分
+ *         writeTime: 写入超时时间
+ *         readTime: 读取超时时间
+ *         connectOutTime: 链接超时时间
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 public @interface AutoNetAnontation {
 
-    String url() default "/";
+    String value() default "/";
 
     long writeTime() default 5000;
 
