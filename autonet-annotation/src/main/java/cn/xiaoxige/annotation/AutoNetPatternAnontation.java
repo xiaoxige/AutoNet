@@ -34,7 +34,7 @@ public @interface AutoNetPatternAnontation {
         POST,
         DELETE,
         PUT,
-        OTHER
+        OTHER_PATTERN
     }
 
     NetPattern value() default NetPattern.GET;

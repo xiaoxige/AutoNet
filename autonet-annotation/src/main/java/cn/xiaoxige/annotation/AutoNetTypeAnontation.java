@@ -34,7 +34,7 @@ public @interface AutoNetTypeAnontation {
         JSON,
         FORM,
         STREAM,
-        OTHER
+        OTHER_TYPE
     }
 
     /**

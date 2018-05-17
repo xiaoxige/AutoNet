@@ -53,7 +53,7 @@ public final class AutoNet {
      * @param fileName
      * @param transformer
      */
-    public static final void startNet(IAutoNetRequest requestEntity,
+    public static final void startNet(IAutoNetRequest requestEntity, String extraDynamicParam,
                                       String domainNameKey, String suffixUrl,
                                       String mediaType, Long writeOutTime, Long readOutTime,
                                       Long connectOutTime, Long encryptionKey, Boolean isEncryption,

@@ -1,17 +1,17 @@
 package cn.xiaoxige.processor;
 
 
-import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Modifier;
-import javax.security.auth.callback.Callback;
 
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
@@ -26,6 +26,7 @@ import io.reactivex.FlowableTransformer;
 public class ProxyWriteUtil {
 
     private static final String AUTO_NET_METHOD_MATRIX = "proxy";
+    private static final String AUTO_NET_METHOD_START_NET = "startNet";
 
     private static final String AUTO_NET_I_REQUEST_REFERENCE = "cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest";
     private static final String AUTO_NET_API_FACADE = "cn.xiaoxige.autonet_api.AutoNet";
@@ -51,6 +52,7 @@ public class ProxyWriteUtil {
     private static final String AUTO_NET_PARAM_TRANSFORMER_NAME = "transformer";
 
     private static final String AUTO_NET_PARAM_REQUEST_ENTITY_NAME = "requestEntity";
+    private static final String AUTO_NET_PARAM_EXTRA_DYNAMIC_PARAM_NAME = "extraDynamicParam";
 
     public static void write(Map<String, ProxyInfo> infoMap, Filer filer) throws Exception {
         if (infoMap == null || infoMap.isEmpty()) {
@@ -66,15 +68,137 @@ public class ProxyWriteUtil {
 
 
     public static void write(ProxyInfo info, Filer filer) throws Exception {
-        // test method
+        List<MethodSpec> methodSpecs = new ArrayList<>();
+        // test ordinary
         MethodSpec testMethod = createTest(info);
+        // net mothods(ordinary)
+        List<MethodSpec> ordinaryMethod = createOrdinaryMethods(info);
+        // net nothods(file)
+        List<MethodSpec> fileMethodSpecs = createFileMethods(info);
+        // Matrix of User concern
+        MethodSpec matrixUserComcern = createMatrixUserComcern(info);
         // Matrix
         MethodSpec matrix = createMatrix(info);
+
+        methodSpecs.add(testMethod);
+        //noinspection ConstantConditions
+        methodSpecs.addAll(ordinaryMethod);
+        //noinspection ConstantConditions
+        methodSpecs.addAll(fileMethodSpecs);
+        methodSpecs.add(matrixUserComcern);
+        methodSpecs.add(matrix);
+
         // Class
-        TypeSpec autoClass = createAutoClass(info, matrix, testMethod);
+        TypeSpec autoClass = createAutoClass(info, methodSpecs);
         // file
-        JavaFile javaFile = JavaFile.builder(info.targetPackage, autoClass).build();
+        JavaFile javaFile = JavaFile.builder(info.targetPackage, autoClass)
+                .addStaticImport(AutoNetPatternAnontation.NetPattern.GET)
+                .addStaticImport(AutoNetPatternAnontation.NetPattern.POST)
+                .addStaticImport(AutoNetPatternAnontation.NetPattern.DELETE)
+                .addStaticImport(AutoNetPatternAnontation.NetPattern.PUT)
+                .addStaticImport(AutoNetPatternAnontation.NetPattern.OTHER_PATTERN)
+                .addStaticImport(AutoNetStrategyAnontation.NetStrategy.LOCAL)
+                .addStaticImport(AutoNetStrategyAnontation.NetStrategy.NET)
+                .addStaticImport(AutoNetStrategyAnontation.NetStrategy.LOCAL_NET)
+                .addStaticImport(AutoNetStrategyAnontation.NetStrategy.NET_LOCAL)
+                .addStaticImport(AutoNetTypeAnontation.Type.FORM)
+                .addStaticImport(AutoNetTypeAnontation.Type.JSON)
+                .addStaticImport(AutoNetTypeAnontation.Type.STREAM)
+                .addStaticImport(AutoNetTypeAnontation.Type.OTHER_TYPE)
+                .build();
         javaFile.writeTo(filer);
+    }
+
+
+    /**
+     * Method of automatically generating file related request network
+     *
+     * @param info
+     * @return
+     */
+    private static List<MethodSpec> createFileMethods(ProxyInfo info) {
+        List<MethodSpec> specs = new ArrayList<>();
+
+        return specs;
+    }
+
+    /**
+     * A method to automatically generate a common request network.
+     *
+     * @param info
+     * @return
+     */
+    private static List<MethodSpec> createOrdinaryMethods(ProxyInfo info) throws ClassNotFoundException {
+        List<MethodSpec> specs = new ArrayList<>();
+
+        // public startNet(object)
+        specs.add(createOrdinaryMatrix(info, false, false, false, false));
+        // public startNet(object, transformer)
+        specs.add(createOrdinaryMatrix(info, false, false, false, true));
+
+        // public startNet(object, entity)
+        specs.add(createOrdinaryMatrix(info, false, true, false, false));
+        // public startNet(object, entity, transformer)
+        specs.add(createOrdinaryMatrix(info, false, true, false, true));
+
+        // public startNet(object, extraDynamicParam)
+        specs.add(createOrdinaryMatrix(info, false, false, true, false));
+        // public startNet(object, extraDynamicParam, transformer)
+        specs.add(createOrdinaryMatrix(info, false, false, true, true));
+
+        // public startNet(object, entity, extraDynamicParam, transformer)
+        specs.add(createOrdinaryMatrix(info, false, true, true, false));
+        // private startNet(object, entity, extraDynamicParam, transformer)
+        specs.add(createOrdinaryMatrix(info, true, true, true, true));
+
+
+        return specs;
+    }
+
+
+    /**
+     * A template for producing common requests for network methods
+     *
+     * @param info
+     * @param isPrivate
+     * @param isExistenceTwo
+     * @param isExistenceThree
+     * @param isExistenceFour
+     * @return
+     * @throws ClassNotFoundException
+     */
+    private static MethodSpec createOrdinaryMatrix(ProxyInfo info, boolean isPrivate, boolean isExistenceTwo, boolean isExistenceThree, boolean isExistenceFour) throws ClassNotFoundException {
+        MethodSpec.Builder specBuilder = MethodSpec.methodBuilder(AUTO_NET_METHOD_START_NET)
+                .addJavadoc("The method of common request network\n")
+                .addModifiers(Modifier.STATIC, Modifier.FINAL, Modifier.PUBLIC)
+                .addParameter(Object.class, AUTO_NET_PARAM_LEADER_NAME);
+
+
+        if (isExistenceTwo) {
+            specBuilder.addJavadoc(AUTO_NET_PARAM_REQUEST_ENTITY_NAME + ": entity of request\n");
+            specBuilder.addParameter(Class.forName(AUTO_NET_I_REQUEST_REFERENCE), AUTO_NET_PARAM_REQUEST_ENTITY_NAME);
+        }
+
+        if (isExistenceThree) {
+            specBuilder.addJavadoc(AUTO_NET_PARAM_EXTRA_DYNAMIC_PARAM_NAME +
+                    ": aynamic param of request, For example, dynamic variable 1230 in https://www.xiaoxige.cn/1230.\n");
+            specBuilder.addParameter(String.class, AUTO_NET_PARAM_EXTRA_DYNAMIC_PARAM_NAME);
+        }
+
+        if (isExistenceFour) {
+            specBuilder.addJavadoc(AUTO_NET_PARAM_TRANSFORMER_NAME +
+                    ": If the life cycle of the dominator is bound to the life cycle of the dominator, then the request will disappear when the ruler's life is over. Memory leak can be solved, such as Activity, Fragment\n");
+            specBuilder.addParameter(FlowableTransformer.class, AUTO_NET_PARAM_TRANSFORMER_NAME);
+        }
+
+
+        specBuilder.addStatement(AUTO_NET_METHOD_MATRIX + "($L, $L, $L, null, null, null, $L)",
+                AUTO_NET_PARAM_LEADER_NAME,
+                (isExistenceTwo ? AUTO_NET_PARAM_REQUEST_ENTITY_NAME : null),
+                (isExistenceThree ? AUTO_NET_PARAM_EXTRA_DYNAMIC_PARAM_NAME : null),
+                (isExistenceFour ? AUTO_NET_PARAM_TRANSFORMER_NAME : null));
+
+        return specBuilder.build();
     }
 
     /**
@@ -117,7 +241,7 @@ public class ProxyWriteUtil {
      * @param methods some methods
      * @return
      */
-    private static TypeSpec createAutoClass(ProxyInfo info, MethodSpec... methods) {
+    private static TypeSpec createAutoClass(ProxyInfo info, List<MethodSpec> methods) {
         String fullTargetPath = info.fullTargetPath;
         String targetPackage = info.targetPackage;
         String targetClassSimpleName = info.targetClassSimpleName;
@@ -141,6 +265,42 @@ public class ProxyWriteUtil {
     }
 
     /**
+     * Users are concerned about and use more methods (annotation of collected information automatically assign).
+     *
+     * @param info
+     * @return
+     */
+    private static MethodSpec createMatrixUserComcern(ProxyInfo info) throws ClassNotFoundException {
+        // method name
+        MethodSpec.Builder specBuilder = MethodSpec.methodBuilder(AUTO_NET_METHOD_MATRIX)
+                .addJavadoc("Users are concerned about and use more methods (annotation of collected information automatically assign).\n")
+                .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL);
+
+        // param
+        specBuilder
+                .addParameter(Object.class, AUTO_NET_PARAM_LEADER_NAME)
+                .addParameter(Class.forName(AUTO_NET_I_REQUEST_REFERENCE), AUTO_NET_PARAM_REQUEST_ENTITY_NAME)
+                .addParameter(String.class, AUTO_NET_PARAM_EXTRA_DYNAMIC_PARAM_NAME)
+                .addParameter(String.class, AUTO_NET_PARAM_PUSH_FILE_KEY_NAME)
+                .addParameter(String.class, AUTO_NET_PARAM_FILE_PATH_NAME)
+                .addParameter(String.class, AUTO_NET_PARAM_FILE_NAME_NAME)
+                .addParameter(FlowableTransformer.class, AUTO_NET_PARAM_TRANSFORMER_NAME);
+
+        specBuilder.addStatement(AUTO_NET_METHOD_MATRIX + "($L, $L, $L, $S, $S, $S, $L, $L, $L, $L, $L, $L, $L, $L, $L, $S, $L, $L, $L, $L)",
+                AUTO_NET_PARAM_LEADER_NAME,
+                AUTO_NET_PARAM_REQUEST_ENTITY_NAME,
+                AUTO_NET_PARAM_EXTRA_DYNAMIC_PARAM_NAME,
+                info.domainNameKey, info.suffixUrl, info.mediaType,
+                info.writeOutTime, info.readOutTime, info.connectOutTime,
+                info.encryptionKey, info.isEncryption,
+                info.netPattern, info.reqType, info.resType,
+                info.netStrategy, info.responseClazzName,
+                AUTO_NET_PARAM_PUSH_FILE_KEY_NAME, AUTO_NET_PARAM_FILE_PATH_NAME, AUTO_NET_PARAM_FILE_NAME_NAME, AUTO_NET_PARAM_TRANSFORMER_NAME);
+
+        return specBuilder.build();
+    }
+
+    /**
      * According to the information, the final method of generating the main key is generated.
      *
      * @param info info of message
@@ -157,14 +317,15 @@ public class ProxyWriteUtil {
         specBuilder
                 .addParameter(Object.class, AUTO_NET_PARAM_LEADER_NAME)
                 .addParameter(Class.forName(AUTO_NET_I_REQUEST_REFERENCE), AUTO_NET_PARAM_REQUEST_ENTITY_NAME)
+                .addParameter(String.class, AUTO_NET_PARAM_EXTRA_DYNAMIC_PARAM_NAME)
 
                 .addParameter(String.class, AUTO_NET_PARAM_DOMAIN_NAME_KEY_NAME)
                 .addParameter(String.class, AUTO_NET_PARAM_SUFFIX_URL_NAME)
                 .addParameter(String.class, AUTO_NET_PARAM_MEDIA_TYPE_NAME)
-                .addParameter(Long.class, AUTO_NET_PARAM_WRITE_OUT_TIME_NAME)
-                .addParameter(Long.class, AUTO_NET_PARAM_READ_OUT_TIME_NAME)
-                .addParameter(Long.class, AUTO_NET_PARAM_CONNECT_OUT_TIME_NAME)
-                .addParameter(Long.class, AUTO_NET_PARAM_ENCRYPTION_KEY_NAME)
+                .addParameter(long.class, AUTO_NET_PARAM_WRITE_OUT_TIME_NAME)
+                .addParameter(long.class, AUTO_NET_PARAM_READ_OUT_TIME_NAME)
+                .addParameter(long.class, AUTO_NET_PARAM_CONNECT_OUT_TIME_NAME)
+                .addParameter(long.class, AUTO_NET_PARAM_ENCRYPTION_KEY_NAME)
                 .addParameter(Boolean.class, AUTO_NET_PARAM_IS_ENCRYPTION_NAME)
                 .addParameter(AutoNetPatternAnontation.NetPattern.class, AUTO_NET_PARAM_NET_PATTERN_NAME)
                 .addParameter(AutoNetTypeAnontation.Type.class, AUTO_NET_PARAM_REQ_TYPE_NAME)
@@ -186,10 +347,10 @@ public class ProxyWriteUtil {
         specBuilder
                 .addComment("AutoNet turns to find Api.")
                 .addStatement("$T.getInstance().startNet(" +
-                                "$L, $L, $L, $L, $L, " +
+                                "$L, $L, $L, $L, $L, $L, " +
                                 "$L, $L, $L, $L, $L, " +
                                 "$L, $L, $L, $N, $L, " +
-                                "$L, $L, $L)", Class.forName(AUTO_NET_API_FACADE), AUTO_NET_PARAM_REQUEST_ENTITY_NAME, AUTO_NET_PARAM_DOMAIN_NAME_KEY_NAME,
+                                "$L, $L, $L)", Class.forName(AUTO_NET_API_FACADE), AUTO_NET_PARAM_REQUEST_ENTITY_NAME, AUTO_NET_PARAM_EXTRA_DYNAMIC_PARAM_NAME, AUTO_NET_PARAM_DOMAIN_NAME_KEY_NAME,
                         AUTO_NET_PARAM_SUFFIX_URL_NAME, AUTO_NET_PARAM_MEDIA_TYPE_NAME, AUTO_NET_PARAM_WRITE_OUT_TIME_NAME, AUTO_NET_PARAM_READ_OUT_TIME_NAME,
                         AUTO_NET_PARAM_CONNECT_OUT_TIME_NAME, AUTO_NET_PARAM_ENCRYPTION_KEY_NAME, AUTO_NET_PARAM_IS_ENCRYPTION_NAME, AUTO_NET_PARAM_NET_PATTERN_NAME,
                         AUTO_NET_PARAM_REQ_TYPE_NAME, AUTO_NET_PARAM_RES_TYPE_NAME, AUTO_NET_PARAM_NET_STRATEGY_NAME, callBackFormat,
@@ -215,6 +376,14 @@ public class ProxyWriteUtil {
         return fullTargetPath.substring(targetPackage.length() + 1, fullTargetPath.length() - targetClassSimpleName.length() - 1);
     }
 
+    /**
+     * External class full path of introverted callback method
+     *
+     * @param fullTargetPath
+     * @param targetPackage
+     * @param targetClassSimpleName
+     * @return
+     */
     private static String getSuperiorClassPath(String fullTargetPath, String targetPackage, String targetClassSimpleName) {
         if (isCallBackSelf(fullTargetPath, targetPackage, targetClassSimpleName)) {
             return targetPackage;
