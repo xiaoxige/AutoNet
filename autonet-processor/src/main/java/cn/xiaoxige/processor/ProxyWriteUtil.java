@@ -289,7 +289,7 @@ public class ProxyWriteUtil {
                         "\t1.onSuccess(null)\n" +
                         "\t2.onFailed(null)\n" +
                         "\t3.onEmpty()\n")
-                .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL);
+                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL);
 
         specBuilder
                 .addParameter(Object.class, AUTO_NET_PARAM_LEADER_NAME)

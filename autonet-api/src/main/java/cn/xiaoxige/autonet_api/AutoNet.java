@@ -4,6 +4,8 @@ import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataSuccessCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
 import io.reactivex.FlowableTransformer;
 
@@ -14,20 +16,20 @@ import io.reactivex.FlowableTransformer;
 
 public final class AutoNet {
 
-    private static AutoNet sAutoNet;
+    private static volatile AutoNet sAutoNet = new AutoNet();
 
     private AutoNet() {
     }
 
     public static AutoNet getInstance() {
-
-        synchronized (sAutoNet) {
-            if (sAutoNet == null) {
-                sAutoNet = new AutoNet();
+        if (sAutoNet == null) {
+            synchronized (AutoNet.class) {
+                if (sAutoNet == null) {
+                    sAutoNet = new AutoNet();
+                }
             }
-            return sAutoNet;
         }
-
+        return sAutoNet;
     }
 
 
@@ -69,14 +71,23 @@ public final class AutoNet {
         if (callback != null && type != null) {
             switch (type) {
                 case 1:
-                    //noinspection unchecked
-                    callback.onSuccess(null);
+                    if (callback instanceof IAutoNetDataSuccessCallBack) {
+                        IAutoNetDataSuccessCallBack successCallBack = (IAutoNetDataSuccessCallBack) callback;
+                        //noinspection unchecked
+                        successCallBack.onSuccess(null);
+                    }
                     break;
                 case 2:
-                    callback.onFailed(null);
+                    if (callback instanceof IAutoNetDataCallBack) {
+                        IAutoNetDataCallBack dataCallBack = (IAutoNetDataCallBack) callback;
+                        dataCallBack.onFailed(null);
+                    }
                     break;
                 case 3:
-                    callback.onEmpty();
+                    if (callback instanceof IAutoNetDataCallBack) {
+                        IAutoNetDataCallBack dataCallBack = (IAutoNetDataCallBack) callback;
+                        dataCallBack.onEmpty();
+                    }
                     break;
                 default:
                     break;

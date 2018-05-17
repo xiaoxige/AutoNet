@@ -6,10 +6,4 @@ package cn.xiaoxige.autonet_api.interfaces;
  */
 
 public interface IAutoNetCallBack<T> {
-
-    void onSuccess(T entity);
-
-    void onFailed(Throwable throwable);
-
-    void onEmpty();
 }
