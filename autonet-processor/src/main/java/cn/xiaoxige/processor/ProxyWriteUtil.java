@@ -27,6 +27,7 @@ public class ProxyWriteUtil {
 
     private static final String AUTO_NET_I_REQUEST_REFERENCE = "cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest";
     private static final String AUTO_NET_API_FACADE = "cn.xiaoxige.autonet_api.AutoNet";
+    private static final String AUTO_NET_I_CALLBACK = "cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack";
 
     private static final String AUTO_NET_PARAM_LEADER_NAME = "leader";
     private static final String AUTO_NET_PARAM_DOMAIN_NAME_KEY_NAME = "domainNameKey";
@@ -153,8 +154,8 @@ public class ProxyWriteUtil {
                         AUTO_NET_PARAM_PUSH_FILE_KEY_NAME, AUTO_NET_PARAM_FILE_PATH_NAME, AUTO_NET_PARAM_FILE_NAME_NAME, AUTO_NET_PARAM_TRANSFORMER_NAME);
 
         boolean callBackSelf = isCallBackSelf(info);
-        String callBackFormat = callBackSelf ? "(cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack)" + AUTO_NET_PARAM_LEADER_NAME :
-                "((" + getSuperiorClassPath(info.fullTargetPath, info.targetPackage, info.targetClassSimpleName) + ")" + AUTO_NET_PARAM_LEADER_NAME
+        String callBackFormat = callBackSelf ? "(" + AUTO_NET_I_CALLBACK + ") " + AUTO_NET_PARAM_LEADER_NAME :
+                "((" + getSuperiorClassPath(info.fullTargetPath, info.targetPackage, info.targetClassSimpleName) + ") " + AUTO_NET_PARAM_LEADER_NAME
                         + ").new " + info.targetClassSimpleName + "()";
 
         specBuilder.addStatement("$T.getInstance().test($N)", Class.forName(AUTO_NET_API_FACADE), callBackFormat);

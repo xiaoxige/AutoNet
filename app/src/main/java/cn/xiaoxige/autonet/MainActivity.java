@@ -54,9 +54,37 @@ public class MainActivity extends RxActivity {
     @AutoNetResponseEntityClass(value = Object.class)
     public class TestCallback implements IAutoNetCallBack{
 
+        @Override
+        public void onSuccess(Object entity) {
+
+        }
+
+        @Override
+        public void onFailed(Throwable throwable) {
+
+        }
+
+        @Override
+        public void onEmpty() {
+
+        }
     }
     @AutoNetResponseEntityClass(value = Object.class)
     public class TestCallback2 implements IAutoNetCallBack{
+        @Override
+        public void onSuccess(Object entity) {
+
+        }
+
+        @Override
+        public void onFailed(Throwable throwable) {
+
+        }
+
+        @Override
+        public void onEmpty() {
+
+        }
     }
 
 

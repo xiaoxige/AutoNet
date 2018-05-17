@@ -4,7 +4,6 @@ import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
-import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
 import io.reactivex.FlowableTransformer;
 
