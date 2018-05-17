@@ -5,14 +5,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.trello.rxlifecycle2.android.ActivityEvent;
+
 import com.trello.rxlifecycle2.components.RxActivity;
 
 import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
-import cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity;
-import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallback;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 
 public class MainActivity extends RxActivity {
 
@@ -53,47 +51,12 @@ public class MainActivity extends RxActivity {
 
 
 
-    @AutoNetResponseEntityClass(value = AutoResponseEntity.class)
-    public class TestCallback implements IAutoNetDataCallback<AutoResponseEntity> {
+    @AutoNetResponseEntityClass(value = Object.class)
+    public class TestCallback implements IAutoNetCallBack{
 
-        @Override
-        public void onSuccess(AutoResponseEntity entity) {
-            Toast.makeText(MainActivity.this, "Get成功", Toast.LENGTH_SHORT).show();
-            tvResult.setText("返回：" + entity.autoResponseResult + "\n" + "是否转Json对象失败：" + entity.isJsonTransformationError);
-        }
-
-        @Override
-        public void onEmpty() {
-            Toast.makeText(MainActivity.this, "Get数据为空", Toast.LENGTH_SHORT).show();
-            tvResult.setText("Get请求为空");
-        }
-
-        @Override
-        public void onError(Throwable throwable) {
-            Toast.makeText(MainActivity.this, "Get数据出错...", Toast.LENGTH_SHORT).show();
-            tvResult.setText(throwable.toString());
-        }
     }
-    @AutoNetResponseEntityClass(value = AutoResponseEntity.class)
-    public class TestCallback2 implements IAutoNetDataCallback<AutoResponseEntity> {
-
-        @Override
-        public void onSuccess(AutoResponseEntity entity) {
-            Toast.makeText(MainActivity.this, "Get成功", Toast.LENGTH_SHORT).show();
-            tvResult.setText("返回：" + entity.autoResponseResult + "\n" + "是否转Json对象失败：" + entity.isJsonTransformationError);
-        }
-
-        @Override
-        public void onEmpty() {
-            Toast.makeText(MainActivity.this, "Get数据为空", Toast.LENGTH_SHORT).show();
-            tvResult.setText("Get请求为空");
-        }
-
-        @Override
-        public void onError(Throwable throwable) {
-            Toast.makeText(MainActivity.this, "Get数据出错...", Toast.LENGTH_SHORT).show();
-            tvResult.setText(throwable.toString());
-        }
+    @AutoNetResponseEntityClass(value = Object.class)
+    public class TestCallback2 implements IAutoNetCallBack{
     }
 
 
