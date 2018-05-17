@@ -174,6 +174,14 @@ public class ProxyWriteUtil {
             specBuilder.addParameter(FlowableTransformer.class, AUTO_NET_PARAM_TRANSFORMER_NAME);
         }
 
+        specBuilder.addStatement(AUTO_NET_METHOD_MATRIX + "($L, $L, null, $L, $L, $L, $L)",
+                AUTO_NET_PARAM_LEADER_NAME,
+                (isExistenceTwo ? AUTO_NET_PARAM_REQUEST_ENTITY_NAME : null),
+                (isPush ? AUTO_NET_PARAM_PUSH_FILE_KEY_NAME : null),
+                AUTO_NET_PARAM_FILE_PATH_NAME,
+                (!isPush ? AUTO_NET_PARAM_FILE_NAME_NAME : null),
+                (isExistenceLast ? AUTO_NET_PARAM_TRANSFORMER_NAME : null));
+
         return specBuilder.build();
     }
 
