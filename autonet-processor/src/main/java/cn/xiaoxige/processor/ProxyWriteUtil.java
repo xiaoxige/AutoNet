@@ -27,6 +27,8 @@ public class ProxyWriteUtil {
 
     private static final String AUTO_NET_METHOD_MATRIX = "proxy";
     private static final String AUTO_NET_METHOD_START_NET = "startNet";
+    private static final String AUTO_NET_METHOD_PUSH_FILE = "pushFile";
+    private static final String AUTO_NET_METHOD_PULL_FILE = "pullFile";
 
     private static final String AUTO_NET_I_REQUEST_REFERENCE = "cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest";
     private static final String AUTO_NET_API_FACADE = "cn.xiaoxige.autonet_api.AutoNet";
@@ -116,10 +118,63 @@ public class ProxyWriteUtil {
      * @param info
      * @return
      */
-    private static List<MethodSpec> createFileMethods(ProxyInfo info) {
+    private static List<MethodSpec> createFileMethods(ProxyInfo info) throws ClassNotFoundException {
         List<MethodSpec> specs = new ArrayList<>();
 
+        // push
+        // pushFile(object, fileKey, path)
+        specs.add(createFileMethodTemplate(info, false, true, false, false));
+        // pushFile(object, fileKey, path, transformer)
+        specs.add(createFileMethodTemplate(info, false, true, false, true));
+        // pushFile(object, entity, fileKey, path)
+        specs.add(createFileMethodTemplate(info, false, true, true, false));
+        // pushFile(object, entity, fileKey, path, transformer)
+        specs.add(createFileMethodTemplate(info, false, true, true, true));
+
+        // pull
+        // pullFile(object, path, fileName)
+        specs.add(createFileMethodTemplate(info, false, false, false, false));
+        // pullFile(object, path, fileName, transformer)
+        specs.add(createFileMethodTemplate(info, false, false, false, true));
+        // pullFile(object, entity, path, fileName)
+        specs.add(createFileMethodTemplate(info, false, false, true, false));
+        // pullFile(object, entity, path, fileName, transformer)
+        specs.add(createFileMethodTemplate(info, false, false, true, true));
+
         return specs;
+    }
+
+    private static MethodSpec createFileMethodTemplate(ProxyInfo info, boolean isPrivate, boolean isPush, boolean isExistenceTwo, boolean isExistenceLast) throws ClassNotFoundException {
+
+        MethodSpec.Builder specBuilder = MethodSpec.methodBuilder(isPush ? AUTO_NET_METHOD_PUSH_FILE : AUTO_NET_METHOD_PULL_FILE)
+                .addJavadoc("The method of file request network\n")
+                .addModifiers(Modifier.STATIC, Modifier.FINAL, Modifier.PUBLIC)
+                .addParameter(Object.class, AUTO_NET_PARAM_LEADER_NAME);
+
+        if (isExistenceTwo) {
+            specBuilder.addJavadoc("@param " + AUTO_NET_PARAM_REQUEST_ENTITY_NAME + ": entity of request\n");
+            specBuilder.addParameter(Class.forName(AUTO_NET_I_REQUEST_REFERENCE), AUTO_NET_PARAM_REQUEST_ENTITY_NAME);
+        }
+
+        if (isPush) {
+            specBuilder.addJavadoc("@param " + AUTO_NET_PARAM_PUSH_FILE_KEY_NAME + ": Flag bit for sending files\n");
+            specBuilder.addParameter(String.class, AUTO_NET_PARAM_PUSH_FILE_KEY_NAME);
+            specBuilder.addJavadoc("@param " + AUTO_NET_PARAM_FILE_PATH_NAME + ": The path to the file\n");
+            specBuilder.addParameter(String.class, AUTO_NET_PARAM_FILE_PATH_NAME);
+        } else {
+            specBuilder.addJavadoc("@param " + AUTO_NET_PARAM_FILE_PATH_NAME + ": The path to save the file\n");
+            specBuilder.addParameter(String.class, AUTO_NET_PARAM_FILE_PATH_NAME);
+            specBuilder.addJavadoc("@param " + AUTO_NET_PARAM_FILE_NAME_NAME + ": Save the name of the file\n");
+            specBuilder.addParameter(String.class, AUTO_NET_PARAM_FILE_NAME_NAME);
+        }
+
+        if (isExistenceLast) {
+            specBuilder.addJavadoc("@param " + AUTO_NET_PARAM_TRANSFORMER_NAME +
+                    ": If the life cycle of the dominator is bound to the life cycle of the dominator, then the request will disappear when the ruler's life is over. Memory leak can be solved, such as Activity, Fragment\n");
+            specBuilder.addParameter(FlowableTransformer.class, AUTO_NET_PARAM_TRANSFORMER_NAME);
+        }
+
+        return specBuilder.build();
     }
 
     /**
@@ -132,24 +187,24 @@ public class ProxyWriteUtil {
         List<MethodSpec> specs = new ArrayList<>();
 
         // public startNet(object)
-        specs.add(createOrdinaryMatrix(info, false, false, false, false));
+        specs.add(createOrdinaryMatrixTemplate(info, false, false, false, false));
         // public startNet(object, transformer)
-        specs.add(createOrdinaryMatrix(info, false, false, false, true));
+        specs.add(createOrdinaryMatrixTemplate(info, false, false, false, true));
 
         // public startNet(object, entity)
-        specs.add(createOrdinaryMatrix(info, false, true, false, false));
+        specs.add(createOrdinaryMatrixTemplate(info, false, true, false, false));
         // public startNet(object, entity, transformer)
-        specs.add(createOrdinaryMatrix(info, false, true, false, true));
+        specs.add(createOrdinaryMatrixTemplate(info, false, true, false, true));
 
         // public startNet(object, extraDynamicParam)
-        specs.add(createOrdinaryMatrix(info, false, false, true, false));
+        specs.add(createOrdinaryMatrixTemplate(info, false, false, true, false));
         // public startNet(object, extraDynamicParam, transformer)
-        specs.add(createOrdinaryMatrix(info, false, false, true, true));
+        specs.add(createOrdinaryMatrixTemplate(info, false, false, true, true));
 
         // public startNet(object, entity, extraDynamicParam, transformer)
-        specs.add(createOrdinaryMatrix(info, false, true, true, false));
+        specs.add(createOrdinaryMatrixTemplate(info, false, true, true, false));
         // private startNet(object, entity, extraDynamicParam, transformer)
-        specs.add(createOrdinaryMatrix(info, true, true, true, true));
+        specs.add(createOrdinaryMatrixTemplate(info, true, true, true, true));
 
 
         return specs;
@@ -167,7 +222,7 @@ public class ProxyWriteUtil {
      * @return
      * @throws ClassNotFoundException
      */
-    private static MethodSpec createOrdinaryMatrix(ProxyInfo info, boolean isPrivate, boolean isExistenceTwo, boolean isExistenceThree, boolean isExistenceFour) throws ClassNotFoundException {
+    private static MethodSpec createOrdinaryMatrixTemplate(ProxyInfo info, boolean isPrivate, boolean isExistenceTwo, boolean isExistenceThree, boolean isExistenceFour) throws ClassNotFoundException {
         MethodSpec.Builder specBuilder = MethodSpec.methodBuilder(AUTO_NET_METHOD_START_NET)
                 .addJavadoc("The method of common request network\n")
                 .addModifiers(Modifier.STATIC, Modifier.FINAL, Modifier.PUBLIC)
@@ -175,18 +230,18 @@ public class ProxyWriteUtil {
 
 
         if (isExistenceTwo) {
-            specBuilder.addJavadoc(AUTO_NET_PARAM_REQUEST_ENTITY_NAME + ": entity of request\n");
+            specBuilder.addJavadoc("@param " + AUTO_NET_PARAM_REQUEST_ENTITY_NAME + ": entity of request\n");
             specBuilder.addParameter(Class.forName(AUTO_NET_I_REQUEST_REFERENCE), AUTO_NET_PARAM_REQUEST_ENTITY_NAME);
         }
 
         if (isExistenceThree) {
-            specBuilder.addJavadoc(AUTO_NET_PARAM_EXTRA_DYNAMIC_PARAM_NAME +
+            specBuilder.addJavadoc("@param " + AUTO_NET_PARAM_EXTRA_DYNAMIC_PARAM_NAME +
                     ": aynamic param of request, For example, dynamic variable 1230 in https://www.xiaoxige.cn/1230.\n");
             specBuilder.addParameter(String.class, AUTO_NET_PARAM_EXTRA_DYNAMIC_PARAM_NAME);
         }
 
         if (isExistenceFour) {
-            specBuilder.addJavadoc(AUTO_NET_PARAM_TRANSFORMER_NAME +
+            specBuilder.addJavadoc("@param " + AUTO_NET_PARAM_TRANSFORMER_NAME +
                     ": If the life cycle of the dominator is bound to the life cycle of the dominator, then the request will disappear when the ruler's life is over. Memory leak can be solved, such as Activity, Fragment\n");
             specBuilder.addParameter(FlowableTransformer.class, AUTO_NET_PARAM_TRANSFORMER_NAME);
         }
