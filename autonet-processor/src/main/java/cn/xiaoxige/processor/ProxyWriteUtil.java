@@ -71,12 +71,16 @@ public class ProxyWriteUtil {
 
     public static void write(ProxyInfo info, Filer filer) throws Exception {
         List<MethodSpec> methodSpecs = new ArrayList<>();
+
+        AutoNetTypeAnontation.Type resType = info.resType;
+        AutoNetTypeAnontation.Type reqType = info.reqType;
+        // Whether there is a file operation
+        boolean isExistenceStream = resType.equals(AutoNetTypeAnontation.Type.STREAM) || reqType.equals(AutoNetTypeAnontation.Type.STREAM);
+
         // test ordinary
         MethodSpec testMethod = createTest(info);
         // net mothods(ordinary)
         List<MethodSpec> ordinaryMethod = createOrdinaryMethods(info);
-        // net nothods(file)
-        List<MethodSpec> fileMethodSpecs = createFileMethods(info);
         // Matrix of User concern
         MethodSpec matrixUserComcern = createMatrixUserComcern(info);
         // Matrix
@@ -85,8 +89,14 @@ public class ProxyWriteUtil {
         methodSpecs.add(testMethod);
         //noinspection ConstantConditions
         methodSpecs.addAll(ordinaryMethod);
-        //noinspection ConstantConditions
-        methodSpecs.addAll(fileMethodSpecs);
+
+        if (isExistenceStream) {
+            // net nothods(file)
+            List<MethodSpec> fileMethodSpecs = createFileMethods(info);
+            //noinspection ConstantConditions
+            methodSpecs.addAll(fileMethodSpecs);
+        }
+
         methodSpecs.add(matrixUserComcern);
         methodSpecs.add(matrix);
 

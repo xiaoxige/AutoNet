@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.trello.rxlifecycle2.components.RxActivity;
 
 import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
+import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 
 public class MainActivity extends RxActivity {
@@ -50,9 +51,8 @@ public class MainActivity extends RxActivity {
     }
 
 
-
     @AutoNetResponseEntityClass(value = Object.class)
-    public class TestCallback implements IAutoNetCallBack{
+    public class TestCallback implements IAutoNetCallBack {
 
         @Override
         public void onSuccess(Object entity) {
@@ -69,8 +69,28 @@ public class MainActivity extends RxActivity {
 
         }
     }
+
     @AutoNetResponseEntityClass(value = Object.class)
-    public class TestCallback2 implements IAutoNetCallBack{
+    public class TestCallback2 implements IAutoNetCallBack {
+        @Override
+        public void onSuccess(Object entity) {
+
+        }
+
+        @Override
+        public void onFailed(Throwable throwable) {
+
+        }
+
+        @Override
+        public void onEmpty() {
+
+        }
+    }
+
+    @AutoNetResponseEntityClass(value = Object.class)
+    @AutoNetTypeAnontation(reqType = AutoNetTypeAnontation.Type.STREAM)
+    public class TestCallback3 implements IAutoNetCallBack {
         @Override
         public void onSuccess(Object entity) {
 
