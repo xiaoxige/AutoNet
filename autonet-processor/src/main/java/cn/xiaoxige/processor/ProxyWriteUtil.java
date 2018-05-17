@@ -1,6 +1,7 @@
 package cn.xiaoxige.processor;
 
 
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -10,6 +11,7 @@ import java.util.Set;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Modifier;
+import javax.security.auth.callback.Callback;
 
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
@@ -64,13 +66,48 @@ public class ProxyWriteUtil {
 
 
     public static void write(ProxyInfo info, Filer filer) throws Exception {
+        // test method
+        MethodSpec testMethod = createTest(info);
         // Matrix
         MethodSpec matrix = createMatrix(info);
         // Class
-        TypeSpec autoClass = createAutoClass(info, matrix);
+        TypeSpec autoClass = createAutoClass(info, matrix, testMethod);
         // file
         JavaFile javaFile = JavaFile.builder(info.targetPackage, autoClass).build();
         javaFile.writeTo(filer);
+    }
+
+    /**
+     * AutoNet automatic generation of code test method(Testing local connections)
+     *
+     * @param info
+     * @return
+     */
+    private static MethodSpec createTest(ProxyInfo info) throws ClassNotFoundException {
+
+        MethodSpec.Builder specBuilder = MethodSpec
+                .methodBuilder("testLocalLink")
+                .addJavadoc("AutoNet automatic generation of code test method(Testing local connections).\n" +
+                        "type:\n" +
+                        "\t1.onSuccess(null)\n" +
+                        "\t2.onFailed(null)\n" +
+                        "\t3.onEmpty()\n")
+                .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL);
+
+        specBuilder
+                .addParameter(Object.class, AUTO_NET_PARAM_LEADER_NAME)
+                .addParameter(Integer.class, "type")
+        ;
+
+        boolean callBackSelf = isCallBackSelf(info);
+        String callBackFormat = callBackSelf ? "(" + AUTO_NET_I_CALLBACK + ") " + AUTO_NET_PARAM_LEADER_NAME :
+                "((" + getSuperiorClassPath(info.fullTargetPath, info.targetPackage, info.targetClassSimpleName) + ") " + AUTO_NET_PARAM_LEADER_NAME
+                        + ").new " + info.targetClassSimpleName + "()";
+
+        specBuilder
+                .addStatement("$T.getInstance().test($N, $L)", Class.forName(AUTO_NET_API_FACADE), callBackFormat, "type");
+
+        return specBuilder.build();
     }
 
     /**
@@ -113,11 +150,11 @@ public class ProxyWriteUtil {
 
         // method name
         MethodSpec.Builder specBuilder = MethodSpec.methodBuilder(AUTO_NET_METHOD_MATRIX)
+                .addJavadoc("matrix of autoNet\n")
                 .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL);
 
         // param
         specBuilder
-                .addJavadoc("matrix of autoNet\n")
                 .addParameter(Object.class, AUTO_NET_PARAM_LEADER_NAME)
                 .addParameter(Class.forName(AUTO_NET_I_REQUEST_REFERENCE), AUTO_NET_PARAM_REQUEST_ENTITY_NAME)
 
@@ -141,24 +178,22 @@ public class ProxyWriteUtil {
 
                 .addParameter(FlowableTransformer.class, AUTO_NET_PARAM_TRANSFORMER_NAME);
 
-        specBuilder
-                .addComment("AutoNet turns to find Api.")
-                .addStatement("$T.getInstance().startNet(" +
-                                "$L, $L, $L, $L, $L, " +
-                                "$L, $L, $L, $L, $L, " +
-                                "$L, $L, $L, $L, $L, " +
-                                "$L, $L, $L)", Class.forName(AUTO_NET_API_FACADE), AUTO_NET_PARAM_REQUEST_ENTITY_NAME, AUTO_NET_PARAM_DOMAIN_NAME_KEY_NAME,
-                        AUTO_NET_PARAM_SUFFIX_URL_NAME, AUTO_NET_PARAM_MEDIA_TYPE_NAME, AUTO_NET_PARAM_WRITE_OUT_TIME_NAME, AUTO_NET_PARAM_READ_OUT_TIME_NAME,
-                        AUTO_NET_PARAM_CONNECT_OUT_TIME_NAME, AUTO_NET_PARAM_ENCRYPTION_KEY_NAME, AUTO_NET_PARAM_IS_ENCRYPTION_NAME, AUTO_NET_PARAM_NET_PATTERN_NAME,
-                        AUTO_NET_PARAM_REQ_TYPE_NAME, AUTO_NET_PARAM_RES_TYPE_NAME, AUTO_NET_PARAM_NET_STRATEGY_NAME, AUTO_NET_PARAM_RESPONSE_CLAZZ_NAME_NAME,
-                        AUTO_NET_PARAM_PUSH_FILE_KEY_NAME, AUTO_NET_PARAM_FILE_PATH_NAME, AUTO_NET_PARAM_FILE_NAME_NAME, AUTO_NET_PARAM_TRANSFORMER_NAME);
-
         boolean callBackSelf = isCallBackSelf(info);
         String callBackFormat = callBackSelf ? "(" + AUTO_NET_I_CALLBACK + ") " + AUTO_NET_PARAM_LEADER_NAME :
                 "((" + getSuperiorClassPath(info.fullTargetPath, info.targetPackage, info.targetClassSimpleName) + ") " + AUTO_NET_PARAM_LEADER_NAME
                         + ").new " + info.targetClassSimpleName + "()";
 
-        specBuilder.addStatement("$T.getInstance().test($N)", Class.forName(AUTO_NET_API_FACADE), callBackFormat);
+        specBuilder
+                .addComment("AutoNet turns to find Api.")
+                .addStatement("$T.getInstance().startNet(" +
+                                "$L, $L, $L, $L, $L, " +
+                                "$L, $L, $L, $L, $L, " +
+                                "$L, $L, $L, $N, $L, " +
+                                "$L, $L, $L)", Class.forName(AUTO_NET_API_FACADE), AUTO_NET_PARAM_REQUEST_ENTITY_NAME, AUTO_NET_PARAM_DOMAIN_NAME_KEY_NAME,
+                        AUTO_NET_PARAM_SUFFIX_URL_NAME, AUTO_NET_PARAM_MEDIA_TYPE_NAME, AUTO_NET_PARAM_WRITE_OUT_TIME_NAME, AUTO_NET_PARAM_READ_OUT_TIME_NAME,
+                        AUTO_NET_PARAM_CONNECT_OUT_TIME_NAME, AUTO_NET_PARAM_ENCRYPTION_KEY_NAME, AUTO_NET_PARAM_IS_ENCRYPTION_NAME, AUTO_NET_PARAM_NET_PATTERN_NAME,
+                        AUTO_NET_PARAM_REQ_TYPE_NAME, AUTO_NET_PARAM_RES_TYPE_NAME, AUTO_NET_PARAM_NET_STRATEGY_NAME, callBackFormat,
+                        AUTO_NET_PARAM_PUSH_FILE_KEY_NAME, AUTO_NET_PARAM_FILE_PATH_NAME, AUTO_NET_PARAM_FILE_NAME_NAME, AUTO_NET_PARAM_TRANSFORMER_NAME);
 
         return specBuilder.build();
     }

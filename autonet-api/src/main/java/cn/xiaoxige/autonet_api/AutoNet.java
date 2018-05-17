@@ -47,7 +47,7 @@ public final class AutoNet {
      * @param reqType
      * @param resType
      * @param netStrategy
-     * @param responseClazzName
+     * @param callBack
      * @param pushFileKey
      * @param filePath
      * @param fileName
@@ -59,13 +59,29 @@ public final class AutoNet {
                                       Long connectOutTime, Long encryptionKey, Boolean isEncryption,
                                       AutoNetPatternAnontation.NetPattern netPattern, AutoNetTypeAnontation.Type reqType,
                                       AutoNetTypeAnontation.Type resType, AutoNetStrategyAnontation.NetStrategy netStrategy,
-                                      String responseClazzName, String pushFileKey, String filePath, String fileName,
+                                      IAutoNetCallBack callBack, String pushFileKey, String filePath, String fileName,
                                       FlowableTransformer transformer) {
 
     }
 
-    public static final void test(IAutoNetCallBack callback) {
+    public static final void test(IAutoNetCallBack callback, Integer type) {
 
+        if (callback != null && type != null) {
+            switch (type) {
+                case 1:
+                    //noinspection unchecked
+                    callback.onSuccess(null);
+                    break;
+                case 2:
+                    callback.onFailed(null);
+                    break;
+                case 3:
+                    callback.onEmpty();
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
 }
