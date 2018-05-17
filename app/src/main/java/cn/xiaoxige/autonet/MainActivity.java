@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import com.trello.rxlifecycle2.components.RxActivity;
 
+import cn.xiaoxige.annotation.AutoNetDisposableBaseUrlAnontation;
+import cn.xiaoxige.annotation.AutoNetDisposableHeadAnnontation;
 import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
@@ -74,6 +76,11 @@ public class MainActivity extends RxActivity {
     }
 
     @AutoNetResponseEntityClass(value = Object.class)
+    @AutoNetDisposableBaseUrlAnontation("http://www.baidu.com")
+    @AutoNetDisposableHeadAnnontation({
+            "mediaType:application/json",
+            "token:aaa"
+    })
     public class TestCallback2 implements IAutoNetDataCallBack {
         @Override
         public void onSuccess(Object entity) {

@@ -45,6 +45,8 @@ public class ProxyWriteUtil {
     private static final String AUTO_NET_PARAM_IS_ENCRYPTION_NAME = "isEncryption";
     private static final String AUTO_NET_PARAM_NET_PATTERN_NAME = "netPattern";
     private static final String AUTO_NET_PARAM_NET_STRATEGY_NAME = "netStrategy";
+    private static final String AUTO_NET_PARAM_DISPOSABLE_BASE_URL = "disposableBaseUrl";
+    private static final String AUTO_NET_PARAM_DISPOSABLE_HEADS = "disposableHeads";
     private static final String AUTO_NET_PARAM_REQ_TYPE_NAME = "reqType";
     private static final String AUTO_NET_PARAM_RES_TYPE_NAME = "resType";
     private static final String AUTO_NET_PARAM_RESPONSE_CLAZZ_NAME_NAME = "responseClazzName";
@@ -359,18 +361,38 @@ public class ProxyWriteUtil {
                 .addParameter(String.class, AUTO_NET_PARAM_FILE_NAME_NAME)
                 .addParameter(FlowableTransformer.class, AUTO_NET_PARAM_TRANSFORMER_NAME);
 
-        specBuilder.addStatement(AUTO_NET_METHOD_MATRIX + "($L, $L, $L, $S, $S, $S, $L, $L, $L, $L, $L, $L, $L, $L, $L, $S, $L, $L, $L, $L)",
+        StringBuffer heads = transformationHeads(info.disposableHeads);
+
+        specBuilder.addStatement(AUTO_NET_METHOD_MATRIX + "($L, $L, $L, $S, $S, $S, $L, $L, $L, $L, $L, $S, $S, $L, $L, $L, $L, $S, $L, $L, $L, $L)",
                 AUTO_NET_PARAM_LEADER_NAME,
                 AUTO_NET_PARAM_REQUEST_ENTITY_NAME,
                 AUTO_NET_PARAM_EXTRA_DYNAMIC_PARAM_NAME,
                 info.domainNameKey, info.suffixUrl, info.mediaType,
                 info.writeOutTime, info.readOutTime, info.connectOutTime,
                 info.encryptionKey, info.isEncryption,
+                info.disposableBaseUrl, heads != null ? heads.toString() : null,
                 info.netPattern, info.reqType, info.resType,
                 info.netStrategy, info.responseClazzName,
                 AUTO_NET_PARAM_PUSH_FILE_KEY_NAME, AUTO_NET_PARAM_FILE_PATH_NAME, AUTO_NET_PARAM_FILE_NAME_NAME, AUTO_NET_PARAM_TRANSFORMER_NAME);
 
         return specBuilder.build();
+    }
+
+    /**
+     * Head data conversion(String[] --> String)
+     *
+     * @param disposableHeads
+     * @return
+     */
+    private static StringBuffer transformationHeads(String[] disposableHeads) {
+        StringBuffer heads = null;
+        if (disposableHeads != null) {
+            heads = new StringBuffer();
+            for (String head : disposableHeads) {
+                heads.append(head + "\n");
+            }
+        }
+        return heads;
     }
 
     /**
@@ -400,6 +422,8 @@ public class ProxyWriteUtil {
                 .addParameter(long.class, AUTO_NET_PARAM_CONNECT_OUT_TIME_NAME)
                 .addParameter(long.class, AUTO_NET_PARAM_ENCRYPTION_KEY_NAME)
                 .addParameter(Boolean.class, AUTO_NET_PARAM_IS_ENCRYPTION_NAME)
+                .addParameter(String.class, AUTO_NET_PARAM_DISPOSABLE_BASE_URL)
+                .addParameter(String.class, AUTO_NET_PARAM_DISPOSABLE_HEADS)
                 .addParameter(AutoNetPatternAnontation.NetPattern.class, AUTO_NET_PARAM_NET_PATTERN_NAME)
                 .addParameter(AutoNetTypeAnontation.Type.class, AUTO_NET_PARAM_REQ_TYPE_NAME)
                 .addParameter(AutoNetTypeAnontation.Type.class, AUTO_NET_PARAM_RES_TYPE_NAME)

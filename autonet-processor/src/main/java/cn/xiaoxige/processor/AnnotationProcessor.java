@@ -28,6 +28,8 @@ import javax.tools.Diagnostic;
 
 import cn.xiaoxige.annotation.AutoNetAnontation;
 import cn.xiaoxige.annotation.AutoNetBaseUrlKeyAnontation;
+import cn.xiaoxige.annotation.AutoNetDisposableBaseUrlAnontation;
+import cn.xiaoxige.annotation.AutoNetDisposableHeadAnnontation;
 import cn.xiaoxige.annotation.AutoNetEncryptionAnontation;
 import cn.xiaoxige.annotation.AutoNetMediaTypeAnontation;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
@@ -64,7 +66,7 @@ public class AnnotationProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        Set<String> set = new HashSet<>(8);
+        Set<String> set = new HashSet<>(10);
         set.add(AutoNetPatternAnontation.class.getCanonicalName());
         set.add(AutoNetEncryptionAnontation.class.getCanonicalName());
         set.add(AutoNetBaseUrlKeyAnontation.class.getCanonicalName());
@@ -73,6 +75,8 @@ public class AnnotationProcessor extends AbstractProcessor {
         set.add(AutoNetMediaTypeAnontation.class.getCanonicalName());
         set.add(AutoNetAnontation.class.getCanonicalName());
         set.add(AutoNetStrategyAnontation.class.getCanonicalName());
+        set.add(AutoNetDisposableBaseUrlAnontation.class.getCanonicalName());
+        set.add(AutoNetDisposableHeadAnnontation.class.getCanonicalName());
         return set;
     }
 
@@ -112,6 +116,14 @@ public class AnnotationProcessor extends AbstractProcessor {
         }
 
         if (!isAnnotatedWithClass(roundEnvironment, AutoNetStrategyAnontation.class)) {
+            return false;
+        }
+
+        if (!isAnnotatedWithClass(roundEnvironment, AutoNetDisposableBaseUrlAnontation.class)) {
+            return false;
+        }
+
+        if (!isAnnotatedWithClass(roundEnvironment, AutoNetDisposableHeadAnnontation.class)) {
             return false;
         }
 
@@ -172,11 +184,25 @@ public class AnnotationProcessor extends AbstractProcessor {
                 autoNetMediaTypeProc(proxyInfo, (AutoNetMediaTypeAnontation) annotation);
             } else if (annotation instanceof AutoNetStrategyAnontation) {
                 autoNetStrategyProc(proxyInfo, (AutoNetStrategyAnontation) annotation);
+            } else if (annotation instanceof AutoNetDisposableBaseUrlAnontation) {
+                autoNetDisposableBaseUrlProc(proxyInfo, (AutoNetDisposableBaseUrlAnontation) annotation);
+            } else if (annotation instanceof AutoNetDisposableHeadAnnontation) {
+                autoNetDisposableHeadProc(proxyInfo, (AutoNetDisposableHeadAnnontation) annotation);
             } else {
                 return false;
             }
         }
         return true;
+    }
+
+    private void autoNetDisposableHeadProc(ProxyInfo proxyInfo, AutoNetDisposableHeadAnnontation annotation) {
+        String[] disposableHeads = annotation.value();
+        proxyInfo.disposableHeads = disposableHeads;
+    }
+
+    private void autoNetDisposableBaseUrlProc(ProxyInfo proxyInfo, AutoNetDisposableBaseUrlAnontation annotation) {
+        String disposableBaseUrl = annotation.value();
+        proxyInfo.disposableBaseUrl = disposableBaseUrl;
     }
 
     private void autoNetStrategyProc(ProxyInfo proxyInfo, AutoNetStrategyAnontation annotation) {

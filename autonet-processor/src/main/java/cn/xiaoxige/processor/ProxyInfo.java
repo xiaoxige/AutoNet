@@ -76,6 +76,16 @@ public final class ProxyInfo {
     public String mediaType = "application/json; charset=utf-8";
 
     /**
+     * A temporary domain name
+     */
+    public String disposableBaseUrl = "";
+
+    /**
+     * Temporary header information
+     */
+    public String[] disposableHeads = null;
+
+    /**
      * type of network request
      */
     public AutoNetPatternAnontation.NetPattern netPattern = AutoNetPatternAnontation.NetPattern.GET;
