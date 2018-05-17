@@ -1,8 +1,13 @@
 package cn.xiaoxige.autonet_api;
 
+import android.support.v4.util.ArrayMap;
+
+import java.util.Map;
+
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
+import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataSuccessCallBack;
@@ -17,6 +22,17 @@ import io.reactivex.FlowableTransformer;
 public final class AutoNet {
 
     private static volatile AutoNet sAutoNet = new AutoNet();
+    /**
+     * Extra request header， Variable and influence the overall situation
+     */
+    private Map<String, String> mExtraHeads;
+
+    /**
+     * Extra request DomainNames, Variable and influence the overall situation
+     */
+    private Map<String, String> mExtraDomainNames;
+
+    private AutoNetConfig mConfig;
 
     private AutoNet() {
     }
@@ -32,11 +48,18 @@ public final class AutoNet {
         return sAutoNet;
     }
 
+    public Builder initAutoNet(AutoNetConfig config) {
+        mConfig = config;
+        mExtraHeads = new ArrayMap<>();
+        mExtraDomainNames = new ArrayMap<>();
+        return new Builder();
+    }
 
     /**
      * Collect and undertake and Distribution and execution
      *
      * @param requestEntity
+     * @param extraDynamicParam
      * @param domainNameKey
      * @param suffixUrl
      * @param mediaType
@@ -66,6 +89,12 @@ public final class AutoNet {
 
     }
 
+    /**
+     * 测试连通性
+     *
+     * @param callback
+     * @param type
+     */
     public static final void test(IAutoNetCallBack callback, Integer type) {
 
         if (callback != null && type != null) {
@@ -93,6 +122,13 @@ public final class AutoNet {
                     break;
             }
         }
+    }
+
+
+    public static class Builder {
+        private Builder() {
+        }
+
     }
 
 }

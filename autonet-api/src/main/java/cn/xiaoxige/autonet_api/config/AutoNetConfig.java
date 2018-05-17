@@ -1,6 +1,7 @@
 package cn.xiaoxige.autonet_api.config;
 
 import android.support.v4.util.ArrayMap;
+import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ import okhttp3.Interceptor;
 public class AutoNetConfig {
 
     private boolean isOpenStetho;
-    private Map<String, String> baseUrl;
+    private Map<String, String> domainNames;
     private Map<String, String> headParam;
     private List<Interceptor> interceptors;
 
@@ -26,7 +27,7 @@ public class AutoNetConfig {
 
     private AutoNetConfig(Builder builder) {
         this.isOpenStetho = builder.isOpenStetho;
-        this.baseUrl = builder.baseUrl;
+        this.domainNames = builder.domainNames;
         this.headParam = builder.headParam;
         this.interceptors = builder.interceptors;
     }
@@ -34,13 +35,13 @@ public class AutoNetConfig {
     public static class Builder {
 
         private boolean isOpenStetho;
-        private Map<String, String> baseUrl;
+        private Map<String, String> domainNames;
         private Map<String, String> headParam;
         private List<Interceptor> interceptors;
 
         public Builder() {
             isOpenStetho = false;
-            baseUrl = new ArrayMap<>();
+            domainNames = new ArrayMap<>();
             headParam = new ArrayMap<>();
             interceptors = new ArrayList<>();
         }
@@ -50,18 +51,31 @@ public class AutoNetConfig {
             return this;
         }
 
-        public Builder setBaseUrl(Map<String, String> baseUrl) {
-            this.baseUrl = baseUrl;
+        public Builder setDefaultDomainName(String domainName) {
+            if (!TextUtils.isEmpty(domainName)) {
+                this.domainNames.put("default", domainName);
+            }
+            return this;
+        }
+
+        public Builder setDomainName(Map<String, String> domainNames) {
+            if (domainNames != null) {
+                this.domainNames.putAll(domainNames);
+            }
             return this;
         }
 
         public Builder setHeadParam(Map<String, String> headParam) {
-            this.headParam = headParam;
+            if (headParam != null) {
+                this.headParam.putAll(headParam);
+            }
             return this;
         }
 
         public Builder setInterceptors(List<Interceptor> interceptors) {
-            this.interceptors = interceptors;
+            if (interceptors != null) {
+                this.interceptors.addAll(interceptors);
+            }
             return this;
         }
 
@@ -74,8 +88,8 @@ public class AutoNetConfig {
         return isOpenStetho;
     }
 
-    public Map<String, String> getBaseUrl() {
-        return baseUrl;
+    public Map<String, String> getDomainNames() {
+        return domainNames;
     }
 
     public Map<String, String> getHeadParam() {
