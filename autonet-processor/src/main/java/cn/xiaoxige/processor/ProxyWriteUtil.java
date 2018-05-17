@@ -26,6 +26,26 @@ public class ProxyWriteUtil {
 
     private static final String AUTO_NET_METHOD_MATRIX = "proxy";
 
+
+    private static final String AUTO_NET_PARAM_LEADER_NAME = "leader";
+    private static final String AUTO_NET_PARAM_DOMAIN_NAME_KEY_NAME = "domainNameKey";
+    private static final String AUTO_NET_PARAM_SUFFIX_URL_NAME = "suffixUrl";
+    private static final String AUTO_NET_PARAM_MEDIA_TYPE_NAME = "mediaType";
+    private static final String AUTO_NET_PARAM_WRITE_OUT_TIME_NAME = "writeOutTime";
+    private static final String AUTO_NET_PARAM_READ_OUT_TIME_NAME = "readOutTime";
+    private static final String AUTO_NET_PARAM_CONNECT_OUT_TIME_NAME = "connectOutTime";
+    private static final String AUTO_NET_PARAM_ENCRYPTION_KEY_NAME = "encryptionKey";
+    private static final String AUTO_NET_PARAM_IS_ENCRYPTION_NAME = "isEncryption";
+    private static final String AUTO_NET_PARAM_NET_PATTERN_NAME = "netPattern";
+    private static final String AUTO_NET_PARAM_NET_STRATEGY_NAME = "netStrategy";
+    private static final String AUTO_NET_PARAM_REQ_TYPE_NAME = "reqType";
+    private static final String AUTO_NET_PARAM_RES_TYPE_NAME = "resType";
+    private static final String AUTO_NET_PARAM_RESPONSE_CLAZZ_NAME_NAME = "responseClazzName";
+    private static final String AUTO_NET_PARAM_PUSH_FILE_KEY_NAME = "pushFileKey";
+    private static final String AUTO_NET_PARAM_FILE_PATH_NAME = "filePath";
+    private static final String AUTO_NET_PARAM_FILE_NAME_NAME = "fileName";
+    private static final String AUTO_NET_PARAM_TRANSFORMER_NAME = "transformer";
+
     public static void write(Map<String, ProxyInfo> infoMap, Filer filer) throws IOException {
         if (infoMap == null || infoMap.isEmpty()) {
             return;
@@ -49,11 +69,19 @@ public class ProxyWriteUtil {
         javaFile.writeTo(filer);
     }
 
+    /**
+     * Generate the corresponding classes based on each information
+     *
+     * @param info    info of class
+     * @param methods some methods
+     * @return
+     */
     private static TypeSpec createAutoClass(ProxyInfo info, MethodSpec... methods) {
         String fullTargetPath = info.fullTargetPath;
         String targetPackage = info.targetPackage;
         String targetClassSimpleName = info.targetClassSimpleName;
 
+        // Gets the only prefix to prevent network callbacks from having the same name in the same package.
         String prefixClassName = getExternalClassName(fullTargetPath, targetPackage, targetClassSimpleName);
 
         String className = prefixClassName + targetClassSimpleName + ProxyInfo.PROXY_CLASS_SUFFIX;
@@ -71,22 +99,10 @@ public class ProxyWriteUtil {
         return specBuilder.build();
     }
 
-    private static String getExternalClassName(String fullTargetPath, String targetPackage, String targetClassSimpleName) {
-        boolean isSelf = isCallBackSelf(fullTargetPath, targetPackage, targetClassSimpleName);
-        if (isSelf) {
-            return "";
-        }
-
-
-        return "";
-    }
-
-    private static boolean isCallBackSelf(String fullTargetPath, String targetPackage, String targetClassSimpleName) {
-        return targetPackage == null || targetPackage.length() <= 0 || fullTargetPath.equals(targetPackage + "." + targetClassSimpleName);
-    }
-
     /**
-     * @param info
+     * According to the information, the final method of generating the main key is generated.
+     *
+     * @param info info of message
      * @return
      */
     private static MethodSpec createMatrix(ProxyInfo info) {
@@ -98,31 +114,59 @@ public class ProxyWriteUtil {
         // param
         specBuilder
                 .addJavadoc("matrix of autoNet\n")
-                .addParameter(Object.class, "object")
-                .addParameter(String.class, "domainNameKey")
-                .addParameter(String.class, "suffixUrl")
-                .addParameter(String.class, "mediaType")
-                .addParameter(Long.class, "writeOutTime")
-                .addParameter(Long.class, "readOutTime")
-                .addParameter(Long.class, "connectOutTime")
-                .addParameter(Long.class, "encryptionKey")
-                .addParameter(Boolean.class, "isEncryption")
-                .addParameter(AutoNetPatternAnontation.NetPattern.class, "netPattern")
-                .addParameter(AutoNetTypeAnontation.Type.class, "reqType")
-                .addParameter(AutoNetTypeAnontation.Type.class, "resType")
-                .addParameter(AutoNetStrategyAnontation.NetStrategy.class, "netStrategy")
+                .addParameter(Object.class, AUTO_NET_PARAM_LEADER_NAME)
+                .addParameter(String.class, AUTO_NET_PARAM_DOMAIN_NAME_KEY_NAME)
+                .addParameter(String.class, AUTO_NET_PARAM_SUFFIX_URL_NAME)
+                .addParameter(String.class, AUTO_NET_PARAM_MEDIA_TYPE_NAME)
+                .addParameter(Long.class, AUTO_NET_PARAM_WRITE_OUT_TIME_NAME)
+                .addParameter(Long.class, AUTO_NET_PARAM_READ_OUT_TIME_NAME)
+                .addParameter(Long.class, AUTO_NET_PARAM_CONNECT_OUT_TIME_NAME)
+                .addParameter(Long.class, AUTO_NET_PARAM_ENCRYPTION_KEY_NAME)
+                .addParameter(Boolean.class, AUTO_NET_PARAM_IS_ENCRYPTION_NAME)
+                .addParameter(AutoNetPatternAnontation.NetPattern.class, AUTO_NET_PARAM_NET_PATTERN_NAME)
+                .addParameter(AutoNetTypeAnontation.Type.class, AUTO_NET_PARAM_REQ_TYPE_NAME)
+                .addParameter(AutoNetTypeAnontation.Type.class, AUTO_NET_PARAM_RES_TYPE_NAME)
+                .addParameter(AutoNetStrategyAnontation.NetStrategy.class, AUTO_NET_PARAM_NET_STRATEGY_NAME)
 
-                .addParameter(String.class, "responseClazzName")
-                .addParameter(String.class, "pushFileKey")
-                .addParameter(String.class, "filePath")
-                .addParameter(String.class, "fileName")
+                .addParameter(String.class, AUTO_NET_PARAM_RESPONSE_CLAZZ_NAME_NAME)
+                .addParameter(String.class, AUTO_NET_PARAM_PUSH_FILE_KEY_NAME)
+                .addParameter(String.class, AUTO_NET_PARAM_FILE_PATH_NAME)
+                .addParameter(String.class, AUTO_NET_PARAM_FILE_NAME_NAME)
 
-                .addParameter(FlowableTransformer.class, "transformer")
-        ;
+                .addParameter(FlowableTransformer.class, AUTO_NET_PARAM_TRANSFORMER_NAME);
 
         specBuilder.addStatement("");
 
         return specBuilder.build();
+    }
+
+    /**
+     * The corresponding class prefix is obtained according to the policy
+     *
+     * @param fullTargetPath
+     * @param targetPackage
+     * @param targetClassSimpleName
+     * @return
+     */
+    private static String getExternalClassName(String fullTargetPath, String targetPackage, String targetClassSimpleName) {
+        boolean isSelf = isCallBackSelf(fullTargetPath, targetPackage, targetClassSimpleName);
+        if (isSelf) {
+            return "";
+        }
+
+        return fullTargetPath.substring(targetPackage.length() + 1, fullTargetPath.length() - targetClassSimpleName.length() - 1);
+    }
+
+    /**
+     * Determine whether there is an internal class
+     *
+     * @param fullTargetPath
+     * @param targetPackage
+     * @param targetClassSimpleName
+     * @return
+     */
+    private static boolean isCallBackSelf(String fullTargetPath, String targetPackage, String targetClassSimpleName) {
+        return targetPackage == null || targetPackage.length() <= 0 || fullTargetPath.equals(targetPackage + "." + targetClassSimpleName);
     }
 
 //    public static void write(Map<String, ProxyInfo> infoMap, Filer filer) throws IOException {
