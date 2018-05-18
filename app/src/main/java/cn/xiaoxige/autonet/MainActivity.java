@@ -10,10 +10,13 @@ import android.widget.Toast;
 
 import com.trello.rxlifecycle2.components.RxActivity;
 
+import cn.xiaoxige.annotation.AutoNetAnontation;
 import cn.xiaoxige.annotation.AutoNetDisposableBaseUrlAnontation;
 import cn.xiaoxige.annotation.AutoNetDisposableHeadAnnontation;
+import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
+import cn.xiaoxige.autonet_api.AutoNet;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
 
@@ -51,6 +54,12 @@ public class MainActivity extends RxActivity {
             @Override
             public void onClick(View v) {
                 MainActivityTestCallbackAutoProxy.testLocalLink(MainActivity.this, 1);
+                MainActivityTestCallback2AutoProxy.startNet(MainActivity.this);
+
+                AutoNet.getInstance().createNet()
+                        .setBaseUrl("www.xiaoxige.com")
+                        .start(new IAutoNetCallBack() {
+                        });
             }
         });
     }
@@ -81,6 +90,8 @@ public class MainActivity extends RxActivity {
             "mediaType:application/json",
             "token:aaa"
     })
+    @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.POST)
+    @AutoNetAnontation("/xiaoxige=zhuxiaoan")
     public class TestCallback2 implements IAutoNetDataCallBack {
         @Override
         public void onSuccess(Object entity) {

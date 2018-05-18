@@ -2,6 +2,7 @@ package cn.xiaoxige.autonet_api;
 
 import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.File;
 import java.util.Map;
@@ -114,7 +115,7 @@ public final class AutoNet {
         String url = getUrlByRequest(domainNameKey, sConfig.getDomainNames(), sAutoNetExtraConfig.getExtraDomainNames(), disposableBaseUrl, suffixUrl);
         mediaType = autoAdjustmentAdjustmentMediaType(mediaType, reqType);
 
-
+        Log.e("TAG", "" + url);
     }
 
     /**
