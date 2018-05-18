@@ -44,28 +44,28 @@ public final class AutoNet {
         return sAutoNet;
     }
 
-    public AutoNetExtraConfig initAutoNet(AutoNetConfig config) {
+    public IAutoNetExtraConfig initAutoNet(AutoNetConfig config) {
         sConfig = config;
         sAutoNetExtraConfig = new AutoNetExtraConfig();
         return sAutoNetExtraConfig;
     }
 
-    public AutoNetExtraConfig updateOrInsertHead(String key, String value) {
+    public IAutoNetExtraConfig updateOrInsertHead(String key, String value) {
         sAutoNetExtraConfig.updateOrInsertHead(key, value);
         return sAutoNetExtraConfig;
     }
 
-    public AutoNetExtraConfig updateOrInsertDomainNames(String key, String value) {
+    public IAutoNetExtraConfig updateOrInsertDomainNames(String key, String value) {
         sAutoNetExtraConfig.updateOrInsertDomainNames(key, value);
         return sAutoNetExtraConfig;
     }
 
-    public AutoNetExtraConfig setExtraHeads(Map<String, String> extraHeads) {
+    public IAutoNetExtraConfig setExtraHeads(Map<String, String> extraHeads) {
         sAutoNetExtraConfig.setExtraHeads(extraHeads);
         return sAutoNetExtraConfig;
     }
 
-    public AutoNetExtraConfig setExtraDomainNames(Map<String, String> extraDomainNames) {
+    public IAutoNetExtraConfig setExtraDomainNames(Map<String, String> extraDomainNames) {
         sAutoNetExtraConfig.setExtraDomainNames(extraDomainNames);
         return sAutoNetExtraConfig;
     }
@@ -114,8 +114,6 @@ public final class AutoNet {
         Map<String, String> heads = integrationHeads(sConfig.getHeadParam(), sAutoNetExtraConfig.getExtraHeads(), disposableHeads);
         String url = getUrlByRequest(domainNameKey, sConfig.getDomainNames(), sAutoNetExtraConfig.getExtraDomainNames(), disposableBaseUrl, suffixUrl);
         mediaType = autoAdjustmentAdjustmentMediaType(mediaType, reqType);
-
-        Log.e("TAG", "" + url);
     }
 
     /**
@@ -341,7 +339,7 @@ public final class AutoNet {
     }
 
 
-    public static class AutoNetExtraConfig {
+    public static class AutoNetExtraConfig implements IAutoNetExtraConfig {
         /**
          * Extra request header， Variable and influence the overall situation
          */
@@ -357,10 +355,12 @@ public final class AutoNet {
             mExtraDomainNames = new ArrayMap<>();
         }
 
+        @Override
         public void setExtraHeads(Map<String, String> extraHeads) {
             this.mExtraHeads = extraHeads;
         }
 
+        @Override
         public void setExtraDomainNames(Map<String, String> extraDomainNames) {
             this.mExtraDomainNames = extraDomainNames;
         }
@@ -373,10 +373,12 @@ public final class AutoNet {
             return mExtraDomainNames;
         }
 
+        @Override
         public void updateOrInsertHead(String key, String value) {
             this.mExtraHeads.put(key, value);
         }
 
+        @Override
         public void updateOrInsertDomainNames(String key, String value) {
             this.mExtraDomainNames.put(key, value);
         }
@@ -514,6 +516,18 @@ public final class AutoNet {
             }
             return heads;
         }
+
+    }
+
+    public interface IAutoNetExtraConfig {
+
+        void setExtraHeads(Map<String, String> extraHeads);
+
+        void setExtraDomainNames(Map<String, String> extraDomainNames);
+
+        void updateOrInsertHead(String key, String value);
+
+        void updateOrInsertDomainNames(String key, String value);
 
     }
 
