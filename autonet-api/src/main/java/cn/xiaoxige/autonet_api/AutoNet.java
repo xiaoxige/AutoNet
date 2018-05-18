@@ -145,10 +145,10 @@ public final class AutoNet {
                                            AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType,
                                            String pushFileKey, String filePath, String fileName) {
         if (isFileOperation(reqType, resType)) {
-            if (!isPushFileOperation(netPattern, reqType, pushFileKey, filePath)) {
+            if (!checkPushFileOperationLegitimate(netPattern, reqType, pushFileKey, filePath)) {
                 return false;
             }
-            if (!isPullFileOperation(resType, filePath, fileName)) {
+            if (!checkPullFileOperationLegitimate(resType, filePath, fileName)) {
                 return false;
             }
         }
@@ -255,13 +255,28 @@ public final class AutoNet {
     /**
      * Determine whether the file is uploaded
      *
+     * @param reqType
+     * @param resType
+     * @param pushFileKey
+     * @param filePath
+     * @param fileName
+     * @return
+     */
+    private static boolean isPushFileOperation(AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType, String pushFileKey, String filePath, String fileName) {
+
+        return true;
+    }
+
+    /**
+     * Check whether there is a problem of uploading file parameters
+     *
      * @param netPattern
      * @param reqType
      * @param pushFileKey
      * @param filePath
      * @return
      */
-    private static boolean isPushFileOperation(AutoNetPatternAnontation.NetPattern netPattern, AutoNetTypeAnontation.Type reqType, String pushFileKey, String filePath) {
+    private static boolean checkPushFileOperationLegitimate(AutoNetPatternAnontation.NetPattern netPattern, AutoNetTypeAnontation.Type reqType, String pushFileKey, String filePath) {
         if (netPattern.equals(AutoNetPatternAnontation.NetPattern.GET) || netPattern.equals(AutoNetPatternAnontation.NetPattern.DELETE)) {
             throw new IllegalArgumentException("File upload operations cannot be requested for get or delete.");
         }
@@ -285,12 +300,27 @@ public final class AutoNet {
     /**
      * Determine whether it is a download file operation
      *
+     * @param reqType
+     * @param resType
+     * @param pushFileKey
+     * @param filePath
+     * @param fileName
+     * @return
+     */
+    private static boolean isPullFileOperation(AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType, String pushFileKey, String filePath, String fileName) {
+
+        return true;
+    }
+
+    /**
+     * Check whether there is a problem with the download file parameters
+     *
      * @param resType
      * @param filePath
      * @param fileName
      * @return
      */
-    private static boolean isPullFileOperation(AutoNetTypeAnontation.Type resType, String filePath, String fileName) {
+    private static boolean checkPullFileOperationLegitimate(AutoNetTypeAnontation.Type resType, String filePath, String fileName) {
         if (!resType.equals(AutoNetTypeAnontation.Type.STREAM)) {
             throw new IllegalArgumentException("Download File receive type must be flow.");
         }
