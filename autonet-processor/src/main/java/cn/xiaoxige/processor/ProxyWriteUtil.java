@@ -16,6 +16,7 @@ import javax.lang.model.element.Modifier;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
+import cn.xiaoxige.annotation.entity.ProxyInfo;
 import io.reactivex.FlowableTransformer;
 
 /**

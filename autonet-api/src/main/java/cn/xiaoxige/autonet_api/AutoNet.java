@@ -9,6 +9,7 @@ import java.util.Map;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
+import cn.xiaoxige.annotation.entity.ProxyInfo;
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
@@ -66,6 +67,10 @@ public final class AutoNet {
     public AutoNetExtraConfig setExtraDomainNames(Map<String, String> extraDomainNames) {
         sAutoNetExtraConfig.setExtraDomainNames(extraDomainNames);
         return sAutoNetExtraConfig;
+    }
+
+    public AutoNetNonAnontation createNet() {
+        return new AutoNetNonAnontation();
     }
 
     /**
@@ -171,7 +176,7 @@ public final class AutoNet {
         if (TextUtils.isEmpty(url)) {
             throw new IllegalArgumentException("The domain name of this request is not found. Please check whether you have configured the domain name, or whether the domain name corresponding to the domain name key exists.");
         }
-        return url;
+        return url + suffixUrl;
     }
 
     /**
@@ -373,6 +378,140 @@ public final class AutoNet {
 
         public void updateOrInsertDomainNames(String key, String value) {
             this.mExtraDomainNames.put(key, value);
+        }
+
+    }
+
+    public static class AutoNetNonAnontation {
+
+        private ProxyInfo info;
+        private IAutoNetRequest requestEntity;
+        private String extraDynamicParam;
+        String pushFileKey;
+        String filePath;
+        String fileName;
+        FlowableTransformer transformer;
+        private StringBuffer disposableHeads;
+
+        private AutoNetNonAnontation() {
+            info = new ProxyInfo();
+        }
+
+        public AutoNetNonAnontation setRequestEntity(IAutoNetRequest requestEntity) {
+            this.requestEntity = requestEntity;
+            return this;
+        }
+
+        public AutoNetNonAnontation setExtraDynamicParam(String extraDynamicParam) {
+            this.extraDynamicParam = extraDynamicParam;
+            return this;
+        }
+
+        public AutoNetNonAnontation setBaseUrl(String baseUrl) {
+            this.info.disposableBaseUrl = baseUrl;
+            return this;
+        }
+
+        public AutoNetNonAnontation setSuffixUrl(String suffixUrl) {
+            this.info.suffixUrl = suffixUrl;
+            return this;
+        }
+
+        public AutoNetNonAnontation setMediaType(String mediaType) {
+            this.info.mediaType = mediaType;
+            return this;
+        }
+
+        public AutoNetNonAnontation setWriteOutTime(Long outTime) {
+            this.info.writeOutTime = outTime;
+            return this;
+        }
+
+        public AutoNetNonAnontation setReadOutTime(Long outTime) {
+            this.info.readOutTime = outTime;
+            return this;
+        }
+
+        public AutoNetNonAnontation setConnectOutTime(Long outTime) {
+            this.info.connectOutTime = outTime;
+            return this;
+        }
+
+        public AutoNetNonAnontation setEncryptionKey(Long encryptionKey) {
+            this.info.encryptionKey = encryptionKey;
+            return this;
+        }
+
+        public AutoNetNonAnontation isEncryption(boolean isEncryption) {
+            this.info.isEncryption = isEncryption;
+            return this;
+        }
+
+        public AutoNetNonAnontation setHeads(String[] heads) {
+            this.info.disposableHeads = heads;
+            this.disposableHeads = transformationHeads(heads);
+            return this;
+        }
+
+        public AutoNetNonAnontation setNetPattern(AutoNetPatternAnontation.NetPattern netPattern) {
+            this.info.netPattern = netPattern;
+            return this;
+        }
+
+        public AutoNetNonAnontation setReqType(AutoNetTypeAnontation.Type reqType) {
+            this.info.reqType = reqType;
+            return this;
+        }
+
+        public AutoNetNonAnontation setResType(AutoNetTypeAnontation.Type resType) {
+            this.info.resType = resType;
+            return this;
+        }
+
+        public AutoNetNonAnontation setNetStrategy(AutoNetStrategyAnontation.NetStrategy netStrategy) {
+            this.info.netStrategy = netStrategy;
+            return this;
+        }
+
+        public AutoNetNonAnontation setPushFileParams(String pushFileKey, String filePath) {
+            this.pushFileKey = pushFileKey;
+            this.filePath = filePath;
+            return this;
+        }
+
+        public AutoNetNonAnontation setPullFileParams(String filePath, String fileName) {
+            this.filePath = filePath;
+            this.fileName = fileName;
+            return this;
+        }
+
+        public AutoNetNonAnontation setTransformer(FlowableTransformer transformer) {
+            this.transformer = transformer;
+            return this;
+        }
+
+        public void start(IAutoNetCallBack callBack) {
+            startNet(requestEntity, extraDynamicParam, null, info.suffixUrl, info.mediaType,
+                    info.writeOutTime, info.readOutTime, info.connectOutTime, info.encryptionKey, info.isEncryption, info.disposableBaseUrl,
+                    disposableHeads == null ? null : disposableHeads.toString(),
+                    info.netPattern, info.reqType, info.resType, info.netStrategy, callBack, pushFileKey, filePath, fileName, transformer);
+        }
+
+        /**
+         * Head data conversion(String[] --> String)
+         *
+         * @param disposableHeads
+         * @return
+         */
+        private StringBuffer transformationHeads(String[] disposableHeads) {
+            StringBuffer heads = null;
+            if (disposableHeads != null) {
+                heads = new StringBuffer();
+                for (String head : disposableHeads) {
+                    heads.append(head + "\n");
+                }
+            }
+            return heads;
         }
 
     }

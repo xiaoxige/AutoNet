@@ -1,4 +1,4 @@
-package cn.xiaoxige.processor;
+package cn.xiaoxige.annotation.entity;
 
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
