@@ -21,7 +21,7 @@ public class MyApplication extends Application {
                 .isOpenStetho(true)
                 .build();
 
-        AutoNet.getInstance().initAutoNet(config);
+        AutoNet.getInstance().initAutoNet(this, config);
 
     }
 }

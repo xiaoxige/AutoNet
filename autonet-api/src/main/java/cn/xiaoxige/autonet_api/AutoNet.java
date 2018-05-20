@@ -1,8 +1,11 @@
 package cn.xiaoxige.autonet_api;
 
+import android.content.Context;
 import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.facebook.stetho.Stetho;
 
 import org.w3c.dom.Text;
 
@@ -47,10 +50,10 @@ public final class AutoNet {
         return sAutoNet;
     }
 
-    public IAutoNetExtraConfig initAutoNet(AutoNetConfig config) {
+    public IAutoNetExtraConfig initAutoNet(Context context, AutoNetConfig config) {
         sConfig = config;
         sAutoNetExtraConfig = new AutoNetExtraConfig();
-        init();
+        init(context);
         return sAutoNetExtraConfig;
     }
 
@@ -78,7 +81,11 @@ public final class AutoNet {
         return new AutoNetNonAnontation();
     }
 
-    private void init() {
+    private void init(Context context) {
+        boolean openStetho = sConfig.isOpenStetho();
+        if (openStetho) {
+            Stetho.initializeWithDefaults(context);
+        }
     }
 
     /**
@@ -126,9 +133,9 @@ public final class AutoNet {
         String url = getUrlByRequest(domainNameKey, sConfig.getDomainNames(), sAutoNetExtraConfig.getExtraDomainNames(), disposableBaseUrl, suffixUrl);
         mediaType = autoAdjustmentAdjustmentMediaType(mediaType, reqType);
 
-        AutoNetExecutor executor = new AutoNetExecutor(requestEntity, extraDynamicParam, sConfig.isOpenStetho(), url, mediaType,
+        AutoNetExecutor executor = new AutoNetExecutor(requestEntity, extraDynamicParam, url, mediaType,
                 writeOutTime, readOutTime, connectOutTime, encryptionKey, isEncryption, sConfig.getInterceptors(),
-                heads, transformer, callBack);
+                heads, responseClazzName, transformer, callBack);
 
         if (isPushFileOperation(reqType, pushFileKey, filePath)) {
             executor.pushFile(pushFileKey, filePath);

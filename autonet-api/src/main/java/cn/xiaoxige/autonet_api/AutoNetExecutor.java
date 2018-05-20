@@ -4,10 +4,15 @@ import java.util.List;
 import java.util.Map;
 
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
+import cn.xiaoxige.autonet_api.client.Client;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
 import io.reactivex.FlowableTransformer;
+import okhttp3.FormBody;
 import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 /**
  * @author by xiaoxige on 2018/5/20.
@@ -17,26 +22,34 @@ import okhttp3.Interceptor;
 public class AutoNetExecutor {
 
     private IAutoNetRequest requestEntity;
+    private String responseClazzName;
+    private String mediaType;
     private FlowableTransformer transformer;
     private IAutoNetCallBack callBack;
 
+    private OkHttpClient client;
+    private Request.Builder requestBuilder;
+
     public AutoNetExecutor(IAutoNetRequest requestEntity, String extraDynamicParam,
-                           boolean openStetho, String url, String mediaType,
+                           String url, String mediaType,
                            Long writeOutTime, Long readOutTime, Long connectOutTime,
                            Long encryptionKey, Boolean isEncryption, List<Interceptor> interceptors, Map<String, String> heads,
-                           FlowableTransformer transformer, IAutoNetCallBack callBack) {
+                           String responseClazzName, FlowableTransformer transformer, IAutoNetCallBack callBack) {
         this.requestEntity = requestEntity;
+        this.responseClazzName = responseClazzName;
+        this.mediaType = mediaType;
         this.transformer = transformer;
         this.callBack = callBack;
 
+        this.client = Client.client(extraDynamicParam, writeOutTime, readOutTime, connectOutTime, heads, encryptionKey, isEncryption, interceptors);
+        requestBuilder = new Request.Builder().url(url);
     }
 
     public void doNetGet() {
-
+        Request request = requestBuilder.get().build();
     }
 
     public void doNetPost() {
-
     }
 
     public void doNetDelete() {
