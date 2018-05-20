@@ -111,7 +111,7 @@ public final class AutoNet {
                                       String disposableBaseUrl, String disposableHeads,
                                       AutoNetPatternAnontation.NetPattern netPattern, AutoNetTypeAnontation.Type reqType,
                                       AutoNetTypeAnontation.Type resType, AutoNetStrategyAnontation.NetStrategy netStrategy,
-                                      IAutoNetCallBack callBack, String pushFileKey, String filePath, String fileName,
+                                      String responseClazzName, IAutoNetCallBack callBack, String pushFileKey, String filePath, String fileName,
                                       FlowableTransformer transformer) {
 
         if (sConfig == null) {
@@ -584,6 +584,13 @@ public final class AutoNet {
             return this;
         }
 
+        public AutoNetNonAnontation setResponseClazz(Class clazz) {
+            if (clazz != null) {
+                this.info.responseClazzName = clazz.getName();
+            }
+            return this;
+        }
+
         public AutoNetNonAnontation setTransformer(FlowableTransformer transformer) {
             this.transformer = transformer;
             return this;
@@ -593,7 +600,7 @@ public final class AutoNet {
             startNet(requestEntity, extraDynamicParam, null, info.suffixUrl, info.mediaType,
                     info.writeOutTime, info.readOutTime, info.connectOutTime, info.encryptionKey, info.isEncryption, info.disposableBaseUrl,
                     disposableHeads == null ? null : disposableHeads.toString(),
-                    info.netPattern, info.reqType, info.resType, info.netStrategy, callBack, pushFileKey, filePath, fileName, transformer);
+                    info.netPattern, info.reqType, info.resType, info.netStrategy, info.responseClazzName, callBack, pushFileKey, filePath, fileName, transformer);
         }
 
         /**

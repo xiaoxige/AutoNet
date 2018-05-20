@@ -58,6 +58,7 @@ public class MainActivity extends RxActivity {
 
                 AutoNet.getInstance().createNet()
                         .setBaseUrl("www.xiaoxige.com")
+                        .setResponseClazz(MainActivity.class)
                         .start(new IAutoNetCallBack() {
                         });
             }

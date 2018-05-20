@@ -447,12 +447,12 @@ public class ProxyWriteUtil {
                 .addStatement("$T.getInstance().startNet(" +
                                 "$L, $L, $L, $L, $L, $L, " +
                                 "$L, $L, $L, $L, $L, $L, " +
-                                "$L, $L, $L, $L, $N, $L, " +
+                                "$L, $L, $L, $L, $L, $N, $L, " +
                                 "$L, $L, $L)", Class.forName(AUTO_NET_API_FACADE), AUTO_NET_PARAM_REQUEST_ENTITY_NAME, AUTO_NET_PARAM_EXTRA_DYNAMIC_PARAM_NAME, AUTO_NET_PARAM_DOMAIN_NAME_KEY_NAME,
                         AUTO_NET_PARAM_SUFFIX_URL_NAME, AUTO_NET_PARAM_MEDIA_TYPE_NAME, AUTO_NET_PARAM_WRITE_OUT_TIME_NAME, AUTO_NET_PARAM_READ_OUT_TIME_NAME,
                         AUTO_NET_PARAM_CONNECT_OUT_TIME_NAME, AUTO_NET_PARAM_ENCRYPTION_KEY_NAME, AUTO_NET_PARAM_IS_ENCRYPTION_NAME,
                         AUTO_NET_PARAM_DISPOSABLE_BASE_URL, AUTO_NET_PARAM_DISPOSABLE_HEADS, AUTO_NET_PARAM_NET_PATTERN_NAME,
-                        AUTO_NET_PARAM_REQ_TYPE_NAME, AUTO_NET_PARAM_RES_TYPE_NAME, AUTO_NET_PARAM_NET_STRATEGY_NAME, callBackFormat,
+                        AUTO_NET_PARAM_REQ_TYPE_NAME, AUTO_NET_PARAM_RES_TYPE_NAME, AUTO_NET_PARAM_NET_STRATEGY_NAME, AUTO_NET_PARAM_RESPONSE_CLAZZ_NAME_NAME, callBackFormat,
                         AUTO_NET_PARAM_PUSH_FILE_KEY_NAME, AUTO_NET_PARAM_FILE_PATH_NAME, AUTO_NET_PARAM_FILE_NAME_NAME, AUTO_NET_PARAM_TRANSFORMER_NAME);
 
         return specBuilder.build();
