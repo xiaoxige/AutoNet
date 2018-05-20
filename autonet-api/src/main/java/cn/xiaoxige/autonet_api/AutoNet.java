@@ -4,7 +4,10 @@ import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
+import java.net.FileNameMap;
 import java.util.Map;
 
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
@@ -47,6 +50,7 @@ public final class AutoNet {
     public IAutoNetExtraConfig initAutoNet(AutoNetConfig config) {
         sConfig = config;
         sAutoNetExtraConfig = new AutoNetExtraConfig();
+        init();
         return sAutoNetExtraConfig;
     }
 
@@ -72,6 +76,9 @@ public final class AutoNet {
 
     public AutoNetNonAnontation createNet() {
         return new AutoNetNonAnontation();
+    }
+
+    private void init() {
     }
 
     /**
@@ -107,6 +114,10 @@ public final class AutoNet {
                                       IAutoNetCallBack callBack, String pushFileKey, String filePath, String fileName,
                                       FlowableTransformer transformer) {
 
+        if (sConfig == null) {
+            throw new IllegalArgumentException("Please initialize first.");
+        }
+
         if (!checkLegitimate(netPattern, reqType, resType, pushFileKey, filePath, fileName)) {
             return;
         }
@@ -114,6 +125,45 @@ public final class AutoNet {
         Map<String, String> heads = integrationHeads(sConfig.getHeadParam(), sAutoNetExtraConfig.getExtraHeads(), disposableHeads);
         String url = getUrlByRequest(domainNameKey, sConfig.getDomainNames(), sAutoNetExtraConfig.getExtraDomainNames(), disposableBaseUrl, suffixUrl);
         mediaType = autoAdjustmentAdjustmentMediaType(mediaType, reqType);
+
+        AutoNetExecutor executor = new AutoNetExecutor(requestEntity, extraDynamicParam, url, mediaType,
+                writeOutTime, readOutTime, connectOutTime, encryptionKey, isEncryption,
+                heads, transformer, callBack);
+
+        if (isPushFileOperation(reqType, pushFileKey, filePath)) {
+            executor.pullFile(pushFileKey, filePath);
+        } else if (isPullFileOperation(resType, filePath, fileName)) {
+            executor.pullFile(filePath, fileName);
+        } else {
+            if (netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.NET)) {
+                doNet(executor, netPattern);
+            } else if (netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.LOCAL_NET)) {
+                executor.doLocalNet(netPattern);
+            } else if (netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.LOCAL)) {
+                executor.doLocal();
+            } else if (netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.NET_LOCAL)) {
+                executor.doNetLocal(netPattern);
+            }
+
+        }
+    }
+
+    /**
+     * Distribute execution network requests
+     *
+     * @param executor
+     * @param netPattern
+     */
+    private static void doNet(AutoNetExecutor executor, AutoNetPatternAnontation.NetPattern netPattern) {
+        if (netPattern.equals(AutoNetPatternAnontation.NetPattern.GET)) {
+            executor.doNetGet();
+        } else if (netPattern.equals(AutoNetPatternAnontation.NetPattern.POST)) {
+            executor.doNetPost();
+        } else if (netPattern.equals(AutoNetPatternAnontation.NetPattern.DELETE)) {
+            executor.doNetDelete();
+        } else if (netPattern.equals(AutoNetPatternAnontation.NetPattern.PUT)) {
+            executor.doNetPut();
+        }
     }
 
     /**
@@ -144,11 +194,19 @@ public final class AutoNet {
     private static boolean checkLegitimate(AutoNetPatternAnontation.NetPattern netPattern,
                                            AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType,
                                            String pushFileKey, String filePath, String fileName) {
-        if (isFileOperation(reqType, resType)) {
-            if (!checkPushFileOperationLegitimate(netPattern, reqType, pushFileKey, filePath)) {
+        if (netPattern.equals(AutoNetPatternAnontation.NetPattern.OTHER_PATTERN)) {
+            throw new IllegalArgumentException("AutoNet does not support the request method for the time being.");
+        }
+        if (reqType.equals(AutoNetTypeAnontation.Type.OTHER_TYPE) || resType.equals(AutoNetTypeAnontation.Type.OTHER_TYPE)) {
+            throw new IllegalArgumentException("AutoNet temporarily does not support the type of this request.");
+        }
+        if (isFileOperation(reqType, resType, pushFileKey, filePath, fileName)) {
+            if (isPushFileOperation(reqType, pushFileKey, filePath) &&
+                    !checkPushFileOperationLegitimate(netPattern, reqType, pushFileKey, filePath)) {
                 return false;
             }
-            if (!checkPullFileOperationLegitimate(resType, filePath, fileName)) {
+            if (isPullFileOperation(resType, filePath, fileName) &&
+                    !checkPullFileOperationLegitimate(resType, filePath, fileName)) {
                 return false;
             }
         }
@@ -246,25 +304,38 @@ public final class AutoNet {
      *
      * @param reqType
      * @param resType
-     * @return
+     * @param pushFileKey
+     * @param filePath
+     * @param fileName    @return
      */
-    private static boolean isFileOperation(AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType) {
-        return reqType.equals(AutoNetTypeAnontation.Type.STREAM) || resType.equals(AutoNetTypeAnontation.Type.STREAM);
+    private static boolean isFileOperation(AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType, String pushFileKey, String filePath, String fileName) {
+        boolean isStream = reqType.equals(AutoNetTypeAnontation.Type.STREAM) || resType.equals(AutoNetTypeAnontation.Type.STREAM);
+        if (isStream) {
+            if (reqType.equals(AutoNetTypeAnontation.Type.STREAM) && resType.equals(AutoNetTypeAnontation.Type.STREAM)) {
+                if (!TextUtils.isEmpty(pushFileKey) && !TextUtils.isEmpty(filePath) && !TextUtils.isEmpty(fileName)) {
+                    throw new IllegalArgumentException("AutoNet can't tell whether to send files or download files.");
+                }
+            }
+
+            if (TextUtils.isEmpty(filePath)) {
+                throw new IllegalArgumentException("AutoNet's file flow operation filePath can't be empty.");
+            }
+            if (TextUtils.isEmpty(pushFileKey) && TextUtils.isEmpty(fileName)) {
+                throw new IllegalArgumentException("AutoNet file flow operation file parameter is incomplete.");
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
      * Determine whether the file is uploaded
      *
      * @param reqType
-     * @param resType
-     * @param pushFileKey
-     * @param filePath
-     * @param fileName
      * @return
      */
-    private static boolean isPushFileOperation(AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType, String pushFileKey, String filePath, String fileName) {
-
-        return true;
+    private static boolean isPushFileOperation(AutoNetTypeAnontation.Type reqType, String pushFileKey, String filePath) {
+        return reqType.equals(AutoNetTypeAnontation.Type.STREAM) && !TextUtils.isEmpty(pushFileKey) && !TextUtils.isEmpty(filePath);
     }
 
     /**
@@ -300,16 +371,11 @@ public final class AutoNet {
     /**
      * Determine whether it is a download file operation
      *
-     * @param reqType
      * @param resType
-     * @param pushFileKey
-     * @param filePath
-     * @param fileName
      * @return
      */
-    private static boolean isPullFileOperation(AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType, String pushFileKey, String filePath, String fileName) {
-
-        return true;
+    private static boolean isPullFileOperation(AutoNetTypeAnontation.Type resType, String filePath, String fileName) {
+        return resType.equals(AutoNetTypeAnontation.Type.STREAM) && !TextUtils.isEmpty(filePath) && !TextUtils.isEmpty(fileName);
     }
 
     /**
