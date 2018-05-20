@@ -126,12 +126,12 @@ public final class AutoNet {
         String url = getUrlByRequest(domainNameKey, sConfig.getDomainNames(), sAutoNetExtraConfig.getExtraDomainNames(), disposableBaseUrl, suffixUrl);
         mediaType = autoAdjustmentAdjustmentMediaType(mediaType, reqType);
 
-        AutoNetExecutor executor = new AutoNetExecutor(requestEntity, extraDynamicParam, url, mediaType,
-                writeOutTime, readOutTime, connectOutTime, encryptionKey, isEncryption,
+        AutoNetExecutor executor = new AutoNetExecutor(requestEntity, extraDynamicParam, sConfig.isOpenStetho(), url, mediaType,
+                writeOutTime, readOutTime, connectOutTime, encryptionKey, isEncryption, sConfig.getInterceptors(),
                 heads, transformer, callBack);
 
         if (isPushFileOperation(reqType, pushFileKey, filePath)) {
-            executor.pullFile(pushFileKey, filePath);
+            executor.pushFile(pushFileKey, filePath);
         } else if (isPullFileOperation(resType, filePath, fileName)) {
             executor.pullFile(filePath, fileName);
         } else {
