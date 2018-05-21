@@ -18,6 +18,7 @@ import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataSuccessCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
 import io.reactivex.FlowableTransformer;
 
@@ -132,7 +133,7 @@ public final class AutoNet {
 
         AutoNetExecutor executor = new AutoNetExecutor(requestEntity, extraDynamicParam, url, mediaType,
                 writeOutTime, readOutTime, connectOutTime, encryptionKey, isEncryption, sConfig.getInterceptors(),
-                heads, responseClazzName, transformer, sAutoNetExtraConfig.getEncryptionCallback(), callBack);
+                heads, responseClazzName, transformer, sAutoNetExtraConfig.getEncryptionCallback(), sAutoNetExtraConfig.getHeadCallBack(), callBack);
 
         if (isPushFileOperation(reqType, pushFileKey, filePath)) {
             executor.pushFile(pushFileKey, filePath);
@@ -455,6 +456,8 @@ public final class AutoNet {
 
         private IAutoNetEncryptionCallback mEncryptionCallback;
 
+        private IAutoNetHeadCallBack mHeadCallBack;
+
         private AutoNetExtraConfig() {
             mExtraHeads = new ArrayMap<>();
             mExtraDomainNames = new ArrayMap<>();
@@ -475,6 +478,11 @@ public final class AutoNet {
             this.mEncryptionCallback = encryptionCallback;
         }
 
+        @Override
+        public void setHeadsCallback(IAutoNetHeadCallBack headsCallback) {
+            this.mHeadCallBack = headsCallback;
+        }
+
         public Map<String, String> getExtraHeads() {
             return mExtraHeads;
         }
@@ -485,6 +493,10 @@ public final class AutoNet {
 
         public IAutoNetEncryptionCallback getEncryptionCallback() {
             return mEncryptionCallback;
+        }
+
+        public IAutoNetHeadCallBack getHeadCallBack() {
+            return mHeadCallBack;
         }
 
         @Override
@@ -651,6 +663,8 @@ public final class AutoNet {
         void updateOrInsertDomainNames(String key, String value);
 
         void setEncryptionCallback(IAutoNetEncryptionCallback encryptionCallback);
+
+        void setHeadsCallback(IAutoNetHeadCallBack headsCallback);
 
     }
 

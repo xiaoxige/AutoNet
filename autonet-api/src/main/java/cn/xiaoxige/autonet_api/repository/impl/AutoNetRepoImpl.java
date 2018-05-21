@@ -1,11 +1,14 @@
 package cn.xiaoxige.autonet_api.repository.impl;
 
+import android.util.Log;
+
 import java.util.List;
 import java.util.Map;
 
 import cn.xiaoxige.autonet_api.client.Client;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
 import cn.xiaoxige.autonet_api.repository.AutoNetRepo;
 import io.reactivex.Flowable;
@@ -31,18 +34,19 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                            String url, String mediaType,
                            Long writeOutTime, Long readOutTime, Long connectOutTime,
                            Long encryptionKey, Boolean isEncryption, List<Interceptor> interceptors, Map<String, String> heads,
-                           String responseClazzName, IAutoNetEncryptionCallback encryptionCallback, IAutoNetCallBack callBack) {
+                           String responseClazzName, IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack, IAutoNetCallBack callBack) {
         this.request = requestEntity;
         this.url = url;
         this.mediaType = mediaType;
         this.responseClazzName = responseClazzName;
         this.callBack = callBack;
 
-        this.client = Client.client(extraDynamicParam, writeOutTime, readOutTime, connectOutTime, heads, encryptionKey, isEncryption, interceptors, encryptionCallback);
+        this.client = Client.client(extraDynamicParam, writeOutTime, readOutTime, connectOutTime, heads, encryptionKey, isEncryption, interceptors, encryptionCallback, headCallBack);
     }
 
     @Override
     public Flowable doNetGet() {
+
         return null;
     }
 

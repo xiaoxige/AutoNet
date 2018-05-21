@@ -11,6 +11,7 @@ import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataSuccessCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
 import cn.xiaoxige.autonet_api.repository.AutoNetRepo;
 import cn.xiaoxige.autonet_api.repository.impl.AutoNetRepoImpl;
@@ -35,12 +36,12 @@ public class AutoNetExecutor {
                            String url, String mediaType,
                            Long writeOutTime, Long readOutTime, Long connectOutTime,
                            Long encryptionKey, Boolean isEncryption, List<Interceptor> interceptors, Map<String, String> heads,
-                           String responseClazzName, FlowableTransformer transformer, IAutoNetEncryptionCallback encryptionCallback, IAutoNetCallBack callBack) {
+                           String responseClazzName, FlowableTransformer transformer, IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack, IAutoNetCallBack callBack) {
         this.transformer = transformer;
         this.callBack = callBack;
         mRepo = new AutoNetRepoImpl(requestEntity, extraDynamicParam,
                 url, mediaType, writeOutTime, readOutTime, connectOutTime,
-                encryptionKey, isEncryption, interceptors, heads, responseClazzName, encryptionCallback, callBack);
+                encryptionKey, isEncryption, interceptors, heads, responseClazzName, encryptionCallback, headCallBack, callBack);
     }
 
 
@@ -48,6 +49,7 @@ public class AutoNetExecutor {
     public void doNetGet() {
         doNetGet(null);
     }
+
     @Deprecated
     public void doNetGet(OnInsertOpt insertOpt) {
         net(BaseUseCase.NET_GET, insertOpt == null ? new OnInsertOpt() {
@@ -61,10 +63,12 @@ public class AutoNetExecutor {
             }
         } : insertOpt);
     }
+
     @Deprecated
     public void doNetPost() {
         doNetPost(null);
     }
+
     @Deprecated
     public void doNetPost(OnInsertOpt insertOpt) {
         net(BaseUseCase.NET_POST, insertOpt == null ? new OnInsertOpt() {
@@ -78,10 +82,12 @@ public class AutoNetExecutor {
             }
         } : insertOpt);
     }
+
     @Deprecated
     public void doNetDelete() {
         doNetDelete(null);
     }
+
     @Deprecated
     public void doNetDelete(OnInsertOpt insertOpt) {
         net(BaseUseCase.NET_DELETE, insertOpt == null ? new OnInsertOpt() {
@@ -95,10 +101,12 @@ public class AutoNetExecutor {
             }
         } : insertOpt);
     }
+
     @Deprecated
     public void doNetPut() {
         doNetPut(null);
     }
+
     @Deprecated
     public void doNetPut(OnInsertOpt insertOpt) {
         net(BaseUseCase.NET_PUT, insertOpt == null ? new OnInsertOpt() {

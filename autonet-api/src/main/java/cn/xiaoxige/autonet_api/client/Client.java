@@ -18,6 +18,7 @@ import javax.net.ssl.X509TrustManager;
 
 import cn.xiaoxige.autonet_api.interceptor.AutoDefaultInterceptor;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -40,12 +41,12 @@ public class Client {
     }
 
     public static OkHttpClient client(String extraDynamicParam, Long writeOutTime, Long readOutTime, Long connectOutTime, Map<String, String> heads,
-                                      Long encryptionKey, Boolean isEncryption, List<Interceptor> interceptors, IAutoNetEncryptionCallback encryptionCallback) {
+                                      Long encryptionKey, Boolean isEncryption, List<Interceptor> interceptors, IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .sslSocketFactory(createSSLSocketFactory())
                 .hostnameVerifier(new TrustAllHostnameVerifier())
                 .addNetworkInterceptor(new StethoInterceptor())
-                .addNetworkInterceptor(new AutoDefaultInterceptor(extraDynamicParam, heads, encryptionKey, isEncryption, encryptionCallback))
+                .addNetworkInterceptor(new AutoDefaultInterceptor(extraDynamicParam, heads, encryptionKey, isEncryption, encryptionCallback, headCallBack))
                 .writeTimeout(writeOutTime, TimeUnit.SECONDS)
                 .readTimeout(readOutTime, TimeUnit.SECONDS)
                 .connectTimeout(connectOutTime, TimeUnit.SECONDS);

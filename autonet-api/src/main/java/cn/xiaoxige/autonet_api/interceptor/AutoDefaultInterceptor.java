@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -30,13 +31,16 @@ public class AutoDefaultInterceptor implements Interceptor {
     private Long encryptionKey;
     private boolean isEncryption;
     private IAutoNetEncryptionCallback encryptionCallback;
+    private IAutoNetHeadCallBack headCallBack;
 
-    public AutoDefaultInterceptor(String extraDynamicParam, Map<String, String> heads, Long encryptionKey, Boolean isEncryption, IAutoNetEncryptionCallback encryptionCallback) {
+    public AutoDefaultInterceptor(String extraDynamicParam, Map<String, String> heads, Long encryptionKey, Boolean isEncryption,
+                                  IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack) {
         this.extraDynamicParam = extraDynamicParam;
         this.heads = heads;
         this.encryptionKey = encryptionKey;
         this.isEncryption = isEncryption;
         this.encryptionCallback = encryptionCallback;
+        this.headCallBack = headCallBack;
     }
 
     @Override
@@ -49,7 +53,11 @@ public class AutoDefaultInterceptor implements Interceptor {
         // init encryption
         request = encryptionParams(request);
 
-        return chain.proceed(request);
+        Response proceed = chain.proceed(request);
+        if (headCallBack != null) {
+            headCallBack.head(proceed.headers());
+        }
+        return proceed;
     }
 
     private Request encryptionParams(Request request) {
