@@ -21,6 +21,7 @@ import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataSuccessCallBack;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
 import io.reactivex.FlowableTransformer;
 
@@ -135,7 +136,7 @@ public final class AutoNet {
 
         AutoNetExecutor executor = new AutoNetExecutor(requestEntity, extraDynamicParam, url, mediaType,
                 writeOutTime, readOutTime, connectOutTime, encryptionKey, isEncryption, sConfig.getInterceptors(),
-                heads, responseClazzName, transformer, callBack);
+                heads, responseClazzName, transformer, sAutoNetExtraConfig.getEncryptionCallback(), callBack);
 
         if (isPushFileOperation(reqType, pushFileKey, filePath)) {
             executor.pushFile(pushFileKey, filePath);
@@ -453,6 +454,8 @@ public final class AutoNet {
          */
         private Map<String, String> mExtraDomainNames;
 
+        private IAutoNetEncryptionCallback mEncryptionCallback;
+
         private AutoNetExtraConfig() {
             mExtraHeads = new ArrayMap<>();
             mExtraDomainNames = new ArrayMap<>();
@@ -468,12 +471,21 @@ public final class AutoNet {
             this.mExtraDomainNames = extraDomainNames;
         }
 
+        @Override
+        public void setEncryptionCallback(IAutoNetEncryptionCallback encryptionCallback) {
+            this.mEncryptionCallback = encryptionCallback;
+        }
+
         public Map<String, String> getExtraHeads() {
             return mExtraHeads;
         }
 
         public Map<String, String> getExtraDomainNames() {
             return mExtraDomainNames;
+        }
+
+        public IAutoNetEncryptionCallback getEncryptionCallback() {
+            return mEncryptionCallback;
         }
 
         @Override
@@ -638,6 +650,8 @@ public final class AutoNet {
         void updateOrInsertHead(String key, String value);
 
         void updateOrInsertDomainNames(String key, String value);
+
+        void setEncryptionCallback(IAutoNetEncryptionCallback encryptionCallback);
 
     }
 

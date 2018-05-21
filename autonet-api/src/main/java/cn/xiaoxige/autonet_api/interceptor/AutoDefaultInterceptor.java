@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -22,16 +23,20 @@ import okio.Buffer;
 public class AutoDefaultInterceptor implements Interceptor {
     private static final String GET = "GET";
     private static final String DELETE = "DELETE";
+    private static final String SLASH = "/";
+
     private String extraDynamicParam;
     private Map<String, String> heads;
     private Long encryptionKey;
     private boolean isEncryption;
+    private IAutoNetEncryptionCallback encryptionCallback;
 
-    public AutoDefaultInterceptor(String extraDynamicParam, Map<String, String> heads, Long encryptionKey, Boolean isEncryption) {
+    public AutoDefaultInterceptor(String extraDynamicParam, Map<String, String> heads, Long encryptionKey, Boolean isEncryption, IAutoNetEncryptionCallback encryptionCallback) {
         this.extraDynamicParam = extraDynamicParam;
         this.heads = heads;
         this.encryptionKey = encryptionKey;
         this.isEncryption = isEncryption;
+        this.encryptionCallback = encryptionCallback;
     }
 
     @Override
@@ -41,20 +46,56 @@ public class AutoDefaultInterceptor implements Interceptor {
         request = splicingHeads(request);
         // init params
         request = splicingParams(request);
+        // init encryption
+        request = encryptionParams(request);
 
         return chain.proceed(request);
+    }
+
+    private Request encryptionParams(Request request) {
+
+        if (!this.isEncryption) {
+            return request;
+        }
+
+        String method = request.method();
+        if (GET.equals(method) || DELETE.equals(method)) {
+            HttpUrl httpUrl = request.url();
+            String url = httpUrl.url().toString();
+            String[] split = url.split("\\?");
+            if (split.length == 2) {
+                if (this.encryptionCallback != null) {
+                    String encryptionParams = this.encryptionCallback.encryption(this.encryptionKey, split[1]);
+                    url = split[0] + "?" + encryptionParams;
+                    request.newBuilder().url(url).build();
+                }
+            }
+        } else {
+            RequestBody body = request.body();
+            String badyContent = getBadyContent(body);
+            if (this.encryptionCallback != null && !TextUtils.isEmpty(badyContent)) {
+                String encryptionBodyContent = this.encryptionCallback.encryption(this.encryptionKey, badyContent);
+                if (!TextUtils.isEmpty(encryptionBodyContent)) {
+                    RequestBody requestBody = RequestBody.create(body.contentType(), encryptionBodyContent);
+                    request = request.newBuilder().method(method, requestBody).build();
+                }
+            }
+        }
+
+        return request;
     }
 
     private Request splicingParams(Request request) {
         HttpUrl httpUrl = request.url();
         String url = httpUrl.toString();
         if (!TextUtils.isEmpty(url) && TextUtils.isEmpty(this.extraDynamicParam)) {
-            char c = url.charAt(url.length() - 1);
-            if ('/' == c) {
-                url = url + this.extraDynamicParam;
-            } else {
-                url = url + "/" + this.extraDynamicParam;
+            if (!url.endsWith(SLASH) && !this.extraDynamicParam.startsWith(SLASH)) {
+                this.extraDynamicParam += SLASH;
+            } else if (url.endsWith(SLASH) && this.extraDynamicParam.startsWith(SLASH)) {
+                this.extraDynamicParam = this.extraDynamicParam.replace(SLASH, "");
             }
+
+            url += this.extraDynamicParam;
         }
         httpUrl = httpUrl.newBuilder(url).build();
         request = request.newBuilder().url(httpUrl).build();

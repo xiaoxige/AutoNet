@@ -6,6 +6,7 @@ import java.util.Map;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.autonet_api.client.Client;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
 import io.reactivex.FlowableTransformer;
 import okhttp3.FormBody;
@@ -34,14 +35,14 @@ public class AutoNetExecutor {
                            String url, String mediaType,
                            Long writeOutTime, Long readOutTime, Long connectOutTime,
                            Long encryptionKey, Boolean isEncryption, List<Interceptor> interceptors, Map<String, String> heads,
-                           String responseClazzName, FlowableTransformer transformer, IAutoNetCallBack callBack) {
+                           String responseClazzName, FlowableTransformer transformer, IAutoNetEncryptionCallback encryptionCallback, IAutoNetCallBack callBack) {
         this.requestEntity = requestEntity;
         this.responseClazzName = responseClazzName;
         this.mediaType = mediaType;
         this.transformer = transformer;
         this.callBack = callBack;
 
-        this.client = Client.client(extraDynamicParam, writeOutTime, readOutTime, connectOutTime, heads, encryptionKey, isEncryption, interceptors);
+        this.client = Client.client(extraDynamicParam, writeOutTime, readOutTime, connectOutTime, heads, encryptionKey, isEncryption, interceptors, encryptionCallback);
         requestBuilder = new Request.Builder().url(url);
     }
 
