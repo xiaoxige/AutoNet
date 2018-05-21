@@ -5,7 +5,7 @@ package cn.xiaoxige.autonet_api.interfaces;
  *         AutoNet operates the callback of the local database and gives it to the user to process it (in the thread).
  */
 
-public interface IAutoNetLocalOptCallBack {
+public interface IAutoNetLocalOptCallBack extends IAutoNetCallBack {
 
     /**
      * The local database operation is given to the user himself to process (the method is in the thread).

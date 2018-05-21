@@ -150,12 +150,12 @@ public class AutoNetRepoImpl implements AutoNetRepo {
     }
 
     @Override
-    public Flowable pushFile() {
+    public Flowable pushFile(String pushFileKey, String filePath) {
         return null;
     }
 
     @Override
-    public Flowable pullFile() {
+    public Flowable pullFile(String filePath, String fileName) {
         return null;
     }
 

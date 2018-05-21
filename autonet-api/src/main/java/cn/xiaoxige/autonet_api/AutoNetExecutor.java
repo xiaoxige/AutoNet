@@ -6,6 +6,8 @@ import java.util.Map;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.autonet_api.abstracts.BaseUseCase;
 import cn.xiaoxige.autonet_api.error.EmptyError;
+import cn.xiaoxige.autonet_api.interactors.AutoNetPullFileUseCase;
+import cn.xiaoxige.autonet_api.interactors.AutoNetPushFileUseCase;
 import cn.xiaoxige.autonet_api.interactors.AutoNetUseCase;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
@@ -196,11 +198,55 @@ public class AutoNetExecutor {
     }
 
     public void pushFile(String pushFileKey, String filePath) {
+        AutoNetPushFileUseCase useCase = new AutoNetPushFileUseCase(mRepo, pushFileKey, filePath);
+        useCase.execute(new DefaultSubscriber() {
+            @Override
+            protected void defaultOnNext(Object entity) {
+                //noinspection unchecked
+                super.defaultOnNext(entity);
+            }
 
+            @Override
+            protected void defaultOnEmptyError() {
+                super.defaultOnEmptyError();
+            }
+
+            @Override
+            protected void defaultOnErrorWithNotEmpty(Throwable throwable) {
+                super.defaultOnErrorWithNotEmpty(throwable);
+            }
+
+            @Override
+            protected void defaultOnComplete() {
+                super.defaultOnComplete();
+            }
+        }, transformer);
     }
 
     public void pullFile(String filePath, String fileName) {
+        AutoNetPullFileUseCase useCase = new AutoNetPullFileUseCase(mRepo, filePath, fileName);
+        useCase.execute(new DefaultSubscriber() {
+            @Override
+            protected void defaultOnNext(Object entity) {
+                //noinspection unchecked
+                super.defaultOnNext(entity);
+            }
 
+            @Override
+            protected void defaultOnEmptyError() {
+                super.defaultOnEmptyError();
+            }
+
+            @Override
+            protected void defaultOnErrorWithNotEmpty(Throwable throwable) {
+                super.defaultOnErrorWithNotEmpty(throwable);
+            }
+
+            @Override
+            protected void defaultOnComplete() {
+                super.defaultOnComplete();
+            }
+        }, transformer);
     }
 
     private void net(int netState, final OnInsertOpt insertOpt) {

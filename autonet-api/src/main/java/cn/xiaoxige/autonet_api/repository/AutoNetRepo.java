@@ -20,7 +20,7 @@ public interface AutoNetRepo {
 
     Flowable doLocal();
 
-    Flowable pushFile();
+    Flowable pushFile(String pushFileKey, String filePath);
 
-    Flowable pullFile();
+    Flowable pullFile(String filePath, String fileName);
 }

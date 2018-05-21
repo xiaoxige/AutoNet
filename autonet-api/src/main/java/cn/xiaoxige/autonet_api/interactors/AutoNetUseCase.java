@@ -6,6 +6,7 @@ import io.reactivex.Flowable;
 
 /**
  * @author by zhuxiaoan on 2018/5/21 0021.
+ *         The branch of the basic network request
  */
 
 public class AutoNetUseCase extends BaseUseCase {
