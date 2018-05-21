@@ -96,7 +96,7 @@ public class AutoDefaultInterceptor implements Interceptor {
     private Request splicingParams(Request request) {
         HttpUrl httpUrl = request.url();
         String url = httpUrl.toString();
-        if (!TextUtils.isEmpty(url) && TextUtils.isEmpty(this.extraDynamicParam)) {
+        if (!TextUtils.isEmpty(url) && !TextUtils.isEmpty(this.extraDynamicParam)) {
             if (!url.endsWith(SLASH) && !this.extraDynamicParam.startsWith(SLASH)) {
                 this.extraDynamicParam += SLASH;
             } else if (url.endsWith(SLASH) && this.extraDynamicParam.startsWith(SLASH)) {

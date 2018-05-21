@@ -265,11 +265,11 @@ public class AutoNetExecutor {
         }
 
         if (throwable == null || throwable instanceof EmptyError) {
-            if (throwable instanceof IAutoNetDataCallBack) {
+            if (callBack instanceof IAutoNetDataCallBack) {
                 ((IAutoNetDataCallBack) callBack).onEmpty();
             }
         } else {
-            if (throwable instanceof IAutoNetDataCallBack) {
+            if (callBack instanceof IAutoNetDataCallBack) {
                 ((IAutoNetDataCallBack) callBack).onFailed(throwable);
             }
         }

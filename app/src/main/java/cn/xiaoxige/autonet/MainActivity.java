@@ -2,6 +2,7 @@ package cn.xiaoxige.autonet;
 
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -19,6 +20,7 @@ import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.autonet_api.AutoNet;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataSuccessCallBack;
 
 public class MainActivity extends RxActivity {
 
@@ -57,9 +59,13 @@ public class MainActivity extends RxActivity {
                 MainActivityTestCallback2AutoProxy.startNet(MainActivity.this);
 
                 AutoNet.getInstance().createNet()
-                        .setBaseUrl("www.xiaoxige.com")
-                        .setResponseClazz(MainActivity.class)
-                        .start(new IAutoNetCallBack() {
+                        .setBaseUrl("https://www.baidu.com")
+                        .setResponseClazz(String.class)
+                        .start(new IAutoNetDataSuccessCallBack() {
+                            @Override
+                            public void onSuccess(Object entity) {
+                                Log.e("TAG", "" + entity);
+                            }
                         });
             }
         });
@@ -86,7 +92,7 @@ public class MainActivity extends RxActivity {
     }
 
     @AutoNetResponseEntityClass(value = Object.class)
-    @AutoNetDisposableBaseUrlAnontation("http://www.baidu.com")
+    @AutoNetDisposableBaseUrlAnontation("http://www.baidu123.com")
     @AutoNetDisposableHeadAnnontation({
             "mediaType:application/json",
             "token:aaa"
@@ -96,17 +102,17 @@ public class MainActivity extends RxActivity {
     public class TestCallback2 implements IAutoNetDataCallBack {
         @Override
         public void onSuccess(Object entity) {
-
+            Log.e("TAG", "成功了" + entity.toString());
         }
 
         @Override
         public void onFailed(Throwable throwable) {
-
+            Log.e("TAG", "失败了" + throwable);
         }
 
         @Override
         public void onEmpty() {
-
+            Log.e("TAG", "数据为空了");
         }
     }
 
