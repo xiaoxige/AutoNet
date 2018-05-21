@@ -1,5 +1,6 @@
 package cn.xiaoxige.autonet_api;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataSuccessCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
 import cn.xiaoxige.autonet_api.repository.AutoNetRepo;
@@ -197,23 +199,39 @@ public class AutoNetExecutor {
         });
     }
 
-    public void pushFile(String pushFileKey, String filePath) {
+    public void pushFile(String pushFileKey, final String filePath) {
         AutoNetPushFileUseCase useCase = new AutoNetPushFileUseCase(mRepo, pushFileKey, filePath);
         useCase.execute(new DefaultSubscriber() {
             @Override
             protected void defaultOnNext(Object entity) {
                 //noinspection unchecked
                 super.defaultOnNext(entity);
+                if (callBack == null) {
+                    return;
+                }
+                if (entity instanceof Float) {
+                    if (callBack instanceof IAutoNetFileCallBack) {
+                        Float progress = (Float) entity;
+                        ((IAutoNetFileCallBack) callBack).onPregress(progress);
+                        if (progress >= 100.0f) {
+                            ((IAutoNetFileCallBack) callBack).onComplete(new File(filePath));
+                        }
+                    }
+                } else {
+                    ansSuccess(entity);
+                }
             }
 
             @Override
             protected void defaultOnEmptyError() {
                 super.defaultOnEmptyError();
+                ansEmpty();
             }
 
             @Override
             protected void defaultOnErrorWithNotEmpty(Throwable throwable) {
                 super.defaultOnErrorWithNotEmpty(throwable);
+                ansError(throwable);
             }
 
             @Override
@@ -223,23 +241,34 @@ public class AutoNetExecutor {
         }, transformer);
     }
 
-    public void pullFile(String filePath, String fileName) {
+    public void pullFile(final String filePath, final String fileName) {
         AutoNetPullFileUseCase useCase = new AutoNetPullFileUseCase(mRepo, filePath, fileName);
-        useCase.execute(new DefaultSubscriber() {
+        useCase.execute(new DefaultSubscriber<Integer>() {
             @Override
-            protected void defaultOnNext(Object entity) {
+            protected void defaultOnNext(Integer progress) {
                 //noinspection unchecked
-                super.defaultOnNext(entity);
+                super.defaultOnNext(progress);
+                if (callBack == null) {
+                    return;
+                }
+                if (callBack instanceof IAutoNetFileCallBack) {
+                    ((IAutoNetFileCallBack) callBack).onPregress(progress);
+                    if (progress >= 100) {
+                        ((IAutoNetFileCallBack) callBack).onComplete(new File(filePath + fileName));
+                    }
+                }
             }
 
             @Override
             protected void defaultOnEmptyError() {
                 super.defaultOnEmptyError();
+                ansEmpty();
             }
 
             @Override
             protected void defaultOnErrorWithNotEmpty(Throwable throwable) {
                 super.defaultOnErrorWithNotEmpty(throwable);
+                ansError(throwable);
             }
 
             @Override

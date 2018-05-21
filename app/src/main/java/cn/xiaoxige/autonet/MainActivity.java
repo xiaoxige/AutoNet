@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import com.trello.rxlifecycle2.components.RxActivity;
 
+import java.io.File;
+
 import cn.xiaoxige.annotation.AutoNetAnontation;
 import cn.xiaoxige.annotation.AutoNetDisposableBaseUrlAnontation;
 import cn.xiaoxige.annotation.AutoNetDisposableHeadAnnontation;
@@ -22,6 +24,7 @@ import cn.xiaoxige.autonet_api.AutoNet;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataSuccessCallBack;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetLocalOptCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
 
@@ -59,19 +62,20 @@ public class MainActivity extends RxActivity {
             @Override
             public void onClick(View v) {
                 MainActivityTestCallbackAutoProxy.testLocalLink(MainActivity.this, 1);
-                MainActivityTestCallback2AutoProxy.startNet(MainActivity.this);
+                String path = getExternalFilesDir(null).toString();
+                MainActivityTestCallback2AutoProxy.pullFile(MainActivity.this, new TestEntity("fdafdas", 330), path, "xiaoxige.png");
 
-                AutoNet.getInstance().createNet()
-                        .setBaseUrl("https://www.baidu.com")
-                        .setResponseClazz(String.class)
-                        .start(new IAutoNetDataSuccessCallBack() {
-                            @Override
-                            public void onSuccess(Object entity) {
-                                Log.e("TAG", "" + entity);
-                            }
-                        });
-
-                MainActivityTestCallbackAutoProxy.startNet(MainActivity.this);
+//                AutoNet.getInstance().createNet()
+//                        .setBaseUrl("https://www.baidu.com")
+//                        .setResponseClazz(String.class)
+//                        .start(new IAutoNetDataSuccessCallBack() {
+//                            @Override
+//                            public void onSuccess(Object entity) {
+//                                Log.e("TAG", "" + entity);
+//                            }
+//                        });
+//
+//                MainActivityTestCallbackAutoProxy.startNet(MainActivity.this);
             }
         });
     }
@@ -104,14 +108,14 @@ public class MainActivity extends RxActivity {
     }
 
     @AutoNetResponseEntityClass(value = Object.class)
-    @AutoNetDisposableBaseUrlAnontation("http://www.baidu123.com")
+    @AutoNetDisposableBaseUrlAnontation("http://pic.616pic.com/ys_b_img/00/03/60/Kt6QwnlaEu.jpg")
+    @AutoNetTypeAnontation(resType = AutoNetTypeAnontation.Type.STREAM)
     @AutoNetDisposableHeadAnnontation({
             "mediaType:application/json",
             "token:aaa"
     })
-    @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.POST)
-    @AutoNetAnontation("/xiaoxige=zhuxiaoan")
-    public class TestCallback2 implements IAutoNetDataCallBack {
+    @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.GET)
+    public class TestCallback2 implements IAutoNetDataCallBack, IAutoNetFileCallBack {
         @Override
         public void onSuccess(Object entity) {
             Log.e("TAG", "成功了" + entity.toString());
@@ -125,6 +129,16 @@ public class MainActivity extends RxActivity {
         @Override
         public void onEmpty() {
             Log.e("TAG", "数据为空了");
+        }
+
+        @Override
+        public void onPregress(float progress) {
+            Log.e("TAG", "" + progress);
+        }
+
+        @Override
+        public void onComplete(File file) {
+            Log.e("TAG", "" + file.toString());
         }
     }
 

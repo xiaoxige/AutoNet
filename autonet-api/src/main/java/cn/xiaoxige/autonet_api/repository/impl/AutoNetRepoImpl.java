@@ -1,11 +1,15 @@
 package cn.xiaoxige.autonet_api.repository.impl;
 
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,9 +19,11 @@ import cn.xiaoxige.autonet_api.error.EmptyError;
 import cn.xiaoxige.autonet_api.flowable.DefaultFlowable;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetLocalOptCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
+import cn.xiaoxige.autonet_api.net.ProgressRequestBody;
 import cn.xiaoxige.autonet_api.repository.AutoNetRepo;
 import cn.xiaoxige.autonet_api.util.DataConvertorUtils;
 import io.reactivex.Flowable;
@@ -25,6 +31,7 @@ import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -150,13 +157,77 @@ public class AutoNetRepoImpl implements AutoNetRepo {
     }
 
     @Override
-    public Flowable pushFile(String pushFileKey, String filePath) {
-        return null;
+    public Flowable pushFile(final String pushFileKey, final String filePath) {
+        //noinspection UnnecessaryLocalVariable
+        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(final FlowableEmitter emitter) throws Exception {
+                MultipartBody.Builder builder = new MultipartBody.Builder();
+                builder.setType(MultipartBody.FORM);
+                if (requestEntity != null) {
+                    Map<String, String> params = DataConvertorUtils.convertEntityToMap(requestEntity, true);
+                    Set<String> keys = params.keySet();
+                    for (String key : keys) {
+                        builder.addFormDataPart(key, params.get(key));
+                    }
+                }
+
+                File file = new File(filePath);
+                builder.addFormDataPart(pushFileKey, file.getName(),
+                        ProgressRequestBody.createProgressRequestBody(MediaType.parse(mediaType), file, new IAutoNetFileCallBack() {
+                            @Override
+                            public void onPregress(float progress) {
+                                //noinspection unchecked
+                                emitter.onNext(progress);
+                            }
+
+                            @Override
+                            public void onComplete(File file) {
+                                //noinspection unchecked
+                                emitter.onNext(100.0f);
+                            }
+                        }));
+
+                Request request = new Request.Builder().url(url).post(builder.build())
+                        .build();
+                executeNet(request, emitter);
+            }
+        });
+        return flowable;
     }
 
     @Override
-    public Flowable pullFile(String filePath, String fileName) {
-        return null;
+    public Flowable pullFile(final String filePath, final String fileName) {
+        //noinspection UnnecessaryLocalVariable
+        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(FlowableEmitter<Integer> emitter) throws Exception {
+                String json = new Gson().toJson(requestEntity);
+                RequestBody body = RequestBody.create(MediaType.parse(mediaType), json);
+                Request request = new Request.Builder().url(url).post(body).build();
+                Response response = client.newCall(request).execute();
+                if (response == null) {
+                    emitter.onError(new EmptyError());
+                    //noinspection UnnecessaryReturnStatement
+                    return;
+                }
+
+                File file = new File(filePath);
+                if (!file.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
+                    file.mkdirs();
+                }
+                file = new File(filePath + fileName);
+                if (!file.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
+                    file.createNewFile();
+                }
+
+                recvFile(emitter, response, file);
+                emitter.onComplete();
+            }
+        });
+        return flowable;
     }
 
     private void executeNet(Request request, FlowableEmitter emitter) throws Exception {
@@ -222,6 +293,42 @@ public class AutoNetRepoImpl implements AutoNetRepo {
             url = url.substring(0, url.length() - 1);
         }
         return url;
+    }
+
+    /**
+     * Download the file
+     *
+     * @param emitter
+     * @param response
+     * @param file
+     * @throws Exception
+     */
+    private void recvFile(FlowableEmitter emitter, Response response, File file) throws Exception {
+        //noinspection ConstantConditions
+        long fileSize = response.body().contentLength();
+        //noinspection ConstantConditions
+        InputStream is =
+                response.body().byteStream();
+
+        float preProgress = 0;
+        float progress;
+        FileOutputStream fos = new FileOutputStream(file);
+        int pullLength = 0;
+        byte[] b = new byte[1024];
+        int len;
+        while ((len = is.read(b)) != -1) {
+            fos.write(b, 0, len);
+            pullLength += len;
+            progress = (float) (pullLength * 100 / fileSize);
+            if (preProgress != progress) {
+                //noinspection unchecked
+                emitter.onNext(progress);
+            }
+            preProgress = progress;
+        }
+        fos.flush();
+        fos.close();
+        is.close();
     }
 
 }
