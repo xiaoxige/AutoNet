@@ -16,6 +16,7 @@ import cn.xiaoxige.autonet_api.flowable.DefaultFlowable;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetLocalOptCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
 import cn.xiaoxige.autonet_api.repository.AutoNetRepo;
 import cn.xiaoxige.autonet_api.util.DataConvertorUtils;
@@ -126,7 +127,26 @@ public class AutoNetRepoImpl implements AutoNetRepo {
 
     @Override
     public Flowable doLocal() {
-        return null;
+        //noinspection UnnecessaryLocalVariable
+        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
+            @Override
+            public void subscribe(FlowableEmitter emitter) throws Exception {
+                if (callBack instanceof IAutoNetLocalOptCallBack) {
+                    Object object = ((IAutoNetLocalOptCallBack) callBack).optLocalData(requestEntity);
+                    if (object == null) {
+                        emitter.onError(new EmptyError());
+                    } else {
+                        //noinspection unchecked
+                        emitter.onNext(object);
+                    }
+                } else {
+                    emitter.onError(new EmptyError());
+                }
+
+                emitter.onComplete();
+            }
+        });
+        return flowable;
     }
 
     @Override

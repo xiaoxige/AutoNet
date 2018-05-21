@@ -16,11 +16,14 @@ import cn.xiaoxige.annotation.AutoNetDisposableBaseUrlAnontation;
 import cn.xiaoxige.annotation.AutoNetDisposableHeadAnnontation;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
+import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.autonet_api.AutoNet;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataSuccessCallBack;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetLocalOptCallBack;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
 
 public class MainActivity extends RxActivity {
 
@@ -67,17 +70,20 @@ public class MainActivity extends RxActivity {
                                 Log.e("TAG", "" + entity);
                             }
                         });
+
+                MainActivityTestCallbackAutoProxy.startNet(MainActivity.this);
             }
         });
     }
 
 
     @AutoNetResponseEntityClass(value = Object.class)
-    public class TestCallback implements IAutoNetDataCallBack {
+    @AutoNetStrategyAnontation(AutoNetStrategyAnontation.NetStrategy.LOCAL)
+    public class TestCallback implements IAutoNetDataCallBack, IAutoNetLocalOptCallBack {
 
         @Override
         public void onSuccess(Object entity) {
-            Toast.makeText(MainActivity.this, "测试", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "测试" + (entity == null ? "" : entity.toString()), Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -88,6 +94,12 @@ public class MainActivity extends RxActivity {
         @Override
         public void onEmpty() {
 
+        }
+
+        @Override
+        public Object optLocalData(IAutoNetRequest request) {
+            Log.e("TAG", "哇哈");
+            return "哇哈";
         }
     }
 
