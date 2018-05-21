@@ -3,14 +3,10 @@ package cn.xiaoxige.autonet_api;
 import android.content.Context;
 import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
-import java.net.FileNameMap;
 import java.util.Map;
 
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
@@ -143,8 +139,10 @@ public final class AutoNet {
         } else if (isPullFileOperation(resType, filePath, fileName)) {
             executor.pullFile(filePath, fileName);
         } else {
+
+
             if (netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.NET)) {
-                doNet(executor, netPattern);
+                executor.netOpt(netPattern);
             } else if (netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.LOCAL_NET)) {
                 executor.doLocalNet(netPattern);
             } else if (netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.LOCAL)) {
@@ -162,6 +160,7 @@ public final class AutoNet {
      * @param executor
      * @param netPattern
      */
+    @Deprecated
     private static void doNet(AutoNetExecutor executor, AutoNetPatternAnontation.NetPattern netPattern) {
         if (netPattern.equals(AutoNetPatternAnontation.NetPattern.GET)) {
             executor.doNetGet();

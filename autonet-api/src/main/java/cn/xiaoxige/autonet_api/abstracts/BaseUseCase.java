@@ -12,7 +12,15 @@ import io.reactivex.schedulers.Schedulers;
  *         Top layer request branch abstraction
  */
 
-public abstract class BaseUsecase {
+public abstract class BaseUseCase {
+
+    public static final int NET_GET = 0x01;
+    public static final int NET_POST = 0x02;
+    public static final int NET_PUT = 0x03;
+    public static final int NET_DELETE = 0x04;
+    public static final int LOCAL = 0x05;
+
+    protected int netState = NET_GET;
 
     public void execute(Subscriber subscriber, FlowableTransformer transformer) {
 
