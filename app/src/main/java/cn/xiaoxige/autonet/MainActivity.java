@@ -350,7 +350,7 @@ public class MainActivity extends RxActivity {
 
         @Override
         public void onPregress(float progress) {
-            buffer.append("发送接收进度：" + progress + "\n");
+            buffer.append("接收进度：" + progress + "\n");
             tvResult.setText(buffer.toString());
         }
 

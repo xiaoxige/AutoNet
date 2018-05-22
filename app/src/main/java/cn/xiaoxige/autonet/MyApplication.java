@@ -31,7 +31,7 @@ public class MyApplication extends Application {
 
         Map<String, String> domainNames = new android.support.v4.util.ArrayMap<>();
         domainNames.put("pppig", "https://www.pangpangpig.com");
-        domainNames.put("upFile", "http://testimage.hxkid.com:4869");
+        domainNames.put("upFile", "http://testimage.xxxx.com:8080");
 
         AutoNetConfig config = new AutoNetConfig.Builder()
                 .isOpenStetho(true)
