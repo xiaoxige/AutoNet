@@ -18,6 +18,7 @@ import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataSuccessCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
 import io.reactivex.FlowableTransformer;
@@ -56,26 +57,30 @@ public final class AutoNet {
     }
 
     public IAutoNetExtraConfig updateOrInsertHead(String key, String value) {
-        sAutoNetExtraConfig.updateOrInsertHead(key, value);
-        return sAutoNetExtraConfig;
+        return sAutoNetExtraConfig.updateOrInsertHead(key, value);
+    }
+
+    public IAutoNetExtraConfig removeHead(String key) {
+        return sAutoNetExtraConfig.removeHead(key);
     }
 
     public IAutoNetExtraConfig updateOrInsertDomainNames(String key, String value) {
-        sAutoNetExtraConfig.updateOrInsertDomainNames(key, value);
-        return sAutoNetExtraConfig;
+        return sAutoNetExtraConfig.updateOrInsertDomainNames(key, value);
+    }
+
+    public IAutoNetExtraConfig removeDomainName(String key) {
+        return sAutoNetExtraConfig.removeDomainName(key);
     }
 
     public IAutoNetExtraConfig setExtraHeads(Map<String, String> extraHeads) {
-        sAutoNetExtraConfig.setExtraHeads(extraHeads);
-        return sAutoNetExtraConfig;
+        return sAutoNetExtraConfig.setExtraHeads(extraHeads);
     }
 
     public IAutoNetExtraConfig setExtraDomainNames(Map<String, String> extraDomainNames) {
-        sAutoNetExtraConfig.setExtraDomainNames(extraDomainNames);
-        return sAutoNetExtraConfig;
+        return sAutoNetExtraConfig.setExtraDomainNames(extraDomainNames);
     }
 
-    public AutoNetNonAnontation createNet() {
+    public IAutoNetNonAnontation createNet() {
         return new AutoNetNonAnontation();
     }
 
@@ -368,10 +373,6 @@ public final class AutoNet {
         if (TextUtils.isEmpty(filePath)) {
             throw new IllegalArgumentException("The file path of the file upload operation cannot be empty.");
         }
-        File file = new File(filePath);
-        if (!file.exists()) {
-            throw new IllegalArgumentException("File uploading files do not exist.");
-        }
         return true;
     }
 
@@ -443,7 +444,7 @@ public final class AutoNet {
     }
 
 
-    public static class AutoNetExtraConfig implements IAutoNetExtraConfig {
+    private static class AutoNetExtraConfig implements IAutoNetExtraConfig {
         /**
          * Extra request header， Variable and influence the overall situation
          */
@@ -464,23 +465,27 @@ public final class AutoNet {
         }
 
         @Override
-        public void setExtraHeads(Map<String, String> extraHeads) {
+        public IAutoNetExtraConfig setExtraHeads(Map<String, String> extraHeads) {
             this.mExtraHeads = extraHeads;
+            return this;
         }
 
         @Override
-        public void setExtraDomainNames(Map<String, String> extraDomainNames) {
+        public IAutoNetExtraConfig setExtraDomainNames(Map<String, String> extraDomainNames) {
             this.mExtraDomainNames = extraDomainNames;
+            return this;
         }
 
         @Override
-        public void setEncryptionCallback(IAutoNetEncryptionCallback encryptionCallback) {
+        public IAutoNetExtraConfig setEncryptionCallback(IAutoNetEncryptionCallback encryptionCallback) {
             this.mEncryptionCallback = encryptionCallback;
+            return this;
         }
 
         @Override
-        public void setHeadsCallback(IAutoNetHeadCallBack headsCallback) {
+        public IAutoNetExtraConfig setHeadsCallback(IAutoNetHeadCallBack headsCallback) {
             this.mHeadCallBack = headsCallback;
+            return this;
         }
 
         public Map<String, String> getExtraHeads() {
@@ -500,18 +505,32 @@ public final class AutoNet {
         }
 
         @Override
-        public void updateOrInsertHead(String key, String value) {
+        public IAutoNetExtraConfig updateOrInsertHead(String key, String value) {
             this.mExtraHeads.put(key, value);
+            return this;
         }
 
         @Override
-        public void updateOrInsertDomainNames(String key, String value) {
+        public IAutoNetExtraConfig removeHead(String key) {
+            this.getExtraHeads().remove(key);
+            return this;
+        }
+
+        @Override
+        public IAutoNetExtraConfig updateOrInsertDomainNames(String key, String value) {
             this.mExtraDomainNames.put(key, value);
+            return this;
+        }
+
+        @Override
+        public IAutoNetExtraConfig removeDomainName(String key) {
+            this.mExtraDomainNames.remove(key);
+            return this;
         }
 
     }
 
-    public static class AutoNetNonAnontation {
+    private static class AutoNetNonAnontation implements IAutoNetNonAnontation {
 
         private ProxyInfo info;
         private IAutoNetRequest requestEntity;
@@ -526,108 +545,134 @@ public final class AutoNet {
             info = new ProxyInfo();
         }
 
-        public AutoNetNonAnontation setRequestEntity(IAutoNetRequest requestEntity) {
+        @Override
+        public IAutoNetNonAnontation setRequestEntity(IAutoNetRequest requestEntity) {
             this.requestEntity = requestEntity;
             return this;
         }
 
-        public AutoNetNonAnontation setExtraDynamicParam(String extraDynamicParam) {
+        @Override
+        public IAutoNetNonAnontation setExtraDynamicParam(String extraDynamicParam) {
             this.extraDynamicParam = extraDynamicParam;
             return this;
         }
 
-        public AutoNetNonAnontation setBaseUrl(String baseUrl) {
+        @Override
+        public IAutoNetNonAnontation setDomainNameKey(String domainNameKey) {
+            this.info.domainNameKey = domainNameKey;
+            return this;
+        }
+
+        @Override
+        public IAutoNetNonAnontation setBaseUrl(String baseUrl) {
             this.info.disposableBaseUrl = baseUrl;
             return this;
         }
 
-        public AutoNetNonAnontation setSuffixUrl(String suffixUrl) {
+        @Override
+        public IAutoNetNonAnontation setSuffixUrl(String suffixUrl) {
             this.info.suffixUrl = suffixUrl;
             return this;
         }
 
-        public AutoNetNonAnontation setMediaType(String mediaType) {
+        @Override
+        public IAutoNetNonAnontation setMediaType(String mediaType) {
             this.info.mediaType = mediaType;
             return this;
         }
 
-        public AutoNetNonAnontation setWriteOutTime(Long outTime) {
+        @Override
+        public IAutoNetNonAnontation setWriteOutTime(Long outTime) {
             this.info.writeOutTime = outTime;
             return this;
         }
 
-        public AutoNetNonAnontation setReadOutTime(Long outTime) {
+        @Override
+        public IAutoNetNonAnontation setReadOutTime(Long outTime) {
             this.info.readOutTime = outTime;
             return this;
         }
 
-        public AutoNetNonAnontation setConnectOutTime(Long outTime) {
+        @Override
+        public IAutoNetNonAnontation setConnectOutTime(Long outTime) {
             this.info.connectOutTime = outTime;
             return this;
         }
 
-        public AutoNetNonAnontation setEncryptionKey(Long encryptionKey) {
+        @Override
+        public IAutoNetNonAnontation setEncryptionKey(Long encryptionKey) {
             this.info.encryptionKey = encryptionKey;
             return this;
         }
 
-        public AutoNetNonAnontation isEncryption(boolean isEncryption) {
+        @Override
+        public IAutoNetNonAnontation isEncryption(boolean isEncryption) {
             this.info.isEncryption = isEncryption;
             return this;
         }
 
-        public AutoNetNonAnontation setHeads(String[] heads) {
+        @Override
+        public IAutoNetNonAnontation setHeads(String[] heads) {
             this.info.disposableHeads = heads;
             this.disposableHeads = transformationHeads(heads);
             return this;
         }
 
-        public AutoNetNonAnontation setNetPattern(AutoNetPatternAnontation.NetPattern netPattern) {
+        @Override
+        public IAutoNetNonAnontation setNetPattern(AutoNetPatternAnontation.NetPattern netPattern) {
             this.info.netPattern = netPattern;
             return this;
         }
 
-        public AutoNetNonAnontation setReqType(AutoNetTypeAnontation.Type reqType) {
+        @Override
+        public IAutoNetNonAnontation setReqType(AutoNetTypeAnontation.Type reqType) {
             this.info.reqType = reqType;
             return this;
         }
 
-        public AutoNetNonAnontation setResType(AutoNetTypeAnontation.Type resType) {
+        @Override
+        public IAutoNetNonAnontation setResType(AutoNetTypeAnontation.Type resType) {
             this.info.resType = resType;
             return this;
         }
 
-        public AutoNetNonAnontation setNetStrategy(AutoNetStrategyAnontation.NetStrategy netStrategy) {
+        @Override
+        public IAutoNetNonAnontation setNetStrategy(AutoNetStrategyAnontation.NetStrategy netStrategy) {
             this.info.netStrategy = netStrategy;
             return this;
         }
 
-        public AutoNetNonAnontation setPushFileParams(String pushFileKey, String filePath) {
+        @Override
+        public IAutoNetNonAnontation setPushFileParams(String pushFileKey, String filePath) {
             this.pushFileKey = pushFileKey;
             this.filePath = filePath;
             return this;
         }
 
-        public AutoNetNonAnontation setPullFileParams(String filePath, String fileName) {
+        @Override
+        public IAutoNetNonAnontation setPullFileParams(String filePath, String fileName) {
             this.filePath = filePath;
             this.fileName = fileName;
             return this;
         }
 
-        public AutoNetNonAnontation setResponseClazz(Class clazz) {
+        @Override
+        public IAutoNetNonAnontation setResponseClazz(Class clazz) {
             if (clazz != null) {
                 this.info.responseClazzName = clazz.getName();
             }
             return this;
         }
 
-        public AutoNetNonAnontation setTransformer(FlowableTransformer transformer) {
+        @Override
+        public IAutoNetNonAnontation setTransformer(FlowableTransformer transformer) {
             this.transformer = transformer;
             return this;
         }
 
+        @Override
         public void start(IAutoNetCallBack callBack) {
-            startNet(requestEntity, extraDynamicParam, null, info.suffixUrl, info.mediaType,
+            startNet(requestEntity, extraDynamicParam, info.domainNameKey, info.suffixUrl, info.mediaType,
                     info.writeOutTime, info.readOutTime, info.connectOutTime, info.encryptionKey, info.isEncryption, info.disposableBaseUrl,
                     disposableHeads == null ? null : disposableHeads.toString(),
                     info.netPattern, info.reqType, info.resType, info.netStrategy, info.responseClazzName, callBack, pushFileKey, filePath, fileName, transformer);
@@ -654,18 +699,67 @@ public final class AutoNet {
 
     public interface IAutoNetExtraConfig {
 
-        void setExtraHeads(Map<String, String> extraHeads);
+        IAutoNetExtraConfig setExtraHeads(Map<String, String> extraHeads);
 
-        void setExtraDomainNames(Map<String, String> extraDomainNames);
+        IAutoNetExtraConfig setExtraDomainNames(Map<String, String> extraDomainNames);
 
-        void updateOrInsertHead(String key, String value);
+        IAutoNetExtraConfig updateOrInsertHead(String key, String value);
 
-        void updateOrInsertDomainNames(String key, String value);
+        IAutoNetExtraConfig removeHead(String key);
 
-        void setEncryptionCallback(IAutoNetEncryptionCallback encryptionCallback);
+        IAutoNetExtraConfig updateOrInsertDomainNames(String key, String value);
 
-        void setHeadsCallback(IAutoNetHeadCallBack headsCallback);
+        IAutoNetExtraConfig removeDomainName(String key);
 
+        IAutoNetExtraConfig setEncryptionCallback(IAutoNetEncryptionCallback encryptionCallback);
+
+        IAutoNetExtraConfig setHeadsCallback(IAutoNetHeadCallBack headsCallback);
+
+    }
+
+    public interface IAutoNetNonAnontation {
+
+        IAutoNetNonAnontation setRequestEntity(IAutoNetRequest requestEntity);
+
+        IAutoNetNonAnontation setExtraDynamicParam(String extraDynamicParam);
+
+        IAutoNetNonAnontation setDomainNameKey(String domainNameKey);
+
+        IAutoNetNonAnontation setBaseUrl(String baseUrl);
+
+        IAutoNetNonAnontation setSuffixUrl(String suffixUrl);
+
+        IAutoNetNonAnontation setMediaType(String mediaType);
+
+        IAutoNetNonAnontation setWriteOutTime(Long outTime);
+
+        IAutoNetNonAnontation setReadOutTime(Long outTime);
+
+        IAutoNetNonAnontation setConnectOutTime(Long outTime);
+
+        IAutoNetNonAnontation setEncryptionKey(Long encryptionKey);
+
+        IAutoNetNonAnontation isEncryption(boolean isEncryption);
+
+        IAutoNetNonAnontation setHeads(String[] heads);
+
+        IAutoNetNonAnontation setNetPattern(AutoNetPatternAnontation.NetPattern netPattern);
+
+        IAutoNetNonAnontation setReqType(AutoNetTypeAnontation.Type reqType);
+
+        IAutoNetNonAnontation setResType(AutoNetTypeAnontation.Type resType);
+
+        IAutoNetNonAnontation setNetStrategy(AutoNetStrategyAnontation.NetStrategy netStrategy);
+
+        IAutoNetNonAnontation setPushFileParams(String pushFileKey, String filePath);
+
+        IAutoNetNonAnontation setPullFileParams(String filePath, String fileName);
+
+        IAutoNetNonAnontation setResponseClazz(Class clazz);
+
+        IAutoNetNonAnontation setTransformer(FlowableTransformer transformer);
+
+        void start(IAutoNetCallBack callBack);
     }
 
 }

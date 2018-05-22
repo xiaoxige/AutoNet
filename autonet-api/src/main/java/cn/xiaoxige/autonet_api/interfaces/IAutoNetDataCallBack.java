@@ -5,7 +5,7 @@ package cn.xiaoxige.autonet_api.interfaces;
  *         AutoNet data request callback interface.
  */
 
-public interface IAutoNetDataCallBack extends IAutoNetDataSuccessCallBack {
+public interface IAutoNetDataCallBack<T> extends IAutoNetDataSuccessCallBack<T> {
 
     void onFailed(Throwable throwable);
 

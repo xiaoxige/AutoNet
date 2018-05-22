@@ -1,6 +1,7 @@
 package cn.xiaoxige.autonet_api.repository.impl;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -171,6 +172,10 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                 }
 
                 File file = new File(filePath);
+                if (!file.exists()) {
+                    emitter.onError(new IllegalArgumentException("File uploading files do not exist."));
+                    return;
+                }
                 builder.addFormDataPart(pushFileKey, file.getName(),
                         ProgressRequestBody.createProgressRequestBody(MediaType.parse(mediaType), file, new IAutoNetFileCallBack() {
                             @Override
@@ -311,18 +316,18 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         float preProgress = 0;
         float progress;
         FileOutputStream fos = new FileOutputStream(file);
-        int pullLength = 0;
+        long pullLength = 0;
         byte[] b = new byte[AutoNetConstant.DEFAULT_BYBE_SIZE];
         int len;
         while ((len = is.read(b)) != -1) {
             fos.write(b, 0, len);
             pullLength += len;
-            progress = (pullLength * AutoNetConstant.MAX_PROGRESS / fileSize);
-            if (preProgress != progress) {
+            progress = (int) (pullLength * AutoNetConstant.MAX_PROGRESS / fileSize);
+            if (preProgress != progress && Math.abs(progress - preProgress) >= 1) {
                 //noinspection unchecked
                 emitter.onNext(progress);
+                preProgress = progress;
             }
-            preProgress = progress;
         }
         //noinspection unchecked
         emitter.onNext(file);

@@ -44,8 +44,8 @@ public class Client {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .sslSocketFactory(createSSLSocketFactory())
                 .hostnameVerifier(new TrustAllHostnameVerifier())
-                .addNetworkInterceptor(new StethoInterceptor())
                 .addNetworkInterceptor(new AutoDefaultInterceptor(extraDynamicParam, heads, encryptionKey, isEncryption, encryptionCallback, headCallBack))
+                .addNetworkInterceptor(new StethoInterceptor())
                 .writeTimeout(writeOutTime, TimeUnit.SECONDS)
                 .readTimeout(readOutTime, TimeUnit.SECONDS)
                 .connectTimeout(connectOutTime, TimeUnit.SECONDS);

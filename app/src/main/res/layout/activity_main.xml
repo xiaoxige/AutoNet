@@ -6,7 +6,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="300dp">
+        android:layout_height="200dp">
 
         <TextView
             android:id="@+id/tvResult"
@@ -17,48 +17,103 @@
 
     </ScrollView>
 
-    <Button
-        android:id="@+id/btnGet"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="Get请求， 请求的百度" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnGet"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Get请求" />
+
+
+        <Button
+            android:id="@+id/btnPost"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Post请求" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+        <Button
+            android:id="@+id/btnLocalNet"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="先本地后网络" />
+
+        <Button
+            android:id="@+id/btnNetLocal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="先网络后本地" />
+
+    </LinearLayout>
 
 
     <Button
-        android:id="@+id/btnPost"
+        android:id="@+id/btnRequestInClass"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="Post请求， 请求的是Json对象" />
-
+        android:layout_height="wrap_content"
+        android:text="直接在类上加注解请求" />
 
     <Button
-        android:id="@+id/btnNormalNet"
+        android:id="@+id/btnChainRequest"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="Post请求, 平常类请求" />
+        android:layout_height="wrap_content"
+        android:text="链式请求" />
 
-    <Button
-        android:id="@+id/btnImmediateNet"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="直接请求" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/btnSendFile"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="发送文件" />
+        <Button
+            android:id="@+id/btnSendFile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="发送文件" />
 
-    <Button
-        android:id="@+id/btnRecvFile"
+        <Button
+            android:id="@+id/btnRecvFile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="接受文件" />
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="接受文件" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnUpdateHeadToken"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="更新头部的token信息" />
+
+        <Button
+            android:id="@+id/btnRemoveHeadToken"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="删除头部的token信息" />
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -44,13 +44,13 @@ public class ProgressRequestBody {
                 for (long readCount; (readCount = source.read(buf, AutoNetConstant.DEFAULT_BYBE_SIZE)) != -1; ) {
                     sink.write(buf, readCount);
                     current += readCount;
-                    progress = current * AutoNetConstant.MAX_PROGRESS / remaining;
-                    if (preProgress != progress) {
+                    progress = (int) (current * AutoNetConstant.MAX_PROGRESS / remaining);
+                    if (preProgress != progress && Math.abs(progress - preProgress) >= 1) {
                         if (callBack != null) {
                             callBack.onPregress(progress);
                         }
+                        preProgress = progress;
                     }
-                    preProgress = progress;
                 }
 
                 if (callBack != null) {
