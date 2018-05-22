@@ -204,23 +204,10 @@ public class AutoNetExecutor {
         AutoNetPushFileUseCase useCase = new AutoNetPushFileUseCase(mRepo, pushFileKey, filePath);
         useCase.execute(new DefaultSubscriber() {
             @Override
-            protected void defaultOnNext(Object entity) {
+            protected void defaultOnNext(Object object) {
                 //noinspection unchecked
-                super.defaultOnNext(entity);
-                if (callBack == null) {
-                    return;
-                }
-                if (entity instanceof Float) {
-                    if (callBack instanceof IAutoNetFileCallBack) {
-                        Float progress = (Float) entity;
-                        ((IAutoNetFileCallBack) callBack).onPregress(progress);
-                        if (progress >= AutoNetConstant.MAX_PROGRESS) {
-                            ((IAutoNetFileCallBack) callBack).onComplete(new File(filePath));
-                        }
-                    }
-                } else {
-                    ansSuccess(entity);
-                }
+                super.defaultOnNext(object);
+                ansFile(object);
             }
 
             @Override
@@ -249,16 +236,7 @@ public class AutoNetExecutor {
             protected void defaultOnNext(Object object) {
                 //noinspection unchecked
                 super.defaultOnNext(object);
-                if (callBack == null) {
-                    return;
-                }
-                if (callBack instanceof IAutoNetFileCallBack) {
-                    if (object instanceof Float) {
-                        ((IAutoNetFileCallBack) callBack).onPregress((Float) object);
-                    } else if (object instanceof File) {
-                        ((IAutoNetFileCallBack) callBack).onComplete((File) object);
-                    }
-                }
+                ansFile(object);
             }
 
             @Override
@@ -327,6 +305,20 @@ public class AutoNetExecutor {
             ((IAutoNetDataSuccessCallBack) callBack).onSuccess(object);
         }
 
+    }
+
+    private void ansFile(Object object) {
+        if (callBack == null) {
+            return;
+        }
+        if (callBack instanceof IAutoNetFileCallBack) {
+            if (object instanceof Float) {
+                ((IAutoNetFileCallBack) callBack).onPregress((Float) object);
+            } else if (object instanceof File) {
+                ((IAutoNetFileCallBack) callBack).onComplete((File) object);
+            }
+        }
+        ansSuccess(object);
     }
 
     private void ansEmpty() {

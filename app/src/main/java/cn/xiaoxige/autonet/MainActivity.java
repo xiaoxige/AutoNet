@@ -63,8 +63,8 @@ public class MainActivity extends RxActivity {
             public void onClick(View v) {
 //                MainActivityTestCallbackAutoProxy.testLocalLink(MainActivity.this, 1);
                 String path = getExternalFilesDir(null).toString();
-                MainActivityTestCallback2AutoProxy.pullFile(MainActivity.this,
-                        new TestEntity("fdafdas", 330), path, "xiaoxige.png");
+//                MainActivityTestCallback2AutoProxy.pullFile(MainActivity.this,
+//                        new TestEntity("fdafdas", 330), path, "xiaoxige.png");
 
 //                AutoNet.getInstance().createNet()
 //                        .setBaseUrl("https://www.baidu.com")
@@ -77,6 +77,10 @@ public class MainActivity extends RxActivity {
 //                        });
 //
 //                MainActivityTestCallbackAutoProxy.startNet(MainActivity.this);
+
+
+                String filePath = path + File.separator + "a.png";
+                MainActivityTestCallback3AutoProxy.pushFile(MainActivity.this, new TestEntity("xiaoxige", 123), "upload", filePath);
             }
         });
     }
@@ -144,22 +148,34 @@ public class MainActivity extends RxActivity {
         }
     }
 
-    @AutoNetResponseEntityClass(value = Object.class)
+    @AutoNetDisposableBaseUrlAnontation("http://testimage.hxkid.com:4869")
     @AutoNetTypeAnontation(reqType = AutoNetTypeAnontation.Type.STREAM)
-    public class TestCallback3 implements IAutoNetDataCallBack {
+    @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.POST)
+    public class TestCallback3 implements IAutoNetDataCallBack, IAutoNetFileCallBack {
+
         @Override
         public void onSuccess(Object entity) {
-
+            Log.e("TAG", "成功了" + entity.toString());
         }
 
         @Override
         public void onFailed(Throwable throwable) {
-
+            Log.e("TAG", "失败了" + throwable);
         }
 
         @Override
         public void onEmpty() {
+            Log.e("TAG", "数据为空了");
+        }
 
+        @Override
+        public void onPregress(float progress) {
+            Log.e("TAG", "progress = " + progress);
+        }
+
+        @Override
+        public void onComplete(File file) {
+            Log.e("TAG", "file = " + file.toString());
         }
     }
 

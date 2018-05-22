@@ -182,7 +182,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                             @Override
                             public void onComplete(File file) {
                                 //noinspection unchecked
-                                emitter.onNext(AutoNetConstant.MAX_PROGRESS);
+                                emitter.onNext(file);
                             }
                         }));
 
