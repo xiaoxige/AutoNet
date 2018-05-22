@@ -6,13 +6,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by zhuxiaoan on 2017/11/26.
+ * @author by zhuxiaoan on 2018/5/16 0016.
+ *         <p>
+ *         desc: setting basic information for network access links
+ *         <p>
+ *         <p>
+ *         value: web site is part of the domain name
+ *         writeTime: writes timeout time
+ *         readTime: reads the timeout time
+ *         connectOutTime: link timeout time
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 public @interface AutoNetAnontation {
 
-    String url() default "/";
+    String value() default "/";
 
     long writeTime() default 5000;
 

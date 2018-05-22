@@ -6,7 +6,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by zhuxiaoan on 2017/11/26.
+ * @author by zhuxiaoan on 2018/5/16 0016.
+ *         <p>
+ *         desc: encrypted annotation
+ *         <p>
+ *         <p>
+ *         key: identifies which request needs to be encrypted
+ *         value: whether to start encryption
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)

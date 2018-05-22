@@ -1,11 +1,16 @@
 package cn.xiaoxige.autonet_api.interfaces;
 
 /**
- * Created by zhuxiaoan on 2017/11/26.
+ * @author by zhuxiaoan on 2018/5/21 0021.
+ *         AutoNet's request parameter encrypted callback
  */
 
 public interface IAutoNetEncryptionCallback {
 
-    String encryption(long encryptionKey, String beforeValue);
-
+    /**
+     * @param key               The unique identifier of this encryption
+     * @param encryptionContent This encrypted content
+     * @return
+     */
+    String encryption(Long key, String encryptionContent);
 }

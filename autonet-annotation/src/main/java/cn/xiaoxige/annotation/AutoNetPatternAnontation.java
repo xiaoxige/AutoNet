@@ -6,17 +6,35 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by zhuxiaoan on 2017/11/26.
- * method of net
+ * @author by zhuxiaoan on 2018/5/16 0016.
+ *         <p>
+ *         desc: network request type
+ *         <p>
+ *         <p>
+ *         NetPattern: network
+ *         value: request type
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 public @interface AutoNetPatternAnontation {
+
+    /**
+     * <p>
+     * type of network request
+     * <p>
+     * <p>
+     * get: get request
+     * post: post request
+     * delete: delete request
+     * put:put request
+     * other: has no significance for the time being
+     */
     enum NetPattern {
         GET,
         POST,
         DELETE,
-        PUT
+        PUT,
+        OTHER_PATTERN
     }
 
     NetPattern value() default NetPattern.GET;

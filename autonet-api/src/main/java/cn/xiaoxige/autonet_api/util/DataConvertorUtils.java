@@ -6,14 +6,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 数据转换工具类,比如model->entity
+ * @author by zhuxiaoan on 2018/5/21 0021.
+ *         Tool classes for data conversion
  */
 public class DataConvertorUtils {
     /**
-     * 将数据表model转换为entity
+     * convert the data table model to entity
      *
-     * @param source 数据表对应的model
-     * @param result 结果数据
+     * @param source data table corresponding to model
+     * @param result result data
      */
     public static <T, R> R convertModelToEntity(T source, R result) {
 
@@ -36,21 +37,21 @@ public class DataConvertorUtils {
     }
 
     /**
-     * 将数据表entity转换为model
+     * convert the data table entity to model
      *
-     * @param source 数据实体
-     * @param result 结果数据
+     * @param source data entity
+     * @param result result data
      */
     public static <T, R> R convertEntityToModel(T source, R result) {
         return convertModelToEntity(source, result);
     }
 
     /**
-     * 将实体类的字段和值映射为map,仅考虑类型字段是String或者ArrayList<String>类型的
+     * map the fields and values of entity classes to map, considering only type fields that are String or ArrayList<String> types.
      *
-     * @param source             实体数据
-     * @param includeParentClass 是否包含父类中的字段
-     * @return 返回以字段名为key, 字段值为value的map
+     * @param source entity data
+     *               does @param includeParentClass contain fields in the parent class?
+     * @return returns map with field name key and field value value.
      */
     public static <T> Map<String, String> convertEntityToMap(T source, boolean includeParentClass) {
         Map<String, String> results = new HashMap<>();
@@ -81,10 +82,10 @@ public class DataConvertorUtils {
     }
 
     /**
-     * 递归的将父类声明的属性和值映射到map中,仅考虑类型字段是String或者ArrayList<String>类型的
+     * mapping the attributes and values declared by the parent class to map recursively, only considering the type fields are String or ArrayList<String> types.
      *
-     * @param map 存储属性和值的map
-     * @return 返回以字段名为key, 字段值为value的map
+     * @param map storage properties and values of map
+     * @return returns map with field name key and field value value.
      */
     public static <T> Map<String, String> convertParentEntityToMap(Map<String, String> map, T source) {
         if (map == null) {

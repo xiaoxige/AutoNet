@@ -1,38 +1,52 @@
 package cn.xiaoxige.autonet;
 
+
 import android.os.Bundle;
+import android.support.annotation.MainThread;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.trello.rxlifecycle2.components.RxActivity;
 
 import java.io.File;
+import java.util.Random;
 
 import cn.xiaoxige.annotation.AutoNetAnontation;
 import cn.xiaoxige.annotation.AutoNetBaseUrlKeyAnontation;
-import cn.xiaoxige.annotation.AutoNetEncryptionAnontation;
+import cn.xiaoxige.annotation.AutoNetDisposableBaseUrlAnontation;
+import cn.xiaoxige.annotation.AutoNetDisposableHeadAnnontation;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
+import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
-import cn.xiaoxige.autonet.model.JsonTestRequestEntity;
-import cn.xiaoxige.autonet.model.JsonTestResponseEntity;
-import cn.xiaoxige.autonet_api.data.responsentity.AutoResponseEntity;
-import cn.xiaoxige.autonet_api.interfaces.AAutoNetStreamCallback;
-import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallback;
+import cn.xiaoxige.autonet.entity.TestRequest;
+import cn.xiaoxige.autonet.entity.TestResponseEntity;
+import cn.xiaoxige.autonet_api.AutoNet;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataSuccessCallBack;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetLocalOptCallBack;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
 
 public class MainActivity extends RxActivity {
 
     private TextView tvResult;
     private Button btnGet;
     private Button btnPost;
-    private Button btnNormalNet;
-    private Button btnImmediateNet;
+    private Button btnLocalNet;
+    private Button btnNetLocal;
+    private Button btnRequestInClass;
+    private Button btnChainRequest;
     private Button btnSendFile;
     private Button btnRecvFile;
+    private Button btnUpdateHeadToken;
+    private Button btnRemoveHeadToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,210 +61,305 @@ public class MainActivity extends RxActivity {
         tvResult = (TextView) findViewById(R.id.tvResult);
         btnGet = (Button) findViewById(R.id.btnGet);
         btnPost = (Button) findViewById(R.id.btnPost);
-        btnNormalNet = (Button) findViewById(R.id.btnNormalNet);
-        btnImmediateNet = (Button) findViewById(R.id.btnImmediateNet);
+        btnRequestInClass = (Button) findViewById(R.id.btnRequestInClass);
+        btnChainRequest = (Button) findViewById(R.id.btnChainRequest);
         btnSendFile = (Button) findViewById(R.id.btnSendFile);
         btnRecvFile = (Button) findViewById(R.id.btnRecvFile);
+        btnUpdateHeadToken = (Button) findViewById(R.id.btnUpdateHeadToken);
+        btnRemoveHeadToken = (Button) findViewById(R.id.btnRemoveHeadToken);
+        btnLocalNet = (Button) findViewById(R.id.btnLocalNet);
+        btnNetLocal = (Button) findViewById(R.id.btnNetLocal);
     }
 
     private void registerListener() {
+
+        // get请求
         btnGet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tvResult.setText("正在请求");
-                cn.xiaoxige.autonet.MainActivityTestCallbackAutoProxy.startSoftNet(MainActivity.this, "5002002", bindUntilEvent(ActivityEvent.DESTROY));
+                // 无参数请求
+//                MainActivitydoGetAutoProxy.startNet(MainActivity.this);
+
+                // 带有参数的请求
+//                MainActivitydoGetAutoProxy.startNet(MainActivity.this, new TestRequest("ina_app", "other", "guidepage"));
+
+                // 绑定生命周期的请求
+                MainActivitydoGetAutoProxy.startNet(MainActivity.this, new TestRequest("ina_app", "other", "guidepage"), bindUntilEvent(ActivityEvent.DESTROY));
+
+
             }
         });
 
+        // post请求
         btnPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tvResult.setText("正在请求");
-                JsonTestRequestEntity entity = new JsonTestRequestEntity();
-                entity.setA("guidepage");
-                entity.setM("ina_app");
-                entity.setC("other");
-                cn.xiaoxige.autonet.MainActivityTwoCallbackAutoProxy.startSoftNet(MainActivity.this, entity, bindUntilEvent(ActivityEvent.DESTROY));
+                // 无参数请求
+//                MainActivitydoPostAutoProxy.startNet(MainActivity.this);
+
+                // 带有参数的请求
+//                MainActivitydoPostAutoProxy.startNet(MainActivity.this, new TestRequest());
+
+                // 绑定生命周期的请求
+                MainActivitydoPostAutoProxy.startNet(MainActivity.this, new TestRequest(), bindUntilEvent(ActivityEvent.DESTROY));
             }
         });
 
-        btnNormalNet.setOnClickListener(new View.OnClickListener() {
+        // 先本地后网络
+        btnLocalNet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tvResult.setText("正在请求");
-                NormalClassNet normalClassNet = new NormalClassNet(tvResult);
-                cn.xiaoxige.autonet.NormalClassNetTestCallbackAutoProxy.startUnSoftNet(normalClassNet);
+                MainActivitydoLocalNetAutoProxy.startNet(MainActivity.this);
             }
         });
 
-        btnImmediateNet.setOnClickListener(new View.OnClickListener() {
+        // 先网络后本地
+        btnNetLocal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tvResult.setText("正在请求");
-                ImmediateNet immediateNet = new ImmediateNet();
-                immediateNet.setmTextView(tvResult);
-                cn.xiaoxige.autonet.AutonetImmediateNetAutoProxy.startUnSoftNet(immediateNet);
+                MainActivitydoNetLocalAutoProxy.startNet(MainActivity.this);
             }
         });
 
-        btnSendFile.setOnClickListener(new View.OnClickListener() {
+        // 直接在类上加注解请求
+        btnRequestInClass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /**
-                 * 文件可能不存在哦， 这只是测试
-                 * （你可以先下载后在上传）
-                 * 改下载的地址及fileKey是本地Tomcat上的，在这里只是指明了一个使用方式而已
-                 */
-                String path = getExternalFilesDir(null).toString();
-                /**
-                 * @param object 最外层类实例
-                 * @param fileKey 发布文件的key， 需要和后台约定好
-                 * @param path 要发送的文件的路径
-                 */
-                cn.xiaoxige.autonet.MainActivitySendFileCallbackAutoProxy.pushFile(MainActivity.this, "photo1", path + File.separator + "xiaoxige.apk");
+                TestRequestInClass testRequestInClass = new TestRequestInClass(MainActivity.this);
+                TestRequestInClassAutoProxy.startNet(testRequestInClass);
             }
         });
 
+        // 接受文件
         btnRecvFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String path = getExternalFilesDir(null).toString();
-                /**
-                 * @param object 最外层类实例
-                 * @param path 文件保存的路径
-                 * @param fileName 文件保存的名字
-                 */
-                cn.xiaoxige.autonet.MainActivityDownFileCallbackAutoProxy.pullFile(MainActivity.this, path, "xiaoxige.apk");
+                MainActivityPullFileAutoProxy.pullFile(MainActivity.this, path, "pppig.apk");
+            }
+        });
 
+        // 发送文件
+        btnSendFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String path = getExternalFilesDir(null).toString();
+                MainActivityPushFileAutoProxy.pushFile(MainActivity.this, "upload", path + File.separator + "a.png");
+            }
+        });
+        // 链式调用
+        btnChainRequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AutoNet.getInstance().createNet()
+                        .setDomainNameKey("pppig")
+                        .start(new IAutoNetDataSuccessCallBack() {
+                            @Override
+                            public void onSuccess(Object entity) {
+                                tvResult.setText(entity.toString());
+                            }
+                        });
+            }
+        });
+        // 修改头信息token信息
+        btnUpdateHeadToken.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int i = new Random().nextInt(100);
+                AutoNet.getInstance().updateOrInsertHead("token", "" + i);
+            }
+        });
+
+        // 删除头信息token信息
+        btnRemoveHeadToken.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AutoNet.getInstance().removeHead("token");
             }
         });
     }
 
-
-    /**
-     * 场景： 不加密， get请求， 默认的baseUrl， url为"/", 不加密
-     */
-    @AutoNetResponseEntityClass(value = AutoResponseEntity.class)
-    public class TestCallback implements IAutoNetDataCallback<AutoResponseEntity> {
+    @AutoNetResponseEntityClass(TestResponseEntity.class)
+    @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.GET)
+    @AutoNetAnontation("/init.php")
+    @AutoNetBaseUrlKeyAnontation("jsonTestBaseUrl")
+    public class doGet implements IAutoNetDataCallBack<TestResponseEntity> {
+        StringBuffer buffer = new StringBuffer();
 
         @Override
-        public void onSuccess(AutoResponseEntity entity) {
-            Toast.makeText(MainActivity.this, "Get成功", Toast.LENGTH_SHORT).show();
-            tvResult.setText("返回：" + entity.autoResponseResult + "\n" + "是否转Json对象失败：" + entity.isJsonTransformationError);
+        public void onFailed(Throwable throwable) {
+            buffer.append("请求失败了：" + throwable.toString());
+            tvResult.setText(buffer.toString());
         }
 
         @Override
         public void onEmpty() {
-            Toast.makeText(MainActivity.this, "Get数据为空", Toast.LENGTH_SHORT).show();
-            tvResult.setText("Get请求为空");
+            buffer.append("请求失败了");
+            tvResult.setText(buffer.toString());
         }
 
         @Override
-        public void onError(Throwable throwable) {
-            Toast.makeText(MainActivity.this, "Get数据出错...", Toast.LENGTH_SHORT).show();
-            tvResult.setText(throwable.toString());
+        public void onSuccess(TestResponseEntity entity) {
+            buffer.append("json数据请求成功\n" + entity.toString());
+            tvResult.setText(buffer.toString());
         }
     }
 
-    /**
-     * 场景： 加密， 使用key为jsonTestBaseUrl的BaseUrl, Get请求， url = "/init.php"
-     * 参数在调用发送请求的时候
-     */
-    @AutoNetResponseEntityClass(value = JsonTestResponseEntity.class)
-    @AutoNetEncryptionAnontation(value = true, key = 1)
-    @AutoNetBaseUrlKeyAnontation(value = "jsonTestBaseUrl")
-    @AutoNetPatternAnontation(value = AutoNetPatternAnontation.NetPattern.GET)
-    @AutoNetAnontation(url = "/init.php")
-    public class TwoCallback implements IAutoNetDataCallback<JsonTestResponseEntity> {
-
-        @Override
-        public void onSuccess(JsonTestResponseEntity entity) {
-            Toast.makeText(MainActivity.this, "Post成功", Toast.LENGTH_SHORT).show();
-            tvResult.setText("返回：" + entity.autoResponseResult + "\n" + "是否转Json对象失败："
-                    + entity.isJsonTransformationError + "\n\n"
-                    + "json： " + entity.toString());
-        }
-
-        @Override
-        public void onEmpty() {
-            Toast.makeText(MainActivity.this, "Post数据为空", Toast.LENGTH_SHORT).show();
-            tvResult.setText("Post数据为空");
-        }
-
-        @Override
-        public void onError(Throwable throwable) {
-            Toast.makeText(MainActivity.this, "Post数据出错", Toast.LENGTH_SHORT).show();
-            tvResult.setText(throwable.toString());
-        }
-    }
-
-
-    /**
-     * 下载文件
-     */
-    @AutoNetBaseUrlKeyAnontation(value = "BaseFileUrl")
-    @AutoNetTypeAnontation(resType = AutoNetTypeAnontation.Type.STREAM)
-    @AutoNetAnontation(url = "/APK/DownLoad/PangPangPig_102.apk")
-    @AutoNetPatternAnontation(value = AutoNetPatternAnontation.NetPattern.POST)
-    public class DownFileCallback extends AAutoNetStreamCallback {
-
-        @Override
-        public void onComplete(File file) {
-            tvResult.setText("文件下载完成");
-        }
-
-        @Override
-        public void onPregress(float progress) {
-            Log.e("TAG", "progress" + progress);
-            tvResult.setText("下载进度" + progress + "%");
-        }
-
-        @Override
-        public void onEmpty() {
-            tvResult.setText("数据为空");
-        }
-
-        @Override
-        public void onError(Throwable throwable) {
-            tvResult.setText(throwable.toString());
-        }
-    }
-
-    /**
-     * 上传文件
-     */
-    @AutoNetBaseUrlKeyAnontation(value = "BaseFilePushUrl")
-    @AutoNetTypeAnontation(reqType = AutoNetTypeAnontation.Type.STREAM)
-    @AutoNetAnontation(url = "/FileUpload/FileUploadServlet")
     @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.POST)
-    public class SendFileCallback extends AAutoNetStreamCallback {
-        @Override
-        public void onComplete(File file) {
-            tvResult.setText("文件上传完成");
-        }
+    public class doPost implements IAutoNetDataCallBack {
+        StringBuffer buffer = new StringBuffer();
 
         @Override
-        public void onPregress(float progress) {
-            Log.e("TAG", "progress" + progress);
-            tvResult.setText("上传进度" + progress + "%");
+        public void onFailed(Throwable throwable) {
+            buffer.append("请求失败了：" + throwable.toString());
+            tvResult.setText(buffer.toString());
         }
 
         @Override
         public void onEmpty() {
-            tvResult.setText("数据为空");
+            buffer.append("请求失败了");
+            tvResult.setText(buffer.toString());
         }
 
         @Override
-        public void onError(Throwable throwable) {
-            tvResult.setText(throwable.toString());
-        }
-
-        @Override
-        public void onSuccess(AutoResponseEntity entity) {
-            super.onSuccess(entity);
-            tvResult.setText("返回：" + entity.autoResponseResult + "\n" + "是否转Json对象失败："
-                    + entity.isJsonTransformationError + "\n\n"
-                    + "json： " + entity.toString());
+        public void onSuccess(Object entity) {
+            buffer.append("请求成功了\n" + entity.toString());
+            tvResult.setText(buffer.toString());
         }
     }
+
+    @AutoNetStrategyAnontation(AutoNetStrategyAnontation.NetStrategy.LOCAL_NET)
+    public class doLocalNet implements IAutoNetDataCallBack, IAutoNetLocalOptCallBack {
+
+        StringBuffer buffer = new StringBuffer();
+
+        @Override
+        public void onFailed(Throwable throwable) {
+            buffer.append("请求失败了：" + throwable.toString());
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onEmpty() {
+            buffer.append("请求失败了");
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onSuccess(Object entity) {
+            buffer.append("成功了\n" + entity.toString());
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public Object optLocalData(IAutoNetRequest request) {
+            // 本地数据交给用户处理
+            return "\n这是本地数据,hahahahaha\n";
+        }
+    }
+
+    @AutoNetStrategyAnontation(AutoNetStrategyAnontation.NetStrategy.NET_LOCAL)
+    public class doNetLocal implements IAutoNetDataCallBack, IAutoNetLocalOptCallBack {
+
+        StringBuffer buffer = new StringBuffer();
+
+        @Override
+        public void onFailed(Throwable throwable) {
+            buffer.append("请求失败了：" + throwable.toString());
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onEmpty() {
+            buffer.append("请求失败了");
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onSuccess(Object entity) {
+            buffer.append("成功了\n" + entity.toString());
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public Object optLocalData(IAutoNetRequest request) {
+            // 本地数据交给用户处理
+            return "\n这是本地数据,hahahahaha\n";
+        }
+    }
+
+    @AutoNetBaseUrlKeyAnontation("upFile")
+    @AutoNetTypeAnontation(reqType = AutoNetTypeAnontation.Type.STREAM)
+    @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.POST)
+    public class PushFile implements IAutoNetDataCallBack, IAutoNetFileCallBack {
+
+        StringBuffer buffer = new StringBuffer();
+
+        @Override
+        public void onFailed(Throwable throwable) {
+            buffer.append("发送文件出错:\n" + throwable.toString() + "\n");
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onEmpty() {
+            buffer.append("发送文件出错");
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onSuccess(Object entity) {
+            buffer.append("发送文件成功， 服务器并返回:\n" + entity.toString() + "\n");
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onPregress(float progress) {
+            buffer.append("发送文件进度：" + progress + "\n");
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onComplete(File file) {
+            buffer.append("文件发送成功， 文件：" + file.toString() + "\n");
+            tvResult.setText(buffer.toString());
+        }
+    }
+
+    @AutoNetBaseUrlKeyAnontation("pppig")
+    @AutoNetTypeAnontation(resType = AutoNetTypeAnontation.Type.STREAM)
+    @AutoNetAnontation("/apk/downLoad/android_4.2.4.apk")
+    public class PullFile implements IAutoNetDataCallBack, IAutoNetFileCallBack {
+        StringBuffer buffer = new StringBuffer();
+
+        @Override
+        public void onFailed(Throwable throwable) {
+            buffer.append("接收文件出错:\n" + throwable.toString() + "\n");
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onEmpty() {
+            buffer.append("接收文件出错");
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onSuccess(Object entity) {
+            // 不会被执行
+        }
+
+        @Override
+        public void onPregress(float progress) {
+            buffer.append("接收进度：" + progress + "\n");
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onComplete(File file) {
+            buffer.append("文件接收成功， 文件：" + file.toString() + "\n");
+            tvResult.setText(buffer.toString());
+        }
+    }
+
 }

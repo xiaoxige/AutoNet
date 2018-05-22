@@ -24,14 +24,19 @@ import javax.tools.Diagnostic;
 
 import cn.xiaoxige.annotation.AutoNetAnontation;
 import cn.xiaoxige.annotation.AutoNetBaseUrlKeyAnontation;
+import cn.xiaoxige.annotation.AutoNetDisposableBaseUrlAnontation;
+import cn.xiaoxige.annotation.AutoNetDisposableHeadAnnontation;
 import cn.xiaoxige.annotation.AutoNetEncryptionAnontation;
 import cn.xiaoxige.annotation.AutoNetMediaTypeAnontation;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
+import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
+import cn.xiaoxige.annotation.entity.ProxyInfo;
 
 /**
- * Created by zhuxiaoan on 2017/11/26.
+ * @author by zhuxiaoan on 2018/5/16 0016.
+ *         Annotate the processor, collect the content of the annotations and handle
  */
 @AutoService(Processor.class)
 public class AnnotationProcessor extends AbstractProcessor {
@@ -58,7 +63,7 @@ public class AnnotationProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        Set set = new HashSet();
+        Set<String> set = new HashSet<>(10);
         set.add(AutoNetPatternAnontation.class.getCanonicalName());
         set.add(AutoNetEncryptionAnontation.class.getCanonicalName());
         set.add(AutoNetBaseUrlKeyAnontation.class.getCanonicalName());
@@ -66,6 +71,9 @@ public class AnnotationProcessor extends AbstractProcessor {
         set.add(AutoNetTypeAnontation.class.getCanonicalName());
         set.add(AutoNetMediaTypeAnontation.class.getCanonicalName());
         set.add(AutoNetAnontation.class.getCanonicalName());
+        set.add(AutoNetStrategyAnontation.class.getCanonicalName());
+        set.add(AutoNetDisposableBaseUrlAnontation.class.getCanonicalName());
+        set.add(AutoNetDisposableHeadAnnontation.class.getCanonicalName());
         return set;
     }
 
@@ -100,8 +108,19 @@ public class AnnotationProcessor extends AbstractProcessor {
             return false;
         }
 
-
         if (!isAnnotatedWithClass(roundEnvironment, AutoNetTypeAnontation.class)) {
+            return false;
+        }
+
+        if (!isAnnotatedWithClass(roundEnvironment, AutoNetStrategyAnontation.class)) {
+            return false;
+        }
+
+        if (!isAnnotatedWithClass(roundEnvironment, AutoNetDisposableBaseUrlAnontation.class)) {
+            return false;
+        }
+
+        if (!isAnnotatedWithClass(roundEnvironment, AutoNetDisposableHeadAnnontation.class)) {
             return false;
         }
 
@@ -112,12 +131,15 @@ public class AnnotationProcessor extends AbstractProcessor {
         } finally {
             mInfoMap.clear();
         }
+
         return true;
     }
 
     private boolean isAnnotatedWithClass(RoundEnvironment roundEnvironment,
                                          Class<? extends Annotation> clazz) {
+
         Set<? extends Element> elements = roundEnvironment.getElementsAnnotatedWith(clazz);
+
         for (Element element : elements) {
             if (isValid(element)) {
                 return false;
@@ -125,36 +147,24 @@ public class AnnotationProcessor extends AbstractProcessor {
             if (!element.getKind().isClass()) {
                 return false;
             }
-            TypeElement typeElement = (TypeElement) element;
-            String fullPackageName = typeElement.getQualifiedName().toString();
-            String packageName = mElementUtils.getPackageOf(element).getQualifiedName().toString();
-            String className = typeElement.getSimpleName().toString();
-            Annotation annotation = typeElement.getAnnotation(clazz);
 
-            ProxyInfo proxyInfo = mInfoMap.get(fullPackageName);
+            TypeElement typeElement = (TypeElement) element;
+
+            String fullTargetPath = typeElement.getQualifiedName().toString();
+            String targetPackage = mElementUtils.getPackageOf(element).getQualifiedName().toString();
+            String targetClassSimpleName = typeElement.getSimpleName().toString();
+
+            ProxyInfo proxyInfo = mInfoMap.get(fullTargetPath);
             if (proxyInfo == null) {
                 proxyInfo = new ProxyInfo();
-                mInfoMap.put(fullPackageName, proxyInfo);
-            }
-            proxyInfo.fullPackageName = fullPackageName;
-            proxyInfo.className = className;
-            proxyInfo.packageName = packageName;
-            proxyInfo.typeElement = typeElement;
-
-            if (fullPackageName != null && fullPackageName.length() > 0) {
-                String outClassFullName;
-                try {
-                    outClassFullName = fullPackageName.substring(0, fullPackageName.length() - className.length() - 1);
-                    if (outClassFullName.equals(packageName)) {
-                        outClassFullName = fullPackageName;
-                    }
-                } catch (Exception e) {
-                    outClassFullName = "";
-                }
-                proxyInfo.outClassFullPackageName = outClassFullName;
+                mInfoMap.put(fullTargetPath, proxyInfo);
             }
 
+            proxyInfo.fullTargetPath = fullTargetPath;
+            proxyInfo.targetPackage = targetPackage;
+            proxyInfo.targetClassSimpleName = targetClassSimpleName;
 
+            Annotation annotation = typeElement.getAnnotation(clazz);
             if (annotation instanceof AutoNetPatternAnontation) {
                 autoNetPatternProc(proxyInfo, (AutoNetPatternAnontation) annotation);
             } else if (annotation instanceof AutoNetEncryptionAnontation) {
@@ -169,11 +179,32 @@ public class AnnotationProcessor extends AbstractProcessor {
                 autoNetReqTypeProc(proxyInfo, (AutoNetTypeAnontation) annotation);
             } else if (annotation instanceof AutoNetMediaTypeAnontation) {
                 autoNetMediaTypeProc(proxyInfo, (AutoNetMediaTypeAnontation) annotation);
+            } else if (annotation instanceof AutoNetStrategyAnontation) {
+                autoNetStrategyProc(proxyInfo, (AutoNetStrategyAnontation) annotation);
+            } else if (annotation instanceof AutoNetDisposableBaseUrlAnontation) {
+                autoNetDisposableBaseUrlProc(proxyInfo, (AutoNetDisposableBaseUrlAnontation) annotation);
+            } else if (annotation instanceof AutoNetDisposableHeadAnnontation) {
+                autoNetDisposableHeadProc(proxyInfo, (AutoNetDisposableHeadAnnontation) annotation);
             } else {
                 return false;
             }
         }
         return true;
+    }
+
+    private void autoNetDisposableHeadProc(ProxyInfo proxyInfo, AutoNetDisposableHeadAnnontation annotation) {
+        String[] disposableHeads = annotation.value();
+        proxyInfo.disposableHeads = disposableHeads;
+    }
+
+    private void autoNetDisposableBaseUrlProc(ProxyInfo proxyInfo, AutoNetDisposableBaseUrlAnontation annotation) {
+        String disposableBaseUrl = annotation.value();
+        proxyInfo.disposableBaseUrl = disposableBaseUrl;
+    }
+
+    private void autoNetStrategyProc(ProxyInfo proxyInfo, AutoNetStrategyAnontation annotation) {
+        AutoNetStrategyAnontation.NetStrategy netStrategy = annotation.value();
+        proxyInfo.netStrategy = netStrategy;
     }
 
     private void autoNetMediaTypeProc(ProxyInfo proxyInfo, AutoNetMediaTypeAnontation annotation) {
@@ -203,17 +234,17 @@ public class AnnotationProcessor extends AbstractProcessor {
 
     private void autoNetBaseUrlKeyProc(ProxyInfo proxyInfo, AutoNetBaseUrlKeyAnontation annotation) {
         String value = annotation.value();
-        proxyInfo.baseUrlKey = value;
+        proxyInfo.domainNameKey = value;
     }
 
     private void autoNetProc(ProxyInfo proxyInfo, AutoNetAnontation annotation) {
-        String url = annotation.url();
-        long writeTime = annotation.writeTime();
-        long readTime = annotation.readTime();
+        String suffixUrl = annotation.value();
+        long writeOutTime = annotation.writeTime();
+        long readOutTime = annotation.readTime();
         long connectOutTime = annotation.connectOutTime();
-        proxyInfo.url = url;
-        proxyInfo.writeTime = writeTime;
-        proxyInfo.readTime = readTime;
+        proxyInfo.suffixUrl = suffixUrl;
+        proxyInfo.writeOutTime = writeOutTime;
+        proxyInfo.readOutTime = readOutTime;
         proxyInfo.connectOutTime = connectOutTime;
     }
 
@@ -240,7 +271,6 @@ public class AnnotationProcessor extends AbstractProcessor {
             printError(element.getSimpleName() + "must could not be abstract or private");
             return true;
         }
-
         return false;
     }
 

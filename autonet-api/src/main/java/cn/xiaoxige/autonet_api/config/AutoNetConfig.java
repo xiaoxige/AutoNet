@@ -1,145 +1,103 @@
 package cn.xiaoxige.autonet_api.config;
 
-import java.util.HashMap;
+import android.support.v4.util.ArrayMap;
+import android.text.TextUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import okhttp3.Interceptor;
+
 /**
- * Created by zhuxiaoan on 2017/11/26.
- * AutoNetConfigs
+ * @author by zhuxiaoan on 2018/5/17 0017.
+ *         AutoNet initialization parameter configuration
+ *         These values will not be changed again after initialization
  */
 
 public class AutoNetConfig {
 
-    private Map<String, String> mBaseUrl = null;
-    private Map<String, String> mHeader = null;
-    private Map<String, String> mGetDelParams = null;
+    private boolean isOpenStetho;
+    private Map<String, String> domainNames;
+    private Map<String, String> headParam;
+    private List<Interceptor> interceptors;
 
     private AutoNetConfig() {
     }
 
-    private AutoNetConfig(Buidler buidler) {
-        this.mBaseUrl = buidler.mBaseUrl;
-        this.mHeader = buidler.mHeader;
-        this.mGetDelParams = buidler.mGetDelParams;
+    private AutoNetConfig(Builder builder) {
+        this.isOpenStetho = builder.isOpenStetho;
+        this.domainNames = builder.domainNames;
+        this.headParam = builder.headParam;
+        this.interceptors = builder.interceptors;
     }
 
-    public void updateOrInsertHeader(Map map) {
-        if (map == null) {
-            return;
-        }
-        if (this.mHeader == null) {
-            this.mHeader = new HashMap<>();
-        }
+    public static class Builder {
 
-        mHeader.putAll(map);
-    }
+        private boolean isOpenStetho;
+        private Map<String, String> domainNames;
+        private Map<String, String> headParam;
+        private List<Interceptor> interceptors;
 
-    public void updateOrInsertGetDelParam(Map map) {
-        if (map == null) {
-            return;
-        }
-        if (this.mGetDelParams == null) {
-            this.mGetDelParams = new HashMap<>();
-        }
-        mGetDelParams.putAll(map);
-    }
-
-    public Map<String, String> getBaseUrl() {
-        return mBaseUrl;
-    }
-
-    public Map<String, String> getHeader() {
-        return mHeader;
-    }
-
-    public Map<String, String> getGetDelParams() {
-        return mGetDelParams;
-    }
-
-    public static class Buidler {
-
-        private Map<String, String> mBaseUrl = null;
-        private Map<String, String> mHeader = null;
-        private Map<String, String> mGetDelParams = null;
-
-
-        public Buidler() {
-            mBaseUrl = new HashMap<>();
-            mHeader = new HashMap<>();
-            mGetDelParams = new HashMap<>();
+        public Builder() {
+            isOpenStetho = false;
+            domainNames = new ArrayMap<>();
+            headParam = new ArrayMap<>();
+            interceptors = new ArrayList<>();
         }
 
-
-        public Buidler setBaseUrl(String baseUrl) {
-            Map<String, String> mapBaseUrl = new HashMap<>();
-            mapBaseUrl.put("default", baseUrl);
-            setBaseUrl(mapBaseUrl, true);
+        public Builder isOpenStetho(boolean isOpenStetho) {
+            this.isOpenStetho = isOpenStetho;
             return this;
         }
 
-        public Buidler setBaseUrl(Map baseUrl) {
-            setBaseUrl(baseUrl, true);
+        public Builder setDefaultDomainName(String domainName) {
+            if (!TextUtils.isEmpty(domainName)) {
+                this.domainNames.put("default", domainName);
+            }
             return this;
         }
 
-        public Buidler addBaseUrl(Map baseUrl) {
-            setBaseUrl(baseUrl, false);
+        public Builder setDomainName(Map<String, String> domainNames) {
+            if (domainNames != null) {
+                this.domainNames.putAll(domainNames);
+            }
             return this;
         }
 
-        public Buidler setHeader(Map header) {
-            setHeader(header, true);
+        public Builder setHeadParam(Map<String, String> headParam) {
+            if (headParam != null) {
+                this.headParam.putAll(headParam);
+            }
             return this;
         }
 
-        public Buidler addHeader(Map header) {
-            setHeader(header, false);
-            return this;
-        }
-
-        public Buidler setGetDelParams(Map getParams) {
-            setGetDelParam(getParams, true);
-            return this;
-        }
-
-        public Buidler addGetDelParams(Map getParams) {
-            setGetDelParam(getParams, false);
+        public Builder setInterceptors(List<Interceptor> interceptors) {
+            if (interceptors != null) {
+                this.interceptors.addAll(interceptors);
+            }
             return this;
         }
 
         public AutoNetConfig build() {
             return new AutoNetConfig(this);
         }
+    }
 
-        private void setBaseUrl(Map baseUrl, boolean isClear) {
-            if (baseUrl == null) {
-                return;
-            }
-            if (isClear) {
-                mBaseUrl.clear();
-            }
-            mBaseUrl.putAll(baseUrl);
-        }
+    public boolean isOpenStetho() {
+        return isOpenStetho;
+    }
 
-        private void setHeader(Map header, boolean isClear) {
-            if (header == null) {
-                return;
-            }
-            if (isClear) {
-                mHeader.clear();
-            }
-            mHeader.putAll(header);
-        }
+    public Map<String, String> getDomainNames() {
+        return domainNames;
+    }
 
-        private void setGetDelParam(Map getParam, boolean isClear) {
-            if (getParam == null) {
-                return;
-            }
-            if (isClear) {
-                mGetDelParams.clear();
-            }
-            mGetDelParams.putAll(getParam);
-        }
+    public Map<String, String> getHeadParam() {
+        return headParam;
+    }
+
+    public List<Interceptor> getInterceptors() {
+        return interceptors;
     }
 
 }

@@ -1,30 +1,26 @@
 package cn.xiaoxige.autonet_api.repository;
 
-import java.io.File;
 
-import cn.xiaoxige.autonet_api.data.requestentity.IRequestEntity;
 import io.reactivex.Flowable;
 
 /**
- * Created by zhuxiaoan on 2017/11/26.
+ * @author by zhuxiaoan on 2018/5/21 0021.
+ *         AutoNet's request implementation interface
  */
 
 public interface AutoNetRepo {
 
-    Flowable doGet(IRequestEntity entity, Class responseEntityClass);
+    Flowable doNetGet();
 
-    Flowable doPost(IRequestEntity entity, Class responseEntityClass);
+    Flowable doNetPost();
 
-    Flowable doDelete(IRequestEntity entity, Class responseEntityClass);
+    Flowable doPut();
 
-    Flowable doPut(IRequestEntity entity, Class responseEntityClass);
+    Flowable doDelete();
 
-    Flowable doPullStreamGet(IRequestEntity requestEntity, File file);
+    Flowable doLocal();
 
-    Flowable doPullStreamPost(IRequestEntity requestEntity, File file);
+    Flowable pushFile(String pushFileKey, String filePath);
 
-    Flowable doPushStreamGet(IRequestEntity requestEntity, Class responseEntityClass, String mediaType, String fileKey, File file);
-
-    Flowable doPushStreamPost(IRequestEntity requestEntity, Class responseEntityClass, String mediaType, String fileKey, File file);
-
+    Flowable pullFile(String filePath, String fileName);
 }

@@ -7,9 +7,16 @@ import java.lang.annotation.Target;
 
 /**
  * @author by zhuxiaoan on 2017/11/27 0027.
+ *         <p>
+ *         desc: the entity class type that specifies the return structure
+ *         <p>
+ *         <p>
+ *         value: specifies the type of return entity class
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 public @interface AutoNetResponseEntityClass {
+
     Class<?> value() default Void.class;
+
 }
