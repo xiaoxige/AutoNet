@@ -113,6 +113,7 @@ public class MainActivity extends RxActivity {
             }
         });
 
+        // 先网络后本地
         btnNetLocal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
