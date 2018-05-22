@@ -3,6 +3,7 @@ package cn.xiaoxige.autonet_api.net;
 import java.io.File;
 import java.io.IOException;
 
+import cn.xiaoxige.autonet_api.constant.AutoNetConstant;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -39,11 +40,11 @@ public class ProgressRequestBody {
                 long remaining = contentLength();
                 long current = 0;
                 float preProgress = 0;
-                float progress = 0;
-                for (long readCount; (readCount = source.read(buf, 2048)) != -1; ) {
+                float progress;
+                for (long readCount; (readCount = source.read(buf, AutoNetConstant.DEFAULT_BYBE_SIZE)) != -1; ) {
                     sink.write(buf, readCount);
                     current += readCount;
-                    progress = current * 100 / remaining;
+                    progress = current * AutoNetConstant.MAX_PROGRESS / remaining;
                     if (preProgress != progress) {
                         if (callBack != null) {
                             callBack.onPregress(progress);

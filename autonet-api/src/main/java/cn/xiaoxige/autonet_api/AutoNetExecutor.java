@@ -6,6 +6,7 @@ import java.util.Map;
 
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.autonet_api.abstracts.BaseUseCase;
+import cn.xiaoxige.autonet_api.constant.AutoNetConstant;
 import cn.xiaoxige.autonet_api.error.EmptyError;
 import cn.xiaoxige.autonet_api.interactors.AutoNetPullFileUseCase;
 import cn.xiaoxige.autonet_api.interactors.AutoNetPushFileUseCase;
@@ -213,7 +214,7 @@ public class AutoNetExecutor {
                     if (callBack instanceof IAutoNetFileCallBack) {
                         Float progress = (Float) entity;
                         ((IAutoNetFileCallBack) callBack).onPregress(progress);
-                        if (progress >= 100.0f) {
+                        if (progress >= AutoNetConstant.MAX_PROGRESS) {
                             ((IAutoNetFileCallBack) callBack).onComplete(new File(filePath));
                         }
                     }
@@ -253,7 +254,7 @@ public class AutoNetExecutor {
                 }
                 if (callBack instanceof IAutoNetFileCallBack) {
                     ((IAutoNetFileCallBack) callBack).onPregress(progress);
-                    if (progress >= 100) {
+                    if (progress >= AutoNetConstant.MAX_PROGRESS) {
                         ((IAutoNetFileCallBack) callBack).onComplete(new File(filePath + fileName));
                     }
                 }

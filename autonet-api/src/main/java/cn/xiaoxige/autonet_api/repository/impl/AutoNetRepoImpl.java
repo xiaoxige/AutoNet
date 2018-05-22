@@ -1,20 +1,18 @@
 package cn.xiaoxige.autonet_api.repository.impl;
 
-import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import cn.xiaoxige.autonet_api.client.Client;
+import cn.xiaoxige.autonet_api.constant.AutoNetConstant;
 import cn.xiaoxige.autonet_api.error.EmptyError;
 import cn.xiaoxige.autonet_api.flowable.DefaultFlowable;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
@@ -184,7 +182,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                             @Override
                             public void onComplete(File file) {
                                 //noinspection unchecked
-                                emitter.onNext(100.0f);
+                                emitter.onNext(AutoNetConstant.MAX_PROGRESS);
                             }
                         }));
 
@@ -314,12 +312,12 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         float progress;
         FileOutputStream fos = new FileOutputStream(file);
         int pullLength = 0;
-        byte[] b = new byte[1024];
+        byte[] b = new byte[AutoNetConstant.DEFAULT_BYBE_SIZE];
         int len;
         while ((len = is.read(b)) != -1) {
             fos.write(b, 0, len);
             pullLength += len;
-            progress = (float) (pullLength * 100 / fileSize);
+            progress = (pullLength * AutoNetConstant.MAX_PROGRESS / fileSize);
             if (preProgress != progress) {
                 //noinspection unchecked
                 emitter.onNext(progress);

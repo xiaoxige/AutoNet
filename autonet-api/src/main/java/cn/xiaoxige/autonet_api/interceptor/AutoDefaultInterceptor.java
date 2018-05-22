@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
+import cn.xiaoxige.autonet_api.constant.AutoNetConstant;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
 import okhttp3.Headers;
@@ -22,9 +23,6 @@ import okio.Buffer;
  */
 
 public class AutoDefaultInterceptor implements Interceptor {
-    private static final String GET = "GET";
-    private static final String DELETE = "DELETE";
-    private static final String SLASH = "/";
 
     private String extraDynamicParam;
     private Map<String, String> heads;
@@ -67,7 +65,7 @@ public class AutoDefaultInterceptor implements Interceptor {
         }
 
         String method = request.method();
-        if (GET.equals(method) || DELETE.equals(method)) {
+        if (AutoNetConstant.GET.equals(method) || AutoNetConstant.DELETE.equals(method)) {
             HttpUrl httpUrl = request.url();
             String url = httpUrl.url().toString();
             String[] split = url.split("\\?");
@@ -97,10 +95,10 @@ public class AutoDefaultInterceptor implements Interceptor {
         HttpUrl httpUrl = request.url();
         String url = httpUrl.toString();
         if (!TextUtils.isEmpty(url) && !TextUtils.isEmpty(this.extraDynamicParam)) {
-            if (!url.endsWith(SLASH) && !this.extraDynamicParam.startsWith(SLASH)) {
-                this.extraDynamicParam += SLASH;
-            } else if (url.endsWith(SLASH) && this.extraDynamicParam.startsWith(SLASH)) {
-                this.extraDynamicParam = this.extraDynamicParam.replace(SLASH, "");
+            if (!url.endsWith(AutoNetConstant.SLASH) && !this.extraDynamicParam.startsWith(AutoNetConstant.SLASH)) {
+                this.extraDynamicParam += AutoNetConstant.SLASH;
+            } else if (url.endsWith(AutoNetConstant.SLASH) && this.extraDynamicParam.startsWith(AutoNetConstant.SLASH)) {
+                this.extraDynamicParam = this.extraDynamicParam.replace(AutoNetConstant.SLASH, "");
             }
 
             url += this.extraDynamicParam;

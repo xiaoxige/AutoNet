@@ -19,7 +19,6 @@ import javax.net.ssl.X509TrustManager;
 import cn.xiaoxige.autonet_api.interceptor.AutoDefaultInterceptor;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
-import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 

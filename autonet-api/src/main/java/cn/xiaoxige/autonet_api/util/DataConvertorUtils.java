@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Data conversion tool class, such as model->entity
+ * @author by zhuxiaoan on 2018/5/21 0021.
+ *         Tool classes for data conversion
  */
 public class DataConvertorUtils {
     /**
