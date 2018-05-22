@@ -4,7 +4,7 @@
 
 #Git地址：https://github.com/xiaoxige/AutoNet
 
-#介绍：
+# 介绍：
 
 	* 使用方式，操作方式简单
     * 支持注解和链式两种方式
@@ -16,7 +16,7 @@
     * 上传及下载文件简单已用
     * ......
 
-#注：具体用法请看Demo
+# 注：具体用法请看Demo
 
 gradle依赖
 compile 'cn.xiaoxige:autonet-api:1.0.4'
@@ -77,26 +77,26 @@ annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
         }
     }).updateOrInsertDomainNames("jsonTestBaseUrl", "http://api.news18a.com");
 
-3. 链式调用
+3. 链式调用:
 
-    '''
     AutoNet.getInstance().createNet()
             .setDomainNameKey("pppig")
             .start(new IAutoNetDataSuccessCallBack() {
+
                 @Override
                 public void onSuccess(Object entity) {
                     tvResult.setText(entity.toString());
                 }
             });
-    '''
 
-4. Get请求
+4. Get请求:
 
     @AutoNetResponseEntityClass(TestResponseEntity.class)
     @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.GET)
     @AutoNetAnontation("/init.php")
     @AutoNetBaseUrlKeyAnontation("jsonTestBaseUrl")
     public class doGet implements IAutoNetDataCallBack<TestResponseEntity> {
+
         StringBuffer buffer = new StringBuffer();
 
         @Override
@@ -118,10 +118,11 @@ annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
         }
     }
 
-5. Post请求
+5. Post请求:
 
     @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.POST)
     public class doPost implements IAutoNetDataCallBack {
+
         StringBuffer buffer = new StringBuffer();
 
         @Override
@@ -143,7 +144,7 @@ annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
         }
     }
 
-6. 先本地后网络
+6. 先本地后网络:
 
     @AutoNetStrategyAnontation(AutoNetStrategyAnontation.NetStrategy.LOCAL_NET)
     public class doLocalNet implements IAutoNetDataCallBack, IAutoNetLocalOptCallBack {
@@ -176,7 +177,7 @@ annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
     }
 
 
-7. 上传文件
+7. 上传文件:
 
     @AutoNetBaseUrlKeyAnontation("upFile")
     @AutoNetTypeAnontation(reqType = AutoNetTypeAnontation.Type.STREAM)
@@ -216,12 +217,13 @@ annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
         }
     }
 
-8. 下载文件
+8. 下载文件:
 
     @AutoNetBaseUrlKeyAnontation("pppig")
     @AutoNetTypeAnontation(resType = AutoNetTypeAnontation.Type.STREAM)
     @AutoNetAnontation("/apk/downLoad/android_4.2.4.apk")
     public class PullFile implements IAutoNetDataCallBack, IAutoNetFileCallBack {
+
         StringBuffer buffer = new StringBuffer();
 
         @Override
@@ -253,5 +255,6 @@ annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
             tvResult.setText(buffer.toString());
         }
     }
+
 
 # 详情可以查看Demo
