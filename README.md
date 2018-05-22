@@ -77,3 +77,179 @@ annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
         }
     }).updateOrInsertDomainNames("jsonTestBaseUrl", "http://api.news18a.com");
 
+3. 链式调用
+
+    AutoNet.getInstance().createNet()
+            .setDomainNameKey("pppig")
+            .start(new IAutoNetDataSuccessCallBack() {
+                @Override
+                public void onSuccess(Object entity) {
+                    tvResult.setText(entity.toString());
+                }
+            });
+
+4. Get请求
+
+    @AutoNetResponseEntityClass(TestResponseEntity.class)
+    @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.GET)
+    @AutoNetAnontation("/init.php")
+    @AutoNetBaseUrlKeyAnontation("jsonTestBaseUrl")
+    public class doGet implements IAutoNetDataCallBack<TestResponseEntity> {
+        StringBuffer buffer = new StringBuffer();
+
+        @Override
+        public void onFailed(Throwable throwable) {
+            buffer.append("请求失败了：" + throwable.toString());
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onEmpty() {
+            buffer.append("请求失败了");
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onSuccess(TestResponseEntity entity) {
+            buffer.append("json数据请求成功\n" + entity.toString());
+            tvResult.setText(buffer.toString());
+        }
+    }
+
+5. Post请求
+
+    @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.POST)
+    public class doPost implements IAutoNetDataCallBack {
+        StringBuffer buffer = new StringBuffer();
+
+        @Override
+        public void onFailed(Throwable throwable) {
+            buffer.append("请求失败了：" + throwable.toString());
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onEmpty() {
+            buffer.append("请求失败了");
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onSuccess(Object entity) {
+            buffer.append("请求成功了\n" + entity.toString());
+            tvResult.setText(buffer.toString());
+        }
+    }
+
+6. 先本地后网络
+
+    @AutoNetStrategyAnontation(AutoNetStrategyAnontation.NetStrategy.LOCAL_NET)
+    public class doLocalNet implements IAutoNetDataCallBack, IAutoNetLocalOptCallBack {
+
+        StringBuffer buffer = new StringBuffer();
+
+        @Override
+        public void onFailed(Throwable throwable) {
+            buffer.append("请求失败了：" + throwable.toString());
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onEmpty() {
+            buffer.append("请求失败了");
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onSuccess(Object entity) {
+            buffer.append("成功了\n" + entity.toString());
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public Object optLocalData(IAutoNetRequest request) {
+            // 本地数据交给用户处理
+            return "\n这是本地数据,hahahahaha\n";
+        }
+    }
+
+
+7. 上传文件
+
+    @AutoNetBaseUrlKeyAnontation("upFile")
+    @AutoNetTypeAnontation(reqType = AutoNetTypeAnontation.Type.STREAM)
+    @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.POST)
+    public class PushFile implements IAutoNetDataCallBack, IAutoNetFileCallBack {
+
+        StringBuffer buffer = new StringBuffer();
+
+        @Override
+        public void onFailed(Throwable throwable) {
+            buffer.append("发送文件出错:\n" + throwable.toString() + "\n");
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onEmpty() {
+            buffer.append("发送文件出错");
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onSuccess(Object entity) {
+            buffer.append("发送文件成功， 服务器并返回:\n" + entity.toString() + "\n");
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onPregress(float progress) {
+            buffer.append("发送文件进度：" + progress + "\n");
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onComplete(File file) {
+            buffer.append("文件发送成功， 文件：" + file.toString() + "\n");
+            tvResult.setText(buffer.toString());
+        }
+    }
+
+8. 下载文件
+
+    @AutoNetBaseUrlKeyAnontation("pppig")
+    @AutoNetTypeAnontation(resType = AutoNetTypeAnontation.Type.STREAM)
+    @AutoNetAnontation("/apk/downLoad/android_4.2.4.apk")
+    public class PullFile implements IAutoNetDataCallBack, IAutoNetFileCallBack {
+        StringBuffer buffer = new StringBuffer();
+
+        @Override
+        public void onFailed(Throwable throwable) {
+            buffer.append("接收文件出错:\n" + throwable.toString() + "\n");
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onEmpty() {
+            buffer.append("接收文件出错");
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onSuccess(Object entity) {
+            // 不会被执行
+        }
+
+        @Override
+        public void onPregress(float progress) {
+            buffer.append("接收进度：" + progress + "\n");
+            tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public void onComplete(File file) {
+            buffer.append("文件接收成功， 文件：" + file.toString() + "\n");
+            tvResult.setText(buffer.toString());
+        }
+    }
+
+# 详情可以查看Demo
