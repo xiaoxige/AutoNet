@@ -1,7 +1,7 @@
 package cn.xiaoxige.autonet;
 
 import android.app.Application;
-import android.util.ArrayMap;
+import android.support.v4.util.ArrayMap;
 import android.util.Log;
 
 import java.util.Map;
@@ -25,11 +25,11 @@ public class MyApplication extends Application {
         super.onCreate();
 
 
-        Map<String, String> heads = new android.support.v4.util.ArrayMap<>();
+        Map<String, String> heads = new ArrayMap<>();
         heads.put("token", "0");
         heads.put("userId", "A");
 
-        Map<String, String> domainNames = new android.support.v4.util.ArrayMap<>();
+        Map<String, String> domainNames = new ArrayMap<>();
         domainNames.put("pppig", "https://www.pangpangpig.com");
         domainNames.put("upFile", "http://testimage.xxxx.com:8080");
 
