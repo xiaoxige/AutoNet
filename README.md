@@ -77,7 +77,7 @@ annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
         }
     }).updateOrInsertDomainNames("jsonTestBaseUrl", "http://api.news18a.com");
 
-3. 链式调用:
+3.链式调用:
 
     AutoNet.getInstance().createNet()
             .setDomainNameKey("pppig")
@@ -89,7 +89,7 @@ annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
                 }
             });
 
-4. Get请求:
+4.Get请求:
 
     @AutoNetResponseEntityClass(TestResponseEntity.class)
     @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.GET)
@@ -118,7 +118,7 @@ annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
         }
     }
 
-5. Post请求:
+5.Post请求:
 
     @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.POST)
     public class doPost implements IAutoNetDataCallBack {
@@ -144,7 +144,7 @@ annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
         }
     }
 
-6. 先本地后网络:
+6.先本地后网络:
 
     @AutoNetStrategyAnontation(AutoNetStrategyAnontation.NetStrategy.LOCAL_NET)
     public class doLocalNet implements IAutoNetDataCallBack, IAutoNetLocalOptCallBack {
@@ -177,7 +177,7 @@ annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
     }
 
 
-7. 上传文件:
+7.上传文件:
 
     @AutoNetBaseUrlKeyAnontation("upFile")
     @AutoNetTypeAnontation(reqType = AutoNetTypeAnontation.Type.STREAM)
@@ -217,7 +217,7 @@ annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
         }
     }
 
-8. 下载文件:
+8.下载文件:
 
     @AutoNetBaseUrlKeyAnontation("pppig")
     @AutoNetTypeAnontation(resType = AutoNetTypeAnontation.Type.STREAM)
@@ -255,6 +255,3 @@ annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
             tvResult.setText(buffer.toString());
         }
     }
-
-
-# 详情可以查看Demo
