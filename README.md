@@ -26,7 +26,16 @@ annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
 #联系方式：
 如果在使用的过程中， 出现什么问题欢迎在GitHub上issues，也可以给我发邮件：xiaoxigexiaoan@outlook.com
 
-#使用：
+# 代理类名规则
+
+    如果是回调是内部 则代理类名为 外层类名 + 回调类名 + AutoProxy
+    如果回调就是一个类 则代理类名为 回调类名 + AutoProxy
+
+# 注意
+
+    如果使用的是注解方式请求网络， 在写完类后，请build -> rebuild project。
+
+# 使用：
 
 1.注解介绍：
 
