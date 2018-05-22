@@ -79,7 +79,7 @@ annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
 
 3. 链式调用
 
-
+    '''
     AutoNet.getInstance().createNet()
             .setDomainNameKey("pppig")
             .start(new IAutoNetDataSuccessCallBack() {
@@ -88,7 +88,7 @@ annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
                     tvResult.setText(entity.toString());
                 }
             });
-
+    '''
 
 4. Get请求
 
