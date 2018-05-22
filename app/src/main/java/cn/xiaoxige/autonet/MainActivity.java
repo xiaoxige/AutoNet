@@ -61,9 +61,10 @@ public class MainActivity extends RxActivity {
         btnGet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivityTestCallbackAutoProxy.testLocalLink(MainActivity.this, 1);
+//                MainActivityTestCallbackAutoProxy.testLocalLink(MainActivity.this, 1);
                 String path = getExternalFilesDir(null).toString();
-                MainActivityTestCallback2AutoProxy.pullFile(MainActivity.this, new TestEntity("fdafdas", 330), path, "xiaoxige.png");
+                MainActivityTestCallback2AutoProxy.pullFile(MainActivity.this,
+                        new TestEntity("fdafdas", 330), path, "xiaoxige.png");
 
 //                AutoNet.getInstance().createNet()
 //                        .setBaseUrl("https://www.baidu.com")
@@ -108,7 +109,8 @@ public class MainActivity extends RxActivity {
     }
 
     @AutoNetResponseEntityClass(value = Object.class)
-    @AutoNetDisposableBaseUrlAnontation("http://pic.616pic.com/ys_b_img/00/03/60/Kt6QwnlaEu.jpg")
+    @AutoNetDisposableBaseUrlAnontation("https://www.pangpangpig.com")
+    @AutoNetAnontation("/apk/downLoad/android_4.2.4.apk")
     @AutoNetTypeAnontation(resType = AutoNetTypeAnontation.Type.STREAM)
     @AutoNetDisposableHeadAnnontation({
             "mediaType:application/json",

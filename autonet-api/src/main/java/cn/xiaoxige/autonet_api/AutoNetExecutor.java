@@ -244,18 +244,19 @@ public class AutoNetExecutor {
 
     public void pullFile(final String filePath, final String fileName) {
         AutoNetPullFileUseCase useCase = new AutoNetPullFileUseCase(mRepo, filePath, fileName);
-        useCase.execute(new DefaultSubscriber<Integer>() {
+        useCase.execute(new DefaultSubscriber() {
             @Override
-            protected void defaultOnNext(Integer progress) {
+            protected void defaultOnNext(Object object) {
                 //noinspection unchecked
-                super.defaultOnNext(progress);
+                super.defaultOnNext(object);
                 if (callBack == null) {
                     return;
                 }
                 if (callBack instanceof IAutoNetFileCallBack) {
-                    ((IAutoNetFileCallBack) callBack).onPregress(progress);
-                    if (progress >= AutoNetConstant.MAX_PROGRESS) {
-                        ((IAutoNetFileCallBack) callBack).onComplete(new File(filePath + fileName));
+                    if (object instanceof Float) {
+                        ((IAutoNetFileCallBack) callBack).onPregress((Float) object);
+                    } else if (object instanceof File) {
+                        ((IAutoNetFileCallBack) callBack).onComplete((File) object);
                     }
                 }
             }

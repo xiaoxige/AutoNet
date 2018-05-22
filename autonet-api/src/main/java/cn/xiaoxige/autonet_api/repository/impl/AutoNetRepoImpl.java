@@ -197,9 +197,9 @@ public class AutoNetRepoImpl implements AutoNetRepo {
     @Override
     public Flowable pullFile(final String filePath, final String fileName) {
         //noinspection UnnecessaryLocalVariable
-        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe<Integer>() {
+        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
             @Override
-            public void subscribe(FlowableEmitter<Integer> emitter) throws Exception {
+            public void subscribe(FlowableEmitter emitter) throws Exception {
                 String json = new Gson().toJson(requestEntity);
                 RequestBody body = RequestBody.create(MediaType.parse(mediaType), json);
                 Request request = new Request.Builder().url(url).post(body).build();
@@ -215,7 +215,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                     //noinspection ResultOfMethodCallIgnored
                     file.mkdirs();
                 }
-                file = new File(filePath + fileName);
+                file = new File(filePath + File.separator + fileName);
                 if (!file.exists()) {
                     //noinspection ResultOfMethodCallIgnored
                     file.createNewFile();
@@ -324,6 +324,8 @@ public class AutoNetRepoImpl implements AutoNetRepo {
             }
             preProgress = progress;
         }
+        //noinspection unchecked
+        emitter.onNext(file);
         fos.flush();
         fos.close();
         is.close();
