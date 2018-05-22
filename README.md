@@ -38,7 +38,7 @@
 
 # 使用：
 
-1.注解介绍：
+## 1.注解介绍：
 
     * AutoNetAnontation 网络参数设置(value(除去域名)、writeTime、readTime、connectOutTime)
     * AutoNetBaseUrlKeyAnontation BaseUrl的选择标识key(value)
@@ -51,7 +51,7 @@
     * AutoNetStrategyAnontation 网络请求策略(value(net/local/local_net/net_local))
     * AutoNetTypeAnontation 请求和返回的请求类型(reqType(json/form/stream), resType(json/form/stream))
 
-2.初始化：
+## 2.初始化：
 
     Map<String, String> heads = new ArrayMap<>();
     heads.put("token", "0");
@@ -87,7 +87,7 @@
         }
     }).updateOrInsertDomainNames("jsonTestBaseUrl", "http://api.news18a.com");
 
-3.链式调用:
+## 3.链式调用:
 
     AutoNet.getInstance().createNet()
             .setDomainNameKey("pppig")
@@ -99,7 +99,7 @@
                 }
             });
 
-4.Get请求:
+## 4.Get请求:
 
     @AutoNetResponseEntityClass(TestResponseEntity.class)
     @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.GET)
@@ -128,7 +128,7 @@
         }
     }
 
-5.Post请求:
+## 5.Post请求:
 
     @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.POST)
     public class doPost implements IAutoNetDataCallBack {
@@ -154,7 +154,7 @@
         }
     }
 
-6.先本地后网络:
+## 6.先本地后网络:
 
     @AutoNetStrategyAnontation(AutoNetStrategyAnontation.NetStrategy.LOCAL_NET)
     public class doLocalNet implements IAutoNetDataCallBack, IAutoNetLocalOptCallBack {
@@ -187,7 +187,7 @@
     }
 
 
-7.上传文件:
+## 7.上传文件:
 
     @AutoNetBaseUrlKeyAnontation("upFile")
     @AutoNetTypeAnontation(reqType = AutoNetTypeAnontation.Type.STREAM)
@@ -227,7 +227,7 @@
         }
     }
 
-8.下载文件:
+## 8.下载文件:
 
     @AutoNetBaseUrlKeyAnontation("pppig")
     @AutoNetTypeAnontation(resType = AutoNetTypeAnontation.Type.STREAM)
