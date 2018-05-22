@@ -14,6 +14,7 @@ import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.annotation.entity.ProxyInfo;
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetBodyCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataSuccessCallBack;
@@ -138,7 +139,8 @@ public final class AutoNet {
 
         AutoNetExecutor executor = new AutoNetExecutor(requestEntity, extraDynamicParam, url, mediaType,
                 writeOutTime, readOutTime, connectOutTime, encryptionKey, isEncryption, sConfig.getInterceptors(),
-                heads, responseClazzName, transformer, sAutoNetExtraConfig.getEncryptionCallback(), sAutoNetExtraConfig.getHeadCallBack(), callBack);
+                heads, responseClazzName, transformer,
+                sAutoNetExtraConfig.getEncryptionCallback(), sAutoNetExtraConfig.getHeadCallBack(), sAutoNetExtraConfig.getBodyCallBack(), callBack);
 
         if (isPushFileOperation(reqType, pushFileKey, filePath)) {
             executor.pushFile(pushFileKey, filePath);
@@ -459,6 +461,8 @@ public final class AutoNet {
 
         private IAutoNetHeadCallBack mHeadCallBack;
 
+        private IAutoNetBodyCallBack mBodyCallBack;
+
         private AutoNetExtraConfig() {
             mExtraHeads = new ArrayMap<>();
             mExtraDomainNames = new ArrayMap<>();
@@ -488,6 +492,13 @@ public final class AutoNet {
             return this;
         }
 
+        @Override
+        public IAutoNetExtraConfig setBodyCallback(IAutoNetBodyCallBack bodyCallback) {
+            this.mBodyCallBack = bodyCallback;
+            return this;
+        }
+
+
         public Map<String, String> getExtraHeads() {
             return mExtraHeads;
         }
@@ -502,6 +513,10 @@ public final class AutoNet {
 
         public IAutoNetHeadCallBack getHeadCallBack() {
             return mHeadCallBack;
+        }
+
+        public IAutoNetBodyCallBack getBodyCallBack() {
+            return mBodyCallBack;
         }
 
         @Override
@@ -714,6 +729,8 @@ public final class AutoNet {
         IAutoNetExtraConfig setEncryptionCallback(IAutoNetEncryptionCallback encryptionCallback);
 
         IAutoNetExtraConfig setHeadsCallback(IAutoNetHeadCallBack headsCallback);
+
+        IAutoNetExtraConfig setBodyCallback(IAutoNetBodyCallBack bodyCallback);
 
     }
 

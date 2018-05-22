@@ -16,6 +16,7 @@ import cn.xiaoxige.autonet_api.client.Client;
 import cn.xiaoxige.autonet_api.constant.AutoNetConstant;
 import cn.xiaoxige.autonet_api.error.EmptyError;
 import cn.xiaoxige.autonet_api.flowable.DefaultFlowable;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetBodyCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
@@ -48,6 +49,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
     private String mediaType;
     private String responseClazzName;
     private IAutoNetCallBack callBack;
+    private IAutoNetBodyCallBack bodyCallBack;
 
     private OkHttpClient client;
 
@@ -56,12 +58,13 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                            String url, String mediaType,
                            Long writeOutTime, Long readOutTime, Long connectOutTime,
                            Long encryptionKey, Boolean isEncryption, List<Interceptor> interceptors, Map<String, String> heads,
-                           String responseClazzName, IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack, IAutoNetCallBack callBack) {
+                           String responseClazzName, IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack, IAutoNetBodyCallBack bodyCallBack, IAutoNetCallBack callBack) {
         this.requestEntity = requestEntity;
         this.url = url;
         this.mediaType = mediaType;
         this.responseClazzName = responseClazzName;
         this.callBack = callBack;
+        this.bodyCallBack = bodyCallBack;
 
         this.client = Client.client(extraDynamicParam, writeOutTime, readOutTime, connectOutTime, heads, encryptionKey, isEncryption, interceptors, encryptionCallback, headCallBack);
     }
@@ -241,6 +244,15 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         }
         //noinspection ConstantConditions
         String content = body.string();
+
+        if (bodyCallBack != null) {
+            boolean isContinue
+                    = bodyCallBack.body(content);
+            if (isContinue) {
+                return;
+            }
+        }
+
         if (TextUtils.isEmpty(content)) {
             emitter.onError(new EmptyError());
         }

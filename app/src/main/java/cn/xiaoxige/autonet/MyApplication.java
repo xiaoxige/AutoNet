@@ -8,6 +8,7 @@ import java.util.Map;
 
 import cn.xiaoxige.autonet_api.AutoNet;
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetBodyCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
 import okhttp3.Headers;
@@ -49,6 +50,12 @@ public class MyApplication extends Application {
             @Override
             public void head(Headers headers) {
                 Log.e("TAG", "头部回调：" + headers);
+            }
+        }).setBodyCallback(new IAutoNetBodyCallBack() {
+            @Override
+            public boolean body(String object) {
+                Log.e("TAG", "body： " + object);
+                return false;
             }
         }).updateOrInsertDomainNames("jsonTestBaseUrl", "http://api.news18a.com");
 

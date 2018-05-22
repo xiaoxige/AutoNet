@@ -11,6 +11,7 @@ import cn.xiaoxige.autonet_api.error.EmptyError;
 import cn.xiaoxige.autonet_api.interactors.AutoNetPullFileUseCase;
 import cn.xiaoxige.autonet_api.interactors.AutoNetPushFileUseCase;
 import cn.xiaoxige.autonet_api.interactors.AutoNetUseCase;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetBodyCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataSuccessCallBack;
@@ -41,12 +42,12 @@ public class AutoNetExecutor {
                            String url, String mediaType,
                            Long writeOutTime, Long readOutTime, Long connectOutTime,
                            Long encryptionKey, Boolean isEncryption, List<Interceptor> interceptors, Map<String, String> heads,
-                           String responseClazzName, FlowableTransformer transformer, IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack, IAutoNetCallBack callBack) {
+                           String responseClazzName, FlowableTransformer transformer, IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack, IAutoNetBodyCallBack bodyCallBack, IAutoNetCallBack callBack) {
         this.transformer = transformer;
         this.callBack = callBack;
         mRepo = new AutoNetRepoImpl(requestEntity, extraDynamicParam,
                 url, mediaType, writeOutTime, readOutTime, connectOutTime,
-                encryptionKey, isEncryption, interceptors, heads, responseClazzName, encryptionCallback, headCallBack, callBack);
+                encryptionKey, isEncryption, interceptors, heads, responseClazzName, encryptionCallback, headCallBack, bodyCallBack, callBack);
     }
 
 
