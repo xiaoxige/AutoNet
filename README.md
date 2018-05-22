@@ -18,13 +18,14 @@
 
 # 注：具体用法请看Demo
 
-gradle依赖
-compile 'cn.xiaoxige:autonet-api:1.0.4'
+# gradle依赖:
 
-annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
+    compile 'cn.xiaoxige:autonet-api:1.0.4'
+    annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
 
-#联系方式：
-如果在使用的过程中， 出现什么问题欢迎在GitHub上issues，也可以给我发邮件：xiaoxigexiaoan@outlook.com
+# 联系方式：
+
+    如果在使用的过程中， 出现什么问题欢迎在GitHub上issues，也可以给我发邮件：xiaoxigexiaoan@outlook.com
 
 # 代理类名规则
 
