@@ -318,7 +318,9 @@ public class AutoNetExecutor {
                 ((IAutoNetFileCallBack) callBack).onComplete((File) object);
             }
         }
-        ansSuccess(object);
+        if (!(object instanceof Float) && !(object instanceof File)) {
+            ansSuccess(object);
+        }
     }
 
     private void ansEmpty() {
