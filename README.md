@@ -12,6 +12,7 @@
     * 可自主对数据进行加密请求
     * 可自主处理每次请求返回的头部数据
     * 可自主处理每次请求的body数据
+    * 可提前处理每次请求的数据，并决定返回去的数据
     * 可选择联网策略(网络、本地、先本地后网络、先网络后本地)
     * 上传及下载文件简单已用
     * ......
@@ -20,8 +21,8 @@
 
 # gradle依赖:
 
-    compile 'cn.xiaoxige:autonet-api:1.0.4'
-    annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.4'
+    compile 'cn.xiaoxige:autonet-api:1.0.5'
+    annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.5'
 
 # 联系方式：
 
