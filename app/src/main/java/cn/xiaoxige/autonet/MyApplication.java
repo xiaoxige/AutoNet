@@ -11,6 +11,7 @@ import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetBodyCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
+import io.reactivex.FlowableEmitter;
 import okhttp3.Headers;
 
 
@@ -53,10 +54,11 @@ public class MyApplication extends Application {
             }
         }).setBodyCallback(new IAutoNetBodyCallBack() {
             @Override
-            public boolean body(String object) {
+            public boolean body(String object, FlowableEmitter emitter) {
                 Log.e("TAG", "body： " + object);
                 return false;
             }
+
         }).updateOrInsertDomainNames("jsonTestBaseUrl", "http://api.news18a.com");
 
 

@@ -27,12 +27,15 @@ import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.autonet.entity.TestRequest;
 import cn.xiaoxige.autonet.entity.TestResponseEntity;
 import cn.xiaoxige.autonet_api.AutoNet;
+import cn.xiaoxige.autonet_api.error.EmptyError;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataBeforeCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataSuccessCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetLocalOptCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
+import io.reactivex.FlowableEmitter;
 
 public class MainActivity extends RxActivity {
 
@@ -183,7 +186,7 @@ public class MainActivity extends RxActivity {
     @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.GET)
     @AutoNetAnontation("/init.php")
     @AutoNetBaseUrlKeyAnontation("jsonTestBaseUrl")
-    public class doGet implements IAutoNetDataCallBack<TestResponseEntity> {
+    public class doGet implements IAutoNetDataCallBack<TestResponseEntity.Data>, IAutoNetDataBeforeCallBack {
         StringBuffer buffer = new StringBuffer();
 
         @Override
@@ -194,14 +197,26 @@ public class MainActivity extends RxActivity {
 
         @Override
         public void onEmpty() {
-            buffer.append("请求失败了");
+            buffer.append("请求为空");
             tvResult.setText(buffer.toString());
         }
 
         @Override
-        public void onSuccess(TestResponseEntity entity) {
+        public void onSuccess(TestResponseEntity.Data entity) {
             buffer.append("json数据请求成功\n" + entity.toString());
             tvResult.setText(buffer.toString());
+        }
+
+        @Override
+        public boolean handlerBefore(Object o, FlowableEmitter emitter) {
+            Log.e("xiaoxige", o.toString());
+            //1
+//            emitter.onError(new EmptyError());
+            //2
+            TestResponseEntity testResponseEntity = (TestResponseEntity) o;
+            TestResponseEntity.Data data = ((TestResponseEntity) o).getData();
+            emitter.onNext(data);
+            return true;
         }
     }
 

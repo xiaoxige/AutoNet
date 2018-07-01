@@ -686,6 +686,54 @@ public final class AutoNet {
         }
 
         @Override
+        public IAutoNetNonAnontation doGet() {
+            return doGet(null);
+        }
+
+        @Override
+        public IAutoNetNonAnontation doPost() {
+            return doPost(null);
+        }
+
+        @Override
+        public IAutoNetNonAnontation doDelete() {
+            return doDelete(null);
+        }
+
+        @Override
+        public IAutoNetNonAnontation doPut() {
+            return doPut(null);
+        }
+
+        @Override
+        public IAutoNetNonAnontation doGet(IAutoNetRequest request) {
+            this.info.netPattern = AutoNetPatternAnontation.NetPattern.GET;
+            this.requestEntity = request;
+            return this;
+        }
+
+        @Override
+        public IAutoNetNonAnontation doPost(IAutoNetRequest request) {
+            this.info.netPattern = AutoNetPatternAnontation.NetPattern.POST;
+            this.requestEntity = request;
+            return this;
+        }
+
+        @Override
+        public IAutoNetNonAnontation doDelete(IAutoNetRequest request) {
+            this.info.netPattern = AutoNetPatternAnontation.NetPattern.DELETE;
+            this.requestEntity = request;
+            return this;
+        }
+
+        @Override
+        public IAutoNetNonAnontation doPut(IAutoNetRequest request) {
+            this.info.netPattern = AutoNetPatternAnontation.NetPattern.PUT;
+            this.requestEntity = request;
+            return this;
+        }
+
+        @Override
         public void start(IAutoNetCallBack callBack) {
             startNet(requestEntity, extraDynamicParam, info.domainNameKey, info.suffixUrl, info.mediaType,
                     info.writeOutTime, info.readOutTime, info.connectOutTime, info.encryptionKey, info.isEncryption, info.disposableBaseUrl,
@@ -775,6 +823,22 @@ public final class AutoNet {
         IAutoNetNonAnontation setResponseClazz(Class clazz);
 
         IAutoNetNonAnontation setTransformer(FlowableTransformer transformer);
+
+        IAutoNetNonAnontation doGet();
+
+        IAutoNetNonAnontation doPost();
+
+        IAutoNetNonAnontation doDelete();
+
+        IAutoNetNonAnontation doPut();
+
+        IAutoNetNonAnontation doGet(IAutoNetRequest request);
+
+        IAutoNetNonAnontation doPost(IAutoNetRequest request);
+
+        IAutoNetNonAnontation doDelete(IAutoNetRequest request);
+
+        IAutoNetNonAnontation doPut(IAutoNetRequest request);
 
         void start(IAutoNetCallBack callBack);
     }

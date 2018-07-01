@@ -18,6 +18,7 @@ import cn.xiaoxige.autonet_api.error.EmptyError;
 import cn.xiaoxige.autonet_api.flowable.DefaultFlowable;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetBodyCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataBeforeCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
@@ -247,7 +248,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
 
         if (bodyCallBack != null) {
             boolean isContinue
-                    = bodyCallBack.body(content);
+                    = bodyCallBack.body(content, emitter);
             if (isContinue) {
                 return;
             }
@@ -261,12 +262,24 @@ public class AutoNetRepoImpl implements AutoNetRepo {
             if (TextUtils.isEmpty(responseClazzName)
                     || String.class.getCanonicalName().equals(responseClazzName)
                     || Object.class.getCanonicalName().equals(responseClazzName)) {
+                if (callBack != null && callBack instanceof IAutoNetDataBeforeCallBack) {
+                    boolean isStop = ((IAutoNetDataBeforeCallBack) callBack).handlerBefore(content, emitter);
+                    if (isStop) {
+                        return;
+                    }
+                }
                 //noinspection SingleStatementInBlock,unchecked
                 emitter.onNext(content);
             } else {
 
                 Class<?> clazz = Class.forName(responseClazzName);
                 Object object = new Gson().fromJson(content, clazz);
+                if (callBack != null && callBack instanceof IAutoNetDataBeforeCallBack) {
+                    boolean isStop = ((IAutoNetDataBeforeCallBack) callBack).handlerBefore(object, emitter);
+                    if (isStop) {
+                        return;
+                    }
+                }
                 //noinspection unchecked
                 emitter.onNext(object);
             }
