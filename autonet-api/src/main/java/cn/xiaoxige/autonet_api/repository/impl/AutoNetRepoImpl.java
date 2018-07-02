@@ -45,7 +45,7 @@ import okhttp3.ResponseBody;
 
 public class AutoNetRepoImpl implements AutoNetRepo {
 
-    private IAutoNetRequest requestEntity;
+    private Map requestParams;
     private String url;
     private String mediaType;
     private String responseClazzName;
@@ -55,12 +55,12 @@ public class AutoNetRepoImpl implements AutoNetRepo {
     private OkHttpClient client;
 
 
-    public AutoNetRepoImpl(IAutoNetRequest requestEntity, String extraDynamicParam,
+    public AutoNetRepoImpl(Map requestParams, String extraDynamicParam,
                            String url, String mediaType,
                            Long writeOutTime, Long readOutTime, Long connectOutTime,
                            Long encryptionKey, Boolean isEncryption, List<Interceptor> interceptors, Map<String, String> heads,
                            String responseClazzName, IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack, IAutoNetBodyCallBack bodyCallBack, IAutoNetCallBack callBack) {
-        this.requestEntity = requestEntity;
+        this.requestParams = requestParams;
         this.url = url;
         this.mediaType = mediaType;
         this.responseClazzName = responseClazzName;
@@ -77,7 +77,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
             @Override
             public void subscribe(FlowableEmitter emitter) throws Exception {
-                String newUrl = restructureUrlWithParams(url, requestEntity);
+                String newUrl = restructureUrlWithParams(url, requestParams);
                 Request request = new Request.Builder()
                         .get()
                         .url(newUrl)
@@ -94,7 +94,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
             @Override
             public void subscribe(FlowableEmitter emitter) throws Exception {
-                String json = new Gson().toJson(requestEntity);
+                String json = new Gson().toJson(requestParams);
                 RequestBody body = RequestBody.create(MediaType.parse(mediaType), json);
                 Request request = new Request.Builder().url(url).post(body).build();
                 executeNet(request, emitter);
@@ -109,7 +109,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
             @Override
             public void subscribe(FlowableEmitter emitter) throws Exception {
-                String json = new Gson().toJson(requestEntity);
+                String json = new Gson().toJson(requestParams);
                 RequestBody body = RequestBody.create(MediaType.parse(mediaType), json);
                 Request request = new Request.Builder().url(url).put(body).build();
                 executeNet(request, emitter);
@@ -124,7 +124,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
             @Override
             public void subscribe(FlowableEmitter emitter) throws Exception {
-                String newUrl = restructureUrlWithParams(url, requestEntity);
+                String newUrl = restructureUrlWithParams(url, requestParams);
                 Request request = new Request.Builder()
                         .delete()
                         .url(newUrl)
@@ -142,7 +142,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
             @Override
             public void subscribe(FlowableEmitter emitter) throws Exception {
                 if (callBack instanceof IAutoNetLocalOptCallBack) {
-                    Object object = ((IAutoNetLocalOptCallBack) callBack).optLocalData(requestEntity);
+                    Object object = ((IAutoNetLocalOptCallBack) callBack).optLocalData(requestParams);
                     if (object == null) {
                         emitter.onError(new EmptyError());
                     } else {
@@ -167,11 +167,10 @@ public class AutoNetRepoImpl implements AutoNetRepo {
             public void subscribe(final FlowableEmitter emitter) throws Exception {
                 MultipartBody.Builder builder = new MultipartBody.Builder();
                 builder.setType(MultipartBody.FORM);
-                if (requestEntity != null) {
-                    Map<String, String> params = DataConvertorUtils.convertEntityToMap(requestEntity, true);
-                    Set<String> keys = params.keySet();
+                if (requestParams != null) {
+                    Set<String> keys = requestParams.keySet();
                     for (String key : keys) {
-                        builder.addFormDataPart(key, params.get(key));
+                        builder.addFormDataPart(key, (String) requestParams.get(key));
                     }
                 }
 
@@ -209,7 +208,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
             @Override
             public void subscribe(FlowableEmitter emitter) throws Exception {
-                String json = new Gson().toJson(requestEntity);
+                String json = new Gson().toJson(requestParams);
                 RequestBody body = RequestBody.create(MediaType.parse(mediaType), json);
                 Request request = new Request.Builder().url(url).post(body).build();
                 Response response = client.newCall(request).execute();
@@ -292,15 +291,16 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         }
     }
 
-    private String restructureUrlWithParams(String url, IAutoNetRequest request) {
-        if (request == null) {
-            return url;
-        }
-        Map<String, String> params = DataConvertorUtils.convertEntityToMap(request, true);
-        if (params == null || params.size() <= 0) {
+    private String restructureUrlWithParams(String url, Map params) {
+        if (params == null) {
             return url;
         }
 
+        if (params.size() <= 0) {
+            return url;
+        }
+
+        //noinspection unchecked
         Set<String> keys =
                 params.keySet();
         //noinspection StringBufferMayBeStringBuilder
@@ -312,7 +312,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
             } else {
                 paramsBuffer.append("&");
             }
-            String value = params.get(key);
+            Object value = params.get(key);
             paramsBuffer.append(key + "=" + value);
             i++;
         }

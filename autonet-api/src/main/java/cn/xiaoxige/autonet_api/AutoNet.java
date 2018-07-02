@@ -115,7 +115,7 @@ public final class AutoNet {
      * @param fileName
      * @param transformer
      */
-    public static final void startNet(IAutoNetRequest requestEntity, String extraDynamicParam,
+    public static final void startNet(IAutoNetRequest requestEntity, Map requestMap, String extraDynamicParam,
                                       String domainNameKey, String suffixUrl,
                                       String mediaType, Long writeOutTime, Long readOutTime,
                                       Long connectOutTime, Long encryptionKey, Boolean isEncryption,
@@ -137,7 +137,7 @@ public final class AutoNet {
         String url = getUrlByRequest(domainNameKey, sConfig.getDomainNames(), sAutoNetExtraConfig.getExtraDomainNames(), disposableBaseUrl, suffixUrl);
         mediaType = autoAdjustmentAdjustmentMediaType(mediaType, reqType);
 
-        AutoNetExecutor executor = new AutoNetExecutor(requestEntity, extraDynamicParam, url, mediaType,
+        AutoNetExecutor executor = new AutoNetExecutor(requestEntity, requestMap, extraDynamicParam, url, mediaType,
                 writeOutTime, readOutTime, connectOutTime, encryptionKey, isEncryption, sConfig.getInterceptors(),
                 heads, responseClazzName, transformer,
                 sAutoNetExtraConfig.getEncryptionCallback(), sAutoNetExtraConfig.getHeadCallBack(), sAutoNetExtraConfig.getBodyCallBack(), callBack);
@@ -549,6 +549,7 @@ public final class AutoNet {
 
         private ProxyInfo info;
         private IAutoNetRequest requestEntity;
+        private Map requestMap;
         private String extraDynamicParam;
         String pushFileKey;
         String filePath;
@@ -557,6 +558,7 @@ public final class AutoNet {
         private StringBuffer disposableHeads;
 
         private AutoNetNonAnontation() {
+            requestMap = new ArrayMap();
             info = new ProxyInfo();
         }
 
@@ -734,8 +736,20 @@ public final class AutoNet {
         }
 
         @Override
+        public IAutoNetNonAnontation setParam(String key, Object value) {
+            requestMap.put(key, value);
+            return this;
+        }
+
+        @Override
+        public IAutoNetNonAnontation setParams(Map params) {
+            requestMap.putAll(params);
+            return this;
+        }
+
+        @Override
         public void start(IAutoNetCallBack callBack) {
-            startNet(requestEntity, extraDynamicParam, info.domainNameKey, info.suffixUrl, info.mediaType,
+            startNet(requestEntity, requestMap, extraDynamicParam, info.domainNameKey, info.suffixUrl, info.mediaType,
                     info.writeOutTime, info.readOutTime, info.connectOutTime, info.encryptionKey, info.isEncryption, info.disposableBaseUrl,
                     disposableHeads == null ? null : disposableHeads.toString(),
                     info.netPattern, info.reqType, info.resType, info.netStrategy, info.responseClazzName, callBack, pushFileKey, filePath, fileName, transformer);
@@ -839,6 +853,10 @@ public final class AutoNet {
         IAutoNetNonAnontation doDelete(IAutoNetRequest request);
 
         IAutoNetNonAnontation doPut(IAutoNetRequest request);
+
+        IAutoNetNonAnontation setParam(String key, Object value);
+
+        IAutoNetNonAnontation setParams(Map params);
 
         void start(IAutoNetCallBack callBack);
     }

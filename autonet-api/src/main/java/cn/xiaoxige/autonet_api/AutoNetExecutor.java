@@ -1,5 +1,7 @@
 package cn.xiaoxige.autonet_api;
 
+import android.support.v4.util.ArrayMap;
+
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +24,7 @@ import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
 import cn.xiaoxige.autonet_api.repository.AutoNetRepo;
 import cn.xiaoxige.autonet_api.repository.impl.AutoNetRepoImpl;
 import cn.xiaoxige.autonet_api.subscriber.DefaultSubscriber;
+import cn.xiaoxige.autonet_api.util.DataConvertorUtils;
 import io.reactivex.FlowableTransformer;
 import okhttp3.Interceptor;
 
@@ -38,18 +41,18 @@ public class AutoNetExecutor {
 
     private AutoNetRepo mRepo;
 
-    public AutoNetExecutor(IAutoNetRequest requestEntity, String extraDynamicParam,
+    public AutoNetExecutor(IAutoNetRequest requestEntity, Map requestMap, String extraDynamicParam,
                            String url, String mediaType,
                            Long writeOutTime, Long readOutTime, Long connectOutTime,
                            Long encryptionKey, Boolean isEncryption, List<Interceptor> interceptors, Map<String, String> heads,
                            String responseClazzName, FlowableTransformer transformer, IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack, IAutoNetBodyCallBack bodyCallBack, IAutoNetCallBack callBack) {
         this.transformer = transformer;
         this.callBack = callBack;
-        mRepo = new AutoNetRepoImpl(requestEntity, extraDynamicParam,
+        Map params = integrationParams(requestEntity, requestMap);
+        mRepo = new AutoNetRepoImpl(params, extraDynamicParam,
                 url, mediaType, writeOutTime, readOutTime, connectOutTime,
                 encryptionKey, isEncryption, interceptors, heads, responseClazzName, encryptionCallback, headCallBack, bodyCallBack, callBack);
     }
-
 
     @Deprecated
     public void doNetGet() {
@@ -346,6 +349,26 @@ public class AutoNetExecutor {
             }
         }
     }
+
+    /**
+     * Integration request parameters
+     *
+     * @param requestEntity
+     * @param requestMap
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    private Map integrationParams(IAutoNetRequest requestEntity, Map requestMap) {
+        Map params = new ArrayMap();
+        if (requestEntity != null) {
+            params.putAll(DataConvertorUtils.convertEntityToMap(requestEntity, true));
+        }
+        if (requestMap != null) {
+            params.putAll(requestMap);
+        }
+        return params;
+    }
+
 
     private interface OnInsertOpt {
 

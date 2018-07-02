@@ -3,6 +3,7 @@ package cn.xiaoxige.autonet;
 
 import android.os.Bundle;
 import android.support.annotation.MainThread;
+import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +15,7 @@ import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.trello.rxlifecycle2.components.RxActivity;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Random;
 
 import cn.xiaoxige.annotation.AutoNetAnontation;
@@ -154,8 +156,25 @@ public class MainActivity extends RxActivity {
         btnChainRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Map map = new ArrayMap();
+
+                map.put("shabi", "hahfdhahfdas");
+
+                TestRequest aaaaa = new TestRequest();
+
+                aaaaa.setA("fjdasfjkldas");
+                aaaaa.setM("fdhjasfkldjasf");
+                aaaaa.setC("1231");
+
                 AutoNet.getInstance().createNet()
                         .setDomainNameKey("pppig")
+
+                        .doPost(aaaaa)
+
+                        .setParam("xiaoxige", "zhuxiaoan")
+                        .setParam("shuzi", 1)
+                        .setParams(map)
+
                         .start(new IAutoNetDataSuccessCallBack() {
                             @Override
                             public void onSuccess(Object entity) {
@@ -267,7 +286,7 @@ public class MainActivity extends RxActivity {
         }
 
         @Override
-        public Object optLocalData(IAutoNetRequest request) {
+        public Object optLocalData(Map request) {
             // 本地数据交给用户处理
             return "\n这是本地数据,hahahahaha\n";
         }
@@ -297,7 +316,7 @@ public class MainActivity extends RxActivity {
         }
 
         @Override
-        public Object optLocalData(IAutoNetRequest request) {
+        public Object optLocalData(Map request) {
             // 本地数据交给用户处理
             return "\n这是本地数据,hahahahaha\n";
         }
