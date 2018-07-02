@@ -7,6 +7,7 @@
 # 介绍：
 
 	* 使用方式，操作方式简单
+	* 请求支持实体类和Map传参
     * 支持注解和链式两种方式
     * 可添加固定和动态的头部信息
     * 可自主对数据进行加密请求
@@ -21,8 +22,8 @@
 
 # gradle依赖:
 
-    compile 'cn.xiaoxige:autonet-api:1.0.5'
-    annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.5'
+    compile 'cn.xiaoxige:autonet-api:1.0.6'
+    annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.6'
 
 # 联系方式：
 
