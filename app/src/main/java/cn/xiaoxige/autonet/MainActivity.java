@@ -29,6 +29,7 @@ import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.autonet.entity.TestRequest;
 import cn.xiaoxige.autonet.entity.TestResponseEntity;
 import cn.xiaoxige.autonet_api.AutoNet;
+import cn.xiaoxige.autonet_api.abstracts.AbsAutoNetCallback;
 import cn.xiaoxige.autonet_api.error.EmptyError;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataBeforeCallBack;
@@ -175,10 +176,17 @@ public class MainActivity extends RxActivity {
                         .setParam("shuzi", 1)
                         .setParams(map)
 
-                        .start(new IAutoNetDataSuccessCallBack() {
+                        .start(new AbsAutoNetCallback<Object, String>() {
                             @Override
-                            public void onSuccess(Object entity) {
-                                tvResult.setText(entity.toString());
+                            public boolean handlerBefore(Object o, FlowableEmitter emitter) {
+                                emitter.onNext("哈哈， 我拦击了， 我修改了返回结果");
+                                return true;
+                            }
+
+                            @Override
+                            public void onSuccess(String entity) {
+                                super.onSuccess(entity);
+                                tvResult.setText(entity);
                             }
                         });
             }
