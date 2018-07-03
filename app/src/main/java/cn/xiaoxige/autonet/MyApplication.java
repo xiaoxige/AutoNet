@@ -33,6 +33,7 @@ public class MyApplication extends Application {
         Map<String, String> domainNames = new ArrayMap<>();
         domainNames.put("pppig", "https://www.pangpangpig.com");
         domainNames.put("upFile", "http://testimage.xxxx.com:8080");
+        domainNames.put("test", "http://192.168.1.38:8080");
 
         AutoNetConfig config = new AutoNetConfig.Builder()
                 .isOpenStetho(true)

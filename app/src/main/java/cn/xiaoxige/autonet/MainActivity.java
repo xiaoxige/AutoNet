@@ -161,24 +161,14 @@ public class MainActivity extends RxActivity {
 
                 map.put("shabi", "hahfdhahfdas");
 
-                TestRequest aaaaa = new TestRequest();
-
-                aaaaa.setA("fjdasfjkldas");
-                aaaaa.setM("fdhjasfkldjasf");
-                aaaaa.setC("1231");
-
                 AutoNet.getInstance().createNet()
-                        .setDomainNameKey("pppig")
-
-                        .doPost(aaaaa)
-
-                        .setParam("xiaoxige", "zhuxiaoan")
-                        .setParam("shuzi", 1)
-                        .setParams(map)
-
+                        .setDomainNameKey("test")
+                        .doPost()
+                        .setSuffixUrl("/home/getHomeData")
                         .start(new AbsAutoNetCallback<Object, String>() {
                             @Override
                             public boolean handlerBefore(Object o, FlowableEmitter emitter) {
+                                Log.e("TAG", "o = " + o.toString());
                                 emitter.onNext("哈哈， 我拦击了， 我修改了返回结果");
                                 return true;
                             }
