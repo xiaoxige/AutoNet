@@ -8,8 +8,10 @@ import java.util.Map;
 
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.autonet_api.abstracts.BaseUseCase;
+import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.constant.AutoNetConstant;
 import cn.xiaoxige.autonet_api.error.EmptyError;
+import cn.xiaoxige.autonet_api.error.NoNetError;
 import cn.xiaoxige.autonet_api.interactors.AutoNetPullFileUseCase;
 import cn.xiaoxige.autonet_api.interactors.AutoNetPushFileUseCase;
 import cn.xiaoxige.autonet_api.interactors.AutoNetUseCase;
@@ -25,6 +27,7 @@ import cn.xiaoxige.autonet_api.repository.AutoNetRepo;
 import cn.xiaoxige.autonet_api.repository.impl.AutoNetRepoImpl;
 import cn.xiaoxige.autonet_api.subscriber.DefaultSubscriber;
 import cn.xiaoxige.autonet_api.util.DataConvertorUtils;
+import cn.xiaoxige.autonet_api.util.NetUtil;
 import io.reactivex.FlowableTransformer;
 import okhttp3.Interceptor;
 
@@ -205,6 +208,12 @@ public class AutoNetExecutor {
     }
 
     public void pushFile(String pushFileKey, final String filePath) {
+
+        if (!NetUtil.isNetworkAvailable(AutoNetConstant.sAutoNetContext)) {
+            ansError(new NoNetError());
+            return;
+        }
+
         AutoNetPushFileUseCase useCase = new AutoNetPushFileUseCase(mRepo, pushFileKey, filePath);
         useCase.execute(new DefaultSubscriber() {
             @Override
@@ -234,6 +243,12 @@ public class AutoNetExecutor {
     }
 
     public void pullFile(final String filePath, final String fileName) {
+
+        if (!NetUtil.isNetworkAvailable(AutoNetConstant.sAutoNetContext)) {
+            ansError(new NoNetError());
+            return;
+        }
+
         AutoNetPullFileUseCase useCase = new AutoNetPullFileUseCase(mRepo, filePath, fileName);
         useCase.execute(new DefaultSubscriber() {
             @Override
@@ -263,6 +278,12 @@ public class AutoNetExecutor {
     }
 
     private void net(int netState, final OnInsertOpt insertOpt) {
+
+        if (!NetUtil.isNetworkAvailable(AutoNetConstant.sAutoNetContext)) {
+            ansError(new NoNetError());
+            return;
+        }
+
         AutoNetUseCase useCase = new AutoNetUseCase(mRepo, netState);
         useCase.execute(new DefaultSubscriber() {
             @Override

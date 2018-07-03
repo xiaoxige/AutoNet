@@ -1,11 +1,15 @@
 package cn.xiaoxige.autonet_api.constant;
 
+import android.content.Context;
+
 /**
  * @author by zhuxiaoan on 2018/5/22 0022.
  *         static final value of autonet
  */
 
 public class AutoNetConstant {
+
+    public static Context sAutoNetContext;
 
     public static final String GET = "GET";
     public static final String POST = "POST";

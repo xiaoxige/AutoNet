@@ -14,6 +14,7 @@ import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.annotation.entity.ProxyInfo;
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
+import cn.xiaoxige.autonet_api.constant.AutoNetConstant;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetBodyCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
@@ -86,6 +87,7 @@ public final class AutoNet {
     }
 
     private void init(Context context) {
+        AutoNetConstant.sAutoNetContext = context;
         boolean openStetho = sConfig.isOpenStetho();
         if (openStetho) {
             Stetho.initializeWithDefaults(context);
