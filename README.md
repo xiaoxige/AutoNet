@@ -22,8 +22,8 @@
 
 # gradle依赖:
 
-    compile 'cn.xiaoxige:autonet-api:1.0.6'
-    annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.6'
+    compile 'cn.xiaoxige:autonet-api:1.0.7'
+    annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.7'
 
 # 联系方式：
 
