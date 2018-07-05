@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
+import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.autonet_api.abstracts.BaseUseCase;
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.constant.AutoNetConstant;
@@ -48,13 +49,13 @@ public class AutoNetExecutor {
                            String url, String mediaType,
                            Long writeOutTime, Long readOutTime, Long connectOutTime,
                            Long encryptionKey, Boolean isEncryption, List<Interceptor> interceptors, Map<String, String> heads,
-                           String responseClazzName, FlowableTransformer transformer, IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack, IAutoNetBodyCallBack bodyCallBack, IAutoNetCallBack callBack) {
+                           String responseClazzName, FlowableTransformer transformer, AutoNetTypeAnontation.Type reqType, IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack, IAutoNetBodyCallBack bodyCallBack, IAutoNetCallBack callBack) {
         this.transformer = transformer;
         this.callBack = callBack;
         Map params = integrationParams(requestEntity, requestMap);
         mRepo = new AutoNetRepoImpl(params, extraDynamicParam,
                 url, mediaType, writeOutTime, readOutTime, connectOutTime,
-                encryptionKey, isEncryption, interceptors, heads, responseClazzName, encryptionCallback, headCallBack, bodyCallBack, callBack);
+                encryptionKey, isEncryption, interceptors, heads, responseClazzName, reqType, encryptionCallback, headCallBack, bodyCallBack, callBack);
     }
 
     @Deprecated

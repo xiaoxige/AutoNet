@@ -1,7 +1,6 @@
 package cn.xiaoxige.autonet_api.repository.impl;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -12,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.autonet_api.client.Client;
 import cn.xiaoxige.autonet_api.constant.AutoNetConstant;
 import cn.xiaoxige.autonet_api.error.EmptyError;
@@ -23,10 +23,8 @@ import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetLocalOptCallBack;
-import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
 import cn.xiaoxige.autonet_api.net.ProgressRequestBody;
 import cn.xiaoxige.autonet_api.repository.AutoNetRepo;
-import cn.xiaoxige.autonet_api.util.DataConvertorUtils;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
@@ -49,6 +47,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
     private String url;
     private String mediaType;
     private String responseClazzName;
+    private AutoNetTypeAnontation.Type reqType;
     private IAutoNetCallBack callBack;
     private IAutoNetBodyCallBack bodyCallBack;
 
@@ -59,11 +58,12 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                            String url, String mediaType,
                            Long writeOutTime, Long readOutTime, Long connectOutTime,
                            Long encryptionKey, Boolean isEncryption, List<Interceptor> interceptors, Map<String, String> heads,
-                           String responseClazzName, IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack, IAutoNetBodyCallBack bodyCallBack, IAutoNetCallBack callBack) {
+                           String responseClazzName, AutoNetTypeAnontation.Type reqType, IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack, IAutoNetBodyCallBack bodyCallBack, IAutoNetCallBack callBack) {
         this.requestParams = requestParams;
         this.url = url;
         this.mediaType = mediaType;
         this.responseClazzName = responseClazzName;
+        this.reqType = reqType;
         this.callBack = callBack;
         this.bodyCallBack = bodyCallBack;
 
@@ -94,8 +94,8 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
             @Override
             public void subscribe(FlowableEmitter emitter) throws Exception {
-                String json = new Gson().toJson(requestParams);
-                RequestBody body = RequestBody.create(MediaType.parse(mediaType), json);
+                String bodyParams = structureBodyParams(reqType, requestParams);
+                RequestBody body = RequestBody.create(MediaType.parse(mediaType), bodyParams);
                 Request request = new Request.Builder().url(url).post(body).build();
                 executeNet(request, emitter);
             }
@@ -109,8 +109,8 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
             @Override
             public void subscribe(FlowableEmitter emitter) throws Exception {
-                String json = new Gson().toJson(requestParams);
-                RequestBody body = RequestBody.create(MediaType.parse(mediaType), json);
+                String bodyParams = structureBodyParams(reqType, requestParams);
+                RequestBody body = RequestBody.create(MediaType.parse(mediaType), bodyParams);
                 Request request = new Request.Builder().url(url).put(body).build();
                 executeNet(request, emitter);
             }
@@ -208,8 +208,8 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
             @Override
             public void subscribe(FlowableEmitter emitter) throws Exception {
-                String json = new Gson().toJson(requestParams);
-                RequestBody body = RequestBody.create(MediaType.parse(mediaType), json);
+                String bodyParams = structureBodyParams(reqType, requestParams);
+                RequestBody body = RequestBody.create(MediaType.parse(mediaType), bodyParams);
                 Request request = new Request.Builder().url(url).post(body).build();
                 Response response = client.newCall(request).execute();
                 if (response == null) {
@@ -291,6 +291,13 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         }
     }
 
+    /**
+     * Parameter processing (mainly for Get, Delete requests)
+     *
+     * @param url
+     * @param params
+     * @return
+     */
     private String restructureUrlWithParams(String url, Map params) {
         if (params == null) {
             return url;
@@ -307,7 +314,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         StringBuffer paramsBuffer = new StringBuffer(url);
         int i = 0;
         for (String key : keys) {
-            if (i == 0) {
+            if (i == 0 && !url.contains("?")) {
                 paramsBuffer.append("?");
             } else {
                 paramsBuffer.append("&");
@@ -321,6 +328,46 @@ public class AutoNetRepoImpl implements AutoNetRepo {
             url = url.substring(0, url.length() - 1);
         }
         return url;
+    }
+
+    /**
+     * Parameter processing (mainly for Post, put requests)
+     *
+     * @param reqType
+     * @param requestParams
+     * @return
+     */
+    private String structureBodyParams(AutoNetTypeAnontation.Type reqType, Map requestParams) {
+        if (reqType == AutoNetTypeAnontation.Type.JSON) {
+            return new Gson().toJson(requestParams);
+        } else if (reqType == AutoNetTypeAnontation.Type.FORM) {
+            return structureFormParams(requestParams);
+        } else {
+            // Using JSON format by default
+            return new Gson().toJson(requestParams);
+        }
+    }
+
+    /**
+     * Structure form parameter
+     *
+     * @param requestParams
+     * @return
+     */
+    private String structureFormParams(Map requestParams) {
+        if (requestParams == null || requestParams.size() <= 0) {
+            return "";
+        }
+        StringBuffer buffer = new StringBuffer();
+        Set<String> keys = requestParams.keySet();
+        for (String key : keys) {
+            buffer.append(key + "=" + requestParams.get(key) + "&");
+        }
+        String bodyParams = buffer.toString();
+        if (bodyParams.endsWith("&")) {
+            bodyParams = bodyParams.substring(0, bodyParams.length() - 1);
+        }
+        return bodyParams;
     }
 
     /**
@@ -360,5 +407,6 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         fos.close();
         is.close();
     }
+
 
 }

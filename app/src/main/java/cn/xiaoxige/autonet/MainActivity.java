@@ -160,17 +160,17 @@ public class MainActivity extends RxActivity {
                 Map map = new ArrayMap();
 
                 map.put("shabi", "hahfdhahfdas");
-
+                map.put("aaaa", 123);
                 AutoNet.getInstance().createNet()
-                        .setDomainNameKey("test")
                         .doPost()
-                        .setSuffixUrl("/home/getHomeData")
+                        .setParams(map)
+                        .setReqType(AutoNetTypeAnontation.Type.JSON)
                         .start(new AbsAutoNetCallback<Object, String>() {
                             @Override
                             public boolean handlerBefore(Object o, FlowableEmitter emitter) {
-                                Log.e("TAG", "o = " + o.toString());
-                                emitter.onNext("哈哈， 我拦击了， 我修改了返回结果");
-                                return true;
+//                                Log.e("TAG", "o = " + o.toString());
+//                                emitter.onNext("哈哈， 我拦击了， 我修改了返回结果");
+                                return false;
                             }
 
                             @Override

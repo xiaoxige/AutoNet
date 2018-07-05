@@ -141,7 +141,7 @@ public final class AutoNet {
 
         AutoNetExecutor executor = new AutoNetExecutor(requestEntity, requestMap, extraDynamicParam, url, mediaType,
                 writeOutTime, readOutTime, connectOutTime, encryptionKey, isEncryption, sConfig.getInterceptors(),
-                heads, responseClazzName, transformer,
+                heads, responseClazzName, transformer, reqType,
                 sAutoNetExtraConfig.getEncryptionCallback(), sAutoNetExtraConfig.getHeadCallBack(), sAutoNetExtraConfig.getBodyCallBack(), callBack);
 
         if (isPushFileOperation(reqType, pushFileKey, filePath)) {
@@ -192,7 +192,9 @@ public final class AutoNet {
      */
     private static String autoAdjustmentAdjustmentMediaType(String mediaType, AutoNetTypeAnontation.Type reqType) {
         if (reqType.equals(AutoNetTypeAnontation.Type.STREAM)) {
-            return "application/octet-stream";
+            return "application/octet-stream;charset=UTF-8";
+        } else if (reqType.equals(AutoNetTypeAnontation.Type.FORM)) {
+            return "application/x-www-form-urlencoded;charset=UTF-8";
         }
         return mediaType;
     }
