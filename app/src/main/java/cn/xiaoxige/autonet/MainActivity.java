@@ -157,28 +157,64 @@ public class MainActivity extends RxActivity {
         btnChainRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Map map = new ArrayMap();
+//                Map map = new ArrayMap();
+//
+//                map.put("shabi", "hahfdhahfdas");
+//                map.put("aaaa", 123);
+//                AutoNet.getInstance().createNet()
+//                        .doPost()
+//                        .setParams(map)
+//                        .setReqType(AutoNetTypeAnontation.Type.JSON)
+//                        .start(new AbsAutoNetCallback<Object, String>() {
+//                            @Override
+//                            public boolean handlerBefore(Object o, FlowableEmitter emitter) {
+////                                Log.e("TAG", "o = " + o.toString());
+////                                emitter.onNext("哈哈， 我拦击了， 我修改了返回结果");
+//                                return false;
+//                            }
+//
+//                            @Override
+//                            public void onSuccess(String entity) {
+//                                super.onSuccess(entity);
+//                                tvResult.setText(entity);
+//                            }
+//                        });
 
-                map.put("shabi", "hahfdhahfdas");
-                map.put("aaaa", 123);
                 AutoNet.getInstance().createNet()
-                        .doPost()
-                        .setParams(map)
-                        .setReqType(AutoNetTypeAnontation.Type.JSON)
-                        .start(new AbsAutoNetCallback<Object, String>() {
+                        .doGet()
+                        .setParam("m", "ina_app")
+                        .setParam("c", "other")
+                        .setParam("a", "guidepage")
+                        .setSuffixUrl("/init.php")
+                        .setDomainNameKey("jsonTestBaseUrl")
+                        .start(new AbsAutoNetCallback<TestResponseEntity, TestResponseEntity.Data>() {
                             @Override
-                            public boolean handlerBefore(Object o, FlowableEmitter emitter) {
-//                                Log.e("TAG", "o = " + o.toString());
-//                                emitter.onNext("哈哈， 我拦击了， 我修改了返回结果");
-                                return false;
+                            public boolean handlerBefore(TestResponseEntity o, FlowableEmitter emitter) {
+                                Log.e("TAG", "" + o.toString());
+                                emitter.onNext(o.getData());
+                                return true;
                             }
 
                             @Override
-                            public void onSuccess(String entity) {
+                            public void onSuccess(TestResponseEntity.Data entity) {
                                 super.onSuccess(entity);
-                                tvResult.setText(entity);
+                                Log.e("TAG", "" + entity.toString());
+                                tvResult.setText(entity.toString());
+                            }
+
+                            @Override
+                            public void onFailed(Throwable throwable) {
+                                super.onFailed(throwable);
+                                Log.e("TAG", "" + throwable.getMessage());
+                            }
+
+                            @Override
+                            public void onEmpty() {
+                                super.onEmpty();
                             }
                         });
+
+
             }
         });
         // 修改头信息token信息
@@ -199,11 +235,11 @@ public class MainActivity extends RxActivity {
         });
     }
 
-    @AutoNetResponseEntityClass(TestResponseEntity.class)
+    //    @AutoNetResponseEntityClass(TestResponseEntity.class)
     @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.GET)
     @AutoNetAnontation("/init.php")
     @AutoNetBaseUrlKeyAnontation("jsonTestBaseUrl")
-    public class doGet implements IAutoNetDataCallBack<TestResponseEntity.Data>, IAutoNetDataBeforeCallBack {
+    public class doGet implements IAutoNetDataBeforeCallBack<TestResponseEntity>, IAutoNetDataCallBack<TestResponseEntity.Data> {
         StringBuffer buffer = new StringBuffer();
 
         @Override
@@ -225,7 +261,7 @@ public class MainActivity extends RxActivity {
         }
 
         @Override
-        public boolean handlerBefore(Object o, FlowableEmitter emitter) {
+        public boolean handlerBefore(TestResponseEntity o, FlowableEmitter emitter) {
             Log.e("xiaoxige", o.toString());
             //1
 //            emitter.onError(new EmptyError());

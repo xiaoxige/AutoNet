@@ -1,6 +1,7 @@
 package cn.xiaoxige.autonet_api;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 
@@ -23,6 +24,7 @@ import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
+import cn.xiaoxige.autonet_api.util.GenericParadigmUtil;
 import io.reactivex.FlowableTransformer;
 
 /**
@@ -138,6 +140,7 @@ public final class AutoNet {
         Map<String, String> heads = integrationHeads(sConfig.getHeadParam(), sAutoNetExtraConfig.getExtraHeads(), disposableHeads);
         String url = getUrlByRequest(domainNameKey, sConfig.getDomainNames(), sAutoNetExtraConfig.getExtraDomainNames(), disposableBaseUrl, suffixUrl);
         mediaType = autoAdjustmentAdjustmentMediaType(mediaType, reqType);
+        responseClazzName = integrationResponseClazzName(responseClazzName, callBack);
 
         AutoNetExecutor executor = new AutoNetExecutor(requestEntity, requestMap, extraDynamicParam, url, mediaType,
                 writeOutTime, readOutTime, connectOutTime, encryptionKey, isEncryption, sConfig.getInterceptors(),
@@ -197,6 +200,25 @@ public final class AutoNet {
             return "application/x-www-form-urlencoded;charset=UTF-8";
         }
         return mediaType;
+    }
+
+
+    /**
+     * Integrate and select the type of entity class based on priority.
+     * If there is no explicit designation to return entity class, try to get the generic type in callback.
+     *
+     * @param responseClazzName
+     * @param callBack
+     * @return
+     */
+    private static String integrationResponseClazzName(String responseClazzName, IAutoNetCallBack callBack) {
+        if (TextUtils.isEmpty(responseClazzName)) {
+            Class clazz = GenericParadigmUtil.parseClass(callBack);
+            if (clazz != null) {
+                responseClazzName = clazz.getName();
+            }
+        }
+        return responseClazzName;
     }
 
     /**
@@ -677,6 +699,7 @@ public final class AutoNet {
             return this;
         }
 
+        @Deprecated
         @Override
         public IAutoNetNonAnontation setResponseClazz(Class clazz) {
             if (clazz != null) {
@@ -838,6 +861,7 @@ public final class AutoNet {
 
         IAutoNetNonAnontation setPullFileParams(String filePath, String fileName);
 
+        @Deprecated
         IAutoNetNonAnontation setResponseClazz(Class clazz);
 
         IAutoNetNonAnontation setTransformer(FlowableTransformer transformer);
