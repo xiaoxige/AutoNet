@@ -1,269 +1,54 @@
-# AutoNet
-
-封装屏蔽网络层， 使Android开发真正的只专注View层的编写
-
-#Git地址：https://github.com/xiaoxige/AutoNet
-
-# 介绍：
-
-	* 使用方式，操作方式简单
-	* 请求支持实体类和Map传参
-    * 支持注解和链式两种方式
-    * 可添加固定和动态的头部信息
-    * 可自主对数据进行加密请求
-    * 可自主处理每次请求返回的头部数据
-    * 可自主处理每次请求的body数据
-    * 可提前处理每次请求的数据，并决定返回去的数据
-    * 可选择联网策略(网络、本地、先本地后网络、先网络后本地)
-    * 上传及下载文件简单已用
-    * ......
-
-# 注：具体用法请看Demo
-
-# gradle依赖:
-
-    compile 'cn.xiaoxige:autonet-api:1.0.9'
-    annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.9'
-
-# 联系方式：
-
-    如果在使用的过程中， 出现什么问题欢迎在GitHub上issues，也可以给我发邮件：xiaoxigexiaoan@outlook.com
-
-# 代理类名规则
-
-    如果是回调是内部 则代理类名为 外层类名 + 回调类名 + AutoProxy
-    如果回调就是一个类 则代理类名为 回调类名 + AutoProxy
-
-# 注意
-
-    如果使用的是注解方式请求网络， 在写完类后，请build -> rebuild project。
-
-# 使用：
-
-## 1.注解介绍：
-
-    * AutoNetAnontation 网络参数设置(value(除去域名)、writeTime、readTime、connectOutTime)
-    * AutoNetBaseUrlKeyAnontation BaseUrl的选择标识key(value)
-    * AutoNetDisposableBaseUrlAnontation 本次请求临时使用的BaseUrl(value)
-    * AutoNetDisposableHeadAnnontation 本次请求临时使用的头部信息(value[])
-    * AutoNetEncryptionAnontation 加密参数设置(key, value)
-    * AutoNetMediaTypeAnontation 请求的MediaType(value)
-    * AutoNetPatternAnontation 请求方式(value(get/post/put/delete))
-    * AutoNetResponseEntityClass 请求返回的实体类(value)
-    * AutoNetStrategyAnontation 网络请求策略(value(net/local/local_net/net_local))
-    * AutoNetTypeAnontation 请求和返回的请求类型(reqType(json/form/stream), resType(json/form/stream))
-
-## 2.初始化：
-
-    Map<String, String> heads = new ArrayMap<>();
-    heads.put("token", "0");
-    heads.put("userId", "A");
-
-    Map<String, String> domainNames = new ArrayMap<>();
-    domainNames.put("pppig", "https://www.pangpangpig.com");
-    domainNames.put("upFile", "http://testimage.xxxx.com:8080");
-
-    AutoNetConfig config = new AutoNetConfig.Builder()
-            .isOpenStetho(true)
-            .setDefaultDomainName("https:www.baidu.com")
-            .setHeadParam(heads)
-            .setDomainName(domainNames)
-            .build();
-
-    AutoNet.getInstance().initAutoNet(this, config).setEncryptionCallback(new IAutoNetEncryptionCallback() {
-        @Override
-        public String encryption(Long key, String encryptionContent) {
-            Log.e("TAG", "加密信息： key = " + key + ", encryptionContent = " + encryptionContent);
-            return encryptionContent;
-        }
-    }).setHeadsCallback(new IAutoNetHeadCallBack() {
-        @Override
-        public void head(Headers headers) {
-            Log.e("TAG", "头部回调：" + headers);
-        }
-    }).setBodyCallback(new IAutoNetBodyCallBack() {
-        @Override
-        public boolean body(String object) {
-            Log.e("TAG", "body： " + object);
-            return false;
-        }
-    }).updateOrInsertDomainNames("jsonTestBaseUrl", "http://api.news18a.com");
-
-## 3.链式调用:
-
-    AutoNet.getInstance().createNet()
-            .setDomainNameKey("pppig")
-            .start(new IAutoNetDataSuccessCallBack() {
-
-                @Override
-                public void onSuccess(Object entity) {
-                    tvResult.setText(entity.toString());
-                }
-            });
-
-## 4.Get请求:
-
-    @AutoNetResponseEntityClass(TestResponseEntity.class)
-    @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.GET)
-    @AutoNetAnontation("/init.php")
-    @AutoNetBaseUrlKeyAnontation("jsonTestBaseUrl")
-    public class doGet implements IAutoNetDataCallBack<TestResponseEntity> {
-
-        StringBuffer buffer = new StringBuffer();
-
-        @Override
-        public void onFailed(Throwable throwable) {
-            buffer.append("请求失败了：" + throwable.toString());
-            tvResult.setText(buffer.toString());
-        }
-
-        @Override
-        public void onEmpty() {
-            buffer.append("请求失败了");
-            tvResult.setText(buffer.toString());
-        }
-
-        @Override
-        public void onSuccess(TestResponseEntity entity) {
-            buffer.append("json数据请求成功\n" + entity.toString());
-            tvResult.setText(buffer.toString());
-        }
-    }
-
-## 5.Post请求:
-
-    @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.POST)
-    public class doPost implements IAutoNetDataCallBack {
-
-        StringBuffer buffer = new StringBuffer();
-
-        @Override
-        public void onFailed(Throwable throwable) {
-            buffer.append("请求失败了：" + throwable.toString());
-            tvResult.setText(buffer.toString());
-        }
-
-        @Override
-        public void onEmpty() {
-            buffer.append("请求失败了");
-            tvResult.setText(buffer.toString());
-        }
-
-        @Override
-        public void onSuccess(Object entity) {
-            buffer.append("请求成功了\n" + entity.toString());
-            tvResult.setText(buffer.toString());
-        }
-    }
-
-## 6.先本地后网络:
-
-    @AutoNetStrategyAnontation(AutoNetStrategyAnontation.NetStrategy.LOCAL_NET)
-    public class doLocalNet implements IAutoNetDataCallBack, IAutoNetLocalOptCallBack {
-
-        StringBuffer buffer = new StringBuffer();
-
-        @Override
-        public void onFailed(Throwable throwable) {
-            buffer.append("请求失败了：" + throwable.toString());
-            tvResult.setText(buffer.toString());
-        }
-
-        @Override
-        public void onEmpty() {
-            buffer.append("请求失败了");
-            tvResult.setText(buffer.toString());
-        }
-
-        @Override
-        public void onSuccess(Object entity) {
-            buffer.append("成功了\n" + entity.toString());
-            tvResult.setText(buffer.toString());
-        }
-
-        @Override
-        public Object optLocalData(IAutoNetRequest request) {
-            // 本地数据交给用户处理
-            return "\n这是本地数据,hahahahaha\n";
-        }
-    }
-
-
-## 7.上传文件:
-
-    @AutoNetBaseUrlKeyAnontation("upFile")
-    @AutoNetTypeAnontation(reqType = AutoNetTypeAnontation.Type.STREAM)
-    @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.POST)
-    public class PushFile implements IAutoNetDataCallBack, IAutoNetFileCallBack {
-
-        StringBuffer buffer = new StringBuffer();
-
-        @Override
-        public void onFailed(Throwable throwable) {
-            buffer.append("发送文件出错:\n" + throwable.toString() + "\n");
-            tvResult.setText(buffer.toString());
-        }
-
-        @Override
-        public void onEmpty() {
-            buffer.append("发送文件出错");
-            tvResult.setText(buffer.toString());
-        }
-
-        @Override
-        public void onSuccess(Object entity) {
-            buffer.append("发送文件成功， 服务器并返回:\n" + entity.toString() + "\n");
-            tvResult.setText(buffer.toString());
-        }
-
-        @Override
-        public void onPregress(float progress) {
-            buffer.append("发送文件进度：" + progress + "\n");
-            tvResult.setText(buffer.toString());
-        }
-
-        @Override
-        public void onComplete(File file) {
-            buffer.append("文件发送成功， 文件：" + file.toString() + "\n");
-            tvResult.setText(buffer.toString());
-        }
-    }
-
-## 8.下载文件:
-
-    @AutoNetBaseUrlKeyAnontation("pppig")
-    @AutoNetTypeAnontation(resType = AutoNetTypeAnontation.Type.STREAM)
-    @AutoNetAnontation("/apk/downLoad/android_4.2.4.apk")
-    public class PullFile implements IAutoNetDataCallBack, IAutoNetFileCallBack {
-
-        StringBuffer buffer = new StringBuffer();
-
-        @Override
-        public void onFailed(Throwable throwable) {
-            buffer.append("接收文件出错:\n" + throwable.toString() + "\n");
-            tvResult.setText(buffer.toString());
-        }
-
-        @Override
-        public void onEmpty() {
-            buffer.append("接收文件出错");
-            tvResult.setText(buffer.toString());
-        }
-
-        @Override
-        public void onSuccess(Object entity) {
-            // 不会被执行
-        }
-
-        @Override
-        public void onPregress(float progress) {
-            buffer.append("接收进度：" + progress + "\n");
-            tvResult.setText(buffer.toString());
-        }
-
-        @Override
-        public void onComplete(File file) {
-            buffer.append("文件接收成功， 文件：" + file.toString() + "\n");
-            tvResult.setText(buffer.toString());
-        }
-    }
+# AutoNet (网络框架)
+	AutoNet 代理了OkHttp， 处理了复杂繁琐的网络请求代码！ 使Android开发网络应用更加简单，只需关注业务即可。
+# Git地址
+	https://github.com/xiaoxige/AutoNet
+# 特色
+	* 使用简单、调用方便
+	* 支持注解、 链式
+	* 支持实体类、map传值
+	* 可动态添加和修改头部
+	* 可对请求参数数据进行加密
+	* 可自主处理返回的头部数据
+	* 可自主处理返回的body数据
+	* 可自定义返回数据的类型
+	* 可定义固定、灵活及临时的域名、头部信息（优先级： 临时>灵活>固定。 有效性： 固定 >= 灵活 > 临时）
+	* 支持网络策略（网络、本地、先本地后网络、先网络后本地）
+	* 支持上传文件和下载文件
+# gradle依赖
+	compile 'cn.xiaoxige:autonet-api:1.0.9'
+	annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.9'
+# 使用
+## 1. 初始化
+### 1.1 AutoNetConfig(配置AutoNet的基本配置)注意：改配置基本是固定，如域名、头部数据
+	* 设置是否开启Stetho调试配置
+	* 设置默认域名（key: default）
+	* 设置多个域名
+	* 设置头部参数
+	* 设置Okhttp的拦截器
+### 1.2 AutoNet的初始化操作
+	AutoNet.getInstance().initAutoNet(Context, AutoNetConfig);
+	可以链式去设置加密的回调，头部数据的回调，Body数据的回调, eg:
+	AutoNet.getInstance().initAutoNet(Context, AutoNetConfig)
+	.setEncryptionCallback(new IAutoNetEncryptionCallback() {
+            @Override
+            public String encryption(Long key, String encryptionContent) {
+				// 可通过key去加密参数
+                return encryptionContent;
+            }
+        }).setHeadsCallback(new IAutoNetHeadCallBack() {
+            @Override
+            public void head(Headers headers) {
+				// 请求返回的头部数据回调
+            }
+        }).setBodyCallback(new IAutoNetBodyCallBack() {
+            @Override
+            public boolean body(String object, FlowableEmitter emitter) {
+				// 自己处理需要返回true
+                return false;
+            }
+	});
+	还可以再次设置域名和头部数据（这里的配置为灵活的， 可在任意地方修改）
+	AutoNet.getInstance().updateOrInsertHead(key, value);
+	AutoNet.getInstance().updateOrInsertDomainNames(key, value);
+## 2. 链式调用
+## 3. 注解方式
