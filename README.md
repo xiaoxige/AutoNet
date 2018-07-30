@@ -107,4 +107,70 @@
 
 	}
 ## 3. 链式调用
+    AutoNet.getInstance().createNet()
+		// 设置url后缀（除去域名）
+        .setSuffixUrl(String)
+		// 参数
+        .setParams(Map)
+        .setParam(key, value)
+        .setRequestEntity(IAutoNetRequest)
+		// post请求（可传参数）
+        .doPost(...)
+		// get请求（可传参数）
+        .doGet(...)
+		// put(可传参数)
+        .doPut(...)
+		// delete(可传参数)
+        .doDelete(...)
+		// 指定使用的域名的Key（默认default）
+        .setDomainNameKey(String)
+		// 设置网络请求方式
+        .setNetPattern(NetPattern)
+		// 设置网络策略
+        .setNetStrategy(NetStrategy)
+		// 设置请求类型（JSON/FORM/STREAM/OTHER）
+        .setReqType(Type)
+		// 设置返回类型（JSON/FORM/STREAM/OTHER）
+        .setResType(Type)
+		// 设置额外的参数（主要解决动态的拼在url中的参数。eg： www.xxx.com/news/1, 最后的那个1为动态）
+        .setExtraDynamicParam(String)
+		// 临时的BaseUrl
+        .setBaseUrl(String)
+		// 链接超时时间
+        .setConnectOutTime(Long)
+		// 读取时间
+        .setReadOuTime(Long)
+		// 写入时间
+        .setWriteOutTime(Long)
+		// 需要加密的参数的key， 可根据key去加密其中类型的参数， 在初始化时使用到了，还记得吗（上去看看）
+        .setEncryptionKey(Long)
+		// 设置MediaType
+        .setMediaType(String)
+		// 发送文件
+        .setPullFileParams()
+		// 接受文件
+        .setPushFileParams()
+		// 设置临时头部
+        .setHeads(String[])
+		// 绑定生命周期，防止内存泄漏（忘了？上面有说）
+        .setTransformer(...)
+		// 数据回调（2章节中讲到的一些回调）
+        .start(CallBack);
 ## 4. 注解方式
+### 4.1 注解介绍
+    * AutoNetAnontation 网络参数设置(value(除去域名)、writeTime、readTime、connectOutTime)
+    * AutoNetBaseUrlKeyAnontation BaseUrl的选择标识key(value)
+    * AutoNetDisposableBaseUrlAnontation 本次请求临时使用的BaseUrl(value)
+    * AutoNetDisposableHeadAnnontation 本次请求临时使用的头部信息(value[])
+    * AutoNetEncryptionAnontation 加密参数设置(key, value)
+    * AutoNetMediaTypeAnontation 请求的MediaType(value)
+    * AutoNetPatternAnontation 请求方式(value(get/post/put/delete))
+    * AutoNetResponseEntityClass 请求返回的实体类(value)
+    * AutoNetStrategyAnontation 网络请求策略(value(net/local/local_net/net_local))
+    * AutoNetTypeAnontation 请求和返回的请求类型(reqType(json/form/stream), resType(json/form/stream))
+
+### 4.2 代理类名规则
+    如果是回调是内部 则代理类名为 外层类名 + 回调类名 + AutoProxy
+    如果回调就是一个类 则代理类名为 回调类名 + AutoProxy
+### 4.3 注意
+	如果使用的是注解方式请求网络， 在写完类后，请build -> rebuild project。
