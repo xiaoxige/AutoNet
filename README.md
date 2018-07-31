@@ -277,7 +277,9 @@
     AutoNet.getInstance().initAutoNet(this, config).setBodyCallback(new IAutoNetBodyCallBack() {
             @Override
             public boolean body(String body, FlowableEmitter emitter) {
-
+				// 全局的， 所有的请求都会到这里
+				// 在这里可以根据自己的统一的字段去判断code什么的是否成功了
+				// 如果不成功可以以异常出去， 最后会在onFailed回调
                 if (!TextUtils.isEmpty(body)) {
                     try {
                         BaseResponse baseResponse = new Gson().fromJson(body, BaseResponse.class);
@@ -305,6 +307,7 @@
 
 	    @Override
 	    public boolean handlerBefore(TestListResponse response, FlowableEmitter emitter) {
+			// 这里可以在数据返回以前， 再次指定要返回的数据， 并根据自己的业务去判断是否为空（注意这里是在分线程中）
 	        List<TestEntity> entitys = response.getData();
 	        if (entitys == null || entitys.isEmpty()) {
 	            emitter.onError(new EmptyError());
