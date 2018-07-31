@@ -174,3 +174,96 @@
     如果回调就是一个类 则代理类名为 回调类名 + AutoProxy
 ### 4.3 注意
 	如果使用的是注解方式请求网络， 在写完类后，请build -> rebuild project。
+### 4.4 例子
+#### 一、普通请求
+	@AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.GET)
+    @AutoNetAnontation("/init.php")
+    @AutoNetBaseUrlKeyAnontation("jsonTestBaseUrl")
+    public class doGet implements IAutoNetDataBeforeCallBack<TestResponseEntity>, IAutoNetDataCallBack<List<Entity>> {
+        @Override
+        public boolean handlerBefore(TestResponseEntity o, FlowableEmitter emitter) {
+			List<Entity> entitys = o.getList();
+			if(entitys == null || entitys.isEmpty()){
+	            emitter.onError(new EmptyError());
+				return true;
+			}
+			emitter.onNext(entitys);
+            return true;
+        }
+
+        @Override
+        public void onSuccess(List<Entity> entitys) {
+			
+        }
+
+        @Override
+        public void onFailed(Throwable throwable) {
+ 
+        }
+
+        @Override
+        public void onEmpty() {
+        }
+    }
+
+	先build下， 然后再需要发送该网络连接时：
+	MainActivitydoGetAutoProxy.startNet(MainActivity.this， bindUntilEvent(ActivityEvent.DESTROY));
+	注意：MainActivitydoGetAutoProxy这个类生成的规则前面已给出
+#### 二、 上传文件
+	@AutoNetBaseUrlKeyAnontation("upFile")
+    @AutoNetTypeAnontation(reqType = AutoNetTypeAnontation.Type.STREAM)
+    @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.POST)
+    public class PushFile implements IAutoNetDataCallBack, IAutoNetFileCallBack {
+
+        @Override
+        public void onFailed(Throwable throwable) {
+        }
+
+        @Override
+        public void onEmpty() {
+        }
+
+        @Override
+        public void onSuccess(Object entity) {
+        }
+
+        @Override
+        public void onPregress(float progress) {
+        }
+
+        @Override
+        public void onComplete(File file) {
+        }
+    }
+
+	请求方式：
+	MainActivityPushFileAutoProxy.pushFile(MainActivity.this, "upload", path + File.separator + "a.png");
+#### 三、 下载文件
+	@AutoNetBaseUrlKeyAnontation("downFile")
+    @AutoNetTypeAnontation(resType = AutoNetTypeAnontation.Type.STREAM)
+    @AutoNetAnontation("/apk/downLoad/android_4.2.4.apk")
+    public class PullFile implements IAutoNetDataCallBack, IAutoNetFileCallBack {
+        @Override
+        public void onFailed(Throwable throwable) {
+        }
+
+        @Override
+        public void onEmpty() {
+        }
+
+        @Override
+        public void onSuccess(Object entity) {
+            // 不被执行
+        }
+
+        @Override
+        public void onPregress(float progress) {
+        }
+
+        @Override
+        public void onComplete(File file) {
+        }
+    }
+
+	请求方式：
+	MainActivityPullFileAutoProxy.pullFile(MainActivity.this, path, "pppig.apk");
