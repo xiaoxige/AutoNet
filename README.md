@@ -267,3 +267,72 @@
 
 	请求方式：
 	MainActivityPullFileAutoProxy.pullFile(MainActivity.this, path, "pppig.apk");
+## 5. 简单的例子
+### 初始化
+	AutoNetConfig config = new AutoNetConfig.Builder()
+                .isOpenStetho(BuildConfig.DEBUG)
+                .setDefaultDomainName(ApiConstant.BASE_POST_URL)
+                .build();
+
+    AutoNet.getInstance().initAutoNet(this, config).setBodyCallback(new IAutoNetBodyCallBack() {
+            @Override
+            public boolean body(String body, FlowableEmitter emitter) {
+
+                if (!TextUtils.isEmpty(body)) {
+                    try {
+                        BaseResponse baseResponse = new Gson().fromJson(body, BaseResponse.class);
+                        if (!baseResponse.isSuccess()) {
+                            emitter.onError(new CustomError(baseResponse.getMessage()));
+                            return true;
+                        }
+                    } catch (Exception e) {
+                        emitter.onError(e);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+
+### 简单使用
+    AutoNet.getInstance().createNet()
+        .setSuffixUrl("/test")
+        .setParam("a", "a")
+        .setParam("b", 1)
+        .doPost()
+        .start(new TestListCallback());
+    private class TestListCallback extends AbsAutoNetCallback<TestListResponse, List<TestEntity>> {
+
+	    @Override
+	    public boolean handlerBefore(TestListResponse response, FlowableEmitter emitter) {
+	        List<TestEntity> entitys = response.getData();
+	        if (entitys == null || entitys.isEmpty()) {
+	            emitter.onError(new EmptyError());
+	            return true;
+	        }
+	        //noinspection unchecked
+	        emitter.onNext(entitys);
+	        return true;
+	    }
+
+	    @Override
+	    public void onSuccess(List<TestEntity> entitys) {
+	        bindUserInfo(entitys);
+	        mEmptyLayout.showContent();
+	        refreshLayout.refreshComplete();
+	    }
+	
+	    @Override
+	    public void onFailed(Throwable throwable) {
+	        HandlerError.handlerError(throwable);
+	        mEmptyLayout.showContent();
+	        refreshLayout.refreshComplete();
+	    }
+	
+	    @Override
+	    public void onEmpty() {
+	        HandlerError.handlerEmpty();
+	        mEmptyLayout.showContent();
+	        refreshLayout.refreshComplete();
+	    }
+	}
