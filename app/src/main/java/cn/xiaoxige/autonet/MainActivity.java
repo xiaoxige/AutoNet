@@ -26,6 +26,7 @@ import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
 import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
+import cn.xiaoxige.autonet.entity.TestARequest;
 import cn.xiaoxige.autonet.entity.TestRequest;
 import cn.xiaoxige.autonet.entity.TestResponseEntity;
 import cn.xiaoxige.autonet_api.AutoNet;
@@ -180,8 +181,14 @@ public class MainActivity extends RxActivity {
 //                            }
 //                        });
 
+                TestARequest entity = new TestARequest();
+                Map o = new ArrayMap();
+                o.put("a", 1);
+                o.put("b", "fdsa");
+                entity.setObject(o);
                 AutoNet.getInstance().createNet()
                         .doGet()
+                        .setRequestEntity(entity)
                         .setParam("m", "ina_app")
                         .setParam("c", "other")
                         .setParam("a", "guidepage")
