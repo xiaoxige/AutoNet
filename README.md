@@ -16,8 +16,8 @@
 	* 支持网络策略（网络、本地、先本地后网络、先网络后本地）
 	* 支持上传文件和下载文件
 # gradle依赖
-	compile 'cn.xiaoxige:autonet-api:1.0.9'
-	annotationProcessor 'cn.xiaoxige:autonet-processor:1.0.9'
+	compile 'cn.xiaoxige:autonet-api:1.1.0'
+	annotationProcessor 'cn.xiaoxige:autonet-processor:1.1.0'
 # 使用
 ## 1. 初始化
 ### 1.1 AutoNetConfig(配置AutoNet的基本配置)注意：改配置基本是固定，如域名、头部数据
