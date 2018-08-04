@@ -383,7 +383,7 @@ public class AutoNetExecutor {
     private Map integrationParams(IAutoNetRequest requestEntity, Map requestMap) {
         Map params = new ArrayMap();
         if (requestEntity != null) {
-            params.putAll(DataConvertorUtils.convertEntityToMap(requestEntity, true));
+            params.putAll(DataConvertorUtils.convertEntityToMapPlus(requestEntity, true));
         }
         if (requestMap != null) {
             params.putAll(requestMap);

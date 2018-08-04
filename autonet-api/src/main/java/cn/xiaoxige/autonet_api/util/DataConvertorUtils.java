@@ -121,4 +121,75 @@ public class DataConvertorUtils {
 
         return map;
     }
+
+
+
+
+    /**
+     * map the fields and values of entity classes to map, considering only type fields that are String or ArrayList<String> types.
+     *
+     * @param source entity data
+     *               does @param includeParentClass contain fields in the parent class?
+     * @return returns map with field name key and field value value.
+     */
+    public static <T> Map<String, Object> convertEntityToMapPlus(T source, boolean includeParentClass) {
+        Map<String, Object> results = new HashMap<>();
+        Field[] fields = source.getClass().getDeclaredFields();
+
+        for (Field field : fields) {
+            field.setAccessible(true);
+            try {
+                String fieldName = field.getName();
+                Object fieldValue = field.get(source);
+                if (fieldValue == null) {
+                    continue;
+                }
+
+                results.put(fieldName, fieldValue);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (includeParentClass) {
+            convertParentEntityToMapPlus(results, source);
+        }
+        return results;
+    }
+
+    /**
+     * mapping the attributes and values declared by the parent class to map recursively, only considering the type fields are String or ArrayList<String> types.
+     *
+     * @param map storage properties and values of map
+     * @return returns map with field name key and field value value.
+     */
+    public static <T> Map<String, Object> convertParentEntityToMapPlus(Map<String, Object> map, T source) {
+        if (map == null) {
+            map = new HashMap<>();
+        }
+        Class<?> clazz = source.getClass().getSuperclass();
+
+        while (clazz != Object.class) {
+            Field[] fields = clazz.getDeclaredFields();
+
+            for (Field field : fields) {
+                field.setAccessible(true);
+                try {
+                    String fieldName = field.getName();
+                    Object fieldValue = field.get(source);
+
+                    if (fieldValue == null) {
+                        continue;
+                    }
+                    map.put(fieldName, fieldValue);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            clazz = clazz.getSuperclass();
+        }
+
+        return map;
+    }
+
 }
