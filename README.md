@@ -15,9 +15,10 @@
 	* 可定义固定、灵活及临时的域名、头部信息（优先级： 临时>灵活>固定。 有效性： 固定 >= 灵活 > 临时）
 	* 支持网络策略（网络、本地、先本地后网络、先网络后本地）
 	* 支持上传文件和下载文件
+	* 可直接获得上游的Flowable, 用户自己进行操作结果。（eg: 使用zip去合并多个请求等）
 # gradle依赖
-	compile 'cn.xiaoxige:autonet-api:1.1.0'
-	annotationProcessor 'cn.xiaoxige:autonet-processor:1.1.0'
+	compile 'cn.xiaoxige:autonet-api:1.1.1'
+	annotationProcessor 'cn.xiaoxige:autonet-processor:1.1.1'
 # 使用
 ## 1. 初始化
 ### 1.1 AutoNetConfig(配置AutoNet的基本配置)注意：改配置基本是固定，如域名、头部数据
@@ -89,20 +90,20 @@
 	    public boolean handlerBefore(T t, FlowableEmitter emitter) {
 	        return false;
 	    }
-	
+
 	    @Override
 	    public void onSuccess(Z entity) {
-	
+
 	    }
-	
+
 	    @Override
 	    public void onFailed(Throwable throwable) {
-	
+
 	    }
-	
+
 	    @Override
 	    public void onEmpty() {
-	
+
 	    }
 
 	}
@@ -155,9 +156,65 @@
 		// 绑定生命周期，防止内存泄漏（忘了？上面有说）
         .setTransformer(...)
 		// 数据回调（2章节中讲到的一些回调）
-        .start(CallBack);
-## 4. 注解方式
-### 4.1 注解介绍
+        (1).start(CallBack);
+		// 获得上游， 用户自己处理结果
+		(2).getFlowable();
+
+## 4. 获取上游并处理（已zip合并为例， 这里只是用了两个， 其实RxJava提供了好多， 当然还有其他用法，详情可以看RxJava的用法）
+
+	// 测试Json数据
+	Flowable flowable1 = AutoNet.getInstance().createNet()
+	        .doGet()
+	        .setParam("m", "ina_app")
+	        .setParam("c", "other")
+	        .setParam("a", "guidepage")
+	        .setSuffixUrl("/init.php")
+	        .setDomainNameKey("jsonTestBaseUrl")
+	        .setResponseClazz(TestResponseEntity.class)
+	        .getFlowable();
+
+	// 测试百度数据（http://www.baidu.com）
+	Flowable flowable2 = AutoNet.getInstance().createNet()
+	        .doGet()
+	        .getFlowable();
+
+	tvResult.setText("正在请求");
+
+	//noinspection unchecked
+	Flowable.zip(flowable1, flowable2, new BiFunction<TestResponseEntity, String, ZipTestEntity>() {
+	    @Override
+	    public ZipTestEntity apply(TestResponseEntity o, String o2) throws Exception {
+			// 合并
+	        ZipTestEntity entity = new ZipTestEntity();
+	        entity.setEntity(o);
+	        entity.setBaiduWebMsg(o2);
+	        return entity;
+	    }
+	}).subscribe(new FlowableSubscriber<ZipTestEntity>() {
+	    @Override
+	    public void onSubscribe(Subscription s) {
+	        s.request(Integer.MAX_VALUE);
+	    }
+
+	    @Override
+	    public void onNext(ZipTestEntity o) {
+	        tvResult.setText(o.toString());
+	    }
+
+	    @Override
+	    public void onError(Throwable t) {
+	        tvResult.setText("请求失败： " + t.getMessage());
+	    }
+
+	    @Override
+	    public void onComplete() {
+
+	    }
+	});
+
+
+## 5. 注解方式
+### 5.1 注解介绍
     * AutoNetAnontation 网络参数设置(value(除去域名)、writeTime、readTime、connectOutTime)
     * AutoNetBaseUrlKeyAnontation BaseUrl的选择标识key(value)
     * AutoNetDisposableBaseUrlAnontation 本次请求临时使用的BaseUrl(value)
@@ -169,12 +226,12 @@
     * AutoNetStrategyAnontation 网络请求策略(value(net/local/local_net/net_local))
     * AutoNetTypeAnontation 请求和返回的请求类型(reqType(json/form/stream), resType(json/form/stream))
 
-### 4.2 代理类名规则
+### 5.2 代理类名规则
     如果是回调是内部 则代理类名为 外层类名 + 回调类名 + AutoProxy
     如果回调就是一个类 则代理类名为 回调类名 + AutoProxy
-### 4.3 注意
+### 5.3 注意
 	如果使用的是注解方式请求网络， 在写完类后，请build -> rebuild project。
-### 4.4 例子
+### 5.4 例子
 #### 一、普通请求
 	@AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.GET)
     @AutoNetAnontation("/init.php")
@@ -193,12 +250,12 @@
 
         @Override
         public void onSuccess(List<Entity> entitys) {
-			
+
         }
 
         @Override
         public void onFailed(Throwable throwable) {
- 
+
         }
 
         @Override
@@ -267,7 +324,7 @@
 
 	请求方式：
 	MainActivityPullFileAutoProxy.pullFile(MainActivity.this, path, "pppig.apk");
-## 5. 简单的例子
+## 6. 简单的例子
 ### 初始化
 	AutoNetConfig config = new AutoNetConfig.Builder()
                 .isOpenStetho(BuildConfig.DEBUG)
