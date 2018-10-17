@@ -9,13 +9,13 @@ import java.util.Map;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.autonet_api.abstracts.BaseUseCase;
-import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.constant.AutoNetConstant;
 import cn.xiaoxige.autonet_api.error.EmptyError;
 import cn.xiaoxige.autonet_api.error.NoNetError;
 import cn.xiaoxige.autonet_api.interactors.AutoNetPullFileUseCase;
 import cn.xiaoxige.autonet_api.interactors.AutoNetPushFileUseCase;
 import cn.xiaoxige.autonet_api.interactors.AutoNetUseCase;
+import cn.xiaoxige.autonet_api.interactors.OpenAutoNetUseCase;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetBodyCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
@@ -29,12 +29,13 @@ import cn.xiaoxige.autonet_api.repository.impl.AutoNetRepoImpl;
 import cn.xiaoxige.autonet_api.subscriber.DefaultSubscriber;
 import cn.xiaoxige.autonet_api.util.DataConvertorUtils;
 import cn.xiaoxige.autonet_api.util.NetUtil;
+import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
 import okhttp3.Interceptor;
 
 /**
  * @author by xiaoxige on 2018/5/20.
- *         The executor of AutoNet
+ * The executor of AutoNet
  */
 
 @SuppressWarnings("WeakerAccess")
@@ -157,17 +158,8 @@ public class AutoNetExecutor {
     }
 
     public void netOpt(AutoNetPatternAnontation.NetPattern netPattern, OnInsertOpt insertOpt) {
-        int netState = BaseUseCase.NET_GET;
-        if (netPattern.equals(AutoNetPatternAnontation.NetPattern.GET)) {
-            netState = BaseUseCase.NET_GET;
-        } else if (netPattern.equals(AutoNetPatternAnontation.NetPattern.POST)) {
-            netState = BaseUseCase.NET_POST;
-        } else if (netPattern.equals(AutoNetPatternAnontation.NetPattern.DELETE)) {
-            netState = BaseUseCase.NET_DELETE;
-        } else if (netPattern.equals(AutoNetPatternAnontation.NetPattern.PUT)) {
-            netState = BaseUseCase.NET_PUT;
-        }
 
+        int netState = analysisTransformationRequestMethod(netPattern);
         net(netState, insertOpt == null ? new OnInsertOpt() {
             @Override
             public boolean transmitError() {
@@ -320,6 +312,11 @@ public class AutoNetExecutor {
         }, transformer);
     }
 
+    public Flowable structureFlowable(AutoNetPatternAnontation.NetPattern netPattern) {
+        int netState = analysisTransformationRequestMethod(netPattern);
+        OpenAutoNetUseCase useCase = new OpenAutoNetUseCase(mRepo, netState, transformer);
+        return useCase.getFlowable();
+    }
 
     private void ansSuccess(Object object) {
         if (callBack == null) {
@@ -389,6 +386,27 @@ public class AutoNetExecutor {
             params.putAll(requestMap);
         }
         return params;
+    }
+
+
+    /**
+     * Parsing transformation request mode
+     *
+     * @param netPattern
+     * @return
+     */
+    private int analysisTransformationRequestMethod(AutoNetPatternAnontation.NetPattern netPattern) {
+        int netState = BaseUseCase.NET_GET;
+        if (netPattern.equals(AutoNetPatternAnontation.NetPattern.GET)) {
+            netState = BaseUseCase.NET_GET;
+        } else if (netPattern.equals(AutoNetPatternAnontation.NetPattern.POST)) {
+            netState = BaseUseCase.NET_POST;
+        } else if (netPattern.equals(AutoNetPatternAnontation.NetPattern.DELETE)) {
+            netState = BaseUseCase.NET_DELETE;
+        } else if (netPattern.equals(AutoNetPatternAnontation.NetPattern.PUT)) {
+            netState = BaseUseCase.NET_PUT;
+        }
+        return netState;
     }
 
 

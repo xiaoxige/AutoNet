@@ -2,17 +2,16 @@ package cn.xiaoxige.autonet;
 
 
 import android.os.Bundle;
-import android.support.annotation.MainThread;
 import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
 
 import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.trello.rxlifecycle2.components.RxActivity;
+
+import org.reactivestreams.Subscription;
 
 import java.io.File;
 import java.util.Map;
@@ -20,26 +19,23 @@ import java.util.Random;
 
 import cn.xiaoxige.annotation.AutoNetAnontation;
 import cn.xiaoxige.annotation.AutoNetBaseUrlKeyAnontation;
-import cn.xiaoxige.annotation.AutoNetDisposableBaseUrlAnontation;
-import cn.xiaoxige.annotation.AutoNetDisposableHeadAnnontation;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
-import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
 import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.autonet.entity.TestARequest;
 import cn.xiaoxige.autonet.entity.TestRequest;
 import cn.xiaoxige.autonet.entity.TestResponseEntity;
+import cn.xiaoxige.autonet.entity.ZipTestEntity;
 import cn.xiaoxige.autonet_api.AutoNet;
 import cn.xiaoxige.autonet_api.abstracts.AbsAutoNetCallback;
-import cn.xiaoxige.autonet_api.error.EmptyError;
-import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataBeforeCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
-import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataSuccessCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetLocalOptCallBack;
-import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
+import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
+import io.reactivex.FlowableSubscriber;
+import io.reactivex.functions.BiFunction;
 
 public class MainActivity extends RxActivity {
 
@@ -54,6 +50,7 @@ public class MainActivity extends RxActivity {
     private Button btnRecvFile;
     private Button btnUpdateHeadToken;
     private Button btnRemoveHeadToken;
+    private Button btnZip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +73,7 @@ public class MainActivity extends RxActivity {
         btnRemoveHeadToken = (Button) findViewById(R.id.btnRemoveHeadToken);
         btnLocalNet = (Button) findViewById(R.id.btnLocalNet);
         btnNetLocal = (Button) findViewById(R.id.btnNetLocal);
+        btnZip = (Button) findViewById(R.id.btnZip);
     }
 
     private void registerListener() {
@@ -224,6 +222,64 @@ public class MainActivity extends RxActivity {
 
             }
         });
+
+        btnZip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // 测试Json数据
+                Flowable flowable1 = AutoNet.getInstance().createNet()
+                        .doGet()
+                        .setParam("m", "ina_app")
+                        .setParam("c", "other")
+                        .setParam("a", "guidepage")
+                        .setSuffixUrl("/init.php")
+                        .setDomainNameKey("jsonTestBaseUrl")
+                        .setResponseClazz(TestResponseEntity.class)
+                        .getFlowable();
+
+                // 百度数据
+                Flowable flowable2 = AutoNet.getInstance().createNet()
+                        .doGet()
+                        .getFlowable();
+
+                tvResult.setText("正在请求");
+
+                //noinspection unchecked
+                Flowable.zip(flowable1, flowable2, new BiFunction<TestResponseEntity, String, ZipTestEntity>() {
+                    @Override
+                    public ZipTestEntity apply(TestResponseEntity o, String o2) throws Exception {
+                        ZipTestEntity entity = new ZipTestEntity();
+                        entity.setEntity(o);
+                        entity.setBaiduWebMsg(o2);
+                        return entity;
+                    }
+                }).subscribe(new FlowableSubscriber<ZipTestEntity>() {
+                    @Override
+                    public void onSubscribe(Subscription s) {
+                        s.request(Integer.MAX_VALUE);
+                    }
+
+                    @Override
+                    public void onNext(ZipTestEntity o) {
+                        tvResult.setText(o.toString());
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        tvResult.setText("请求失败： " + t.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+
+            }
+        });
+
         // 修改头信息token信息
         btnUpdateHeadToken.setOnClickListener(new View.OnClickListener() {
             @Override
