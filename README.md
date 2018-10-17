@@ -1,7 +1,11 @@
+
 # AutoNet (网络框架)
 	AutoNet 代理了OkHttp， 处理了复杂繁琐的网络请求代码！ 使Android开发网络应用更加简单，只需关注业务即可。
 # Git地址
+## 1.Android版本：
 	https://github.com/xiaoxige/AutoNet
+## 2.ios版本：
+	https://github.com/xiaoxige/AutoNet-Ios
 # 特色
 	* 使用简单、调用方便
 	* 支持注解、 链式
