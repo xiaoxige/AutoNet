@@ -12,6 +12,8 @@ import cn.xiaoxige.autonet_api.interfaces.IAutoNetBodyCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
 import io.reactivex.FlowableEmitter;
+import io.reactivex.functions.Consumer;
+import io.reactivex.plugins.RxJavaPlugins;
 import okhttp3.Headers;
 
 
@@ -34,6 +36,12 @@ public class MyApplication extends Application {
         domainNames.put("pppig", "https://www.pangpangpig.com");
         domainNames.put("upFile", "http://testimage.xxxx.com:8080");
         domainNames.put("test", "http://192.168.1.38:8080");
+
+        RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Exception {
+            }
+        });
 
         AutoNetConfig config = new AutoNetConfig.Builder()
                 .isOpenStetho(true)
