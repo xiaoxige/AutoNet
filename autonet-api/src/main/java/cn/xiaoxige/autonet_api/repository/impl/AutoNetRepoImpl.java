@@ -43,6 +43,7 @@ import okhttp3.ResponseBody;
 
 public class AutoNetRepoImpl implements AutoNetRepo {
 
+    private Object mFlag;
     private Map requestParams;
     private String url;
     private String mediaType;
@@ -54,11 +55,12 @@ public class AutoNetRepoImpl implements AutoNetRepo {
     private OkHttpClient client;
 
 
-    public AutoNetRepoImpl(Map requestParams, String extraDynamicParam,
+    public AutoNetRepoImpl(Object flag, Map requestParams, String extraDynamicParam,
                            String url, String mediaType,
                            Long writeOutTime, Long readOutTime, Long connectOutTime,
                            Long encryptionKey, Boolean isEncryption, List<Interceptor> interceptors, Map<String, String> heads,
                            String responseClazzName, AutoNetTypeAnontation.Type reqType, IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack, IAutoNetBodyCallBack bodyCallBack, IAutoNetCallBack callBack) {
+        this.mFlag = flag;
         this.requestParams = requestParams;
         this.url = url;
         this.mediaType = mediaType;
@@ -67,7 +69,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         this.callBack = callBack;
         this.bodyCallBack = bodyCallBack;
 
-        this.client = Client.client(extraDynamicParam, writeOutTime, readOutTime, connectOutTime, heads, encryptionKey, isEncryption, interceptors, encryptionCallback, headCallBack);
+        this.client = Client.client(flag, extraDynamicParam, writeOutTime, readOutTime, connectOutTime, heads, encryptionKey, isEncryption, interceptors, encryptionCallback, headCallBack);
     }
 
     @Override
@@ -247,7 +249,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
 
         if (bodyCallBack != null) {
             boolean isContinue
-                    = bodyCallBack.body(content, emitter);
+                    = bodyCallBack.body(this.mFlag, content, emitter);
             if (isContinue) {
                 return;
             }

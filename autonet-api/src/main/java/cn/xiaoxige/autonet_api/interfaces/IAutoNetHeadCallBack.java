@@ -4,7 +4,7 @@ import okhttp3.Headers;
 
 /**
  * @author by zhuxiaoan on 2018/5/21 0021.
- *         Header information callback of the AutoNet request to return the data.
+ * Header information callback of the AutoNet request to return the data.
  */
 
 public interface IAutoNetHeadCallBack {
@@ -14,5 +14,5 @@ public interface IAutoNetHeadCallBack {
      *
      * @param headers
      */
-    void head(Headers headers);
+    void head(Object flag, Headers headers);
 }

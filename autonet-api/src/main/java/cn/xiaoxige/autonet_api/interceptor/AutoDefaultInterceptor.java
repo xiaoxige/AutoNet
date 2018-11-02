@@ -19,11 +19,12 @@ import okio.Buffer;
 
 /**
  * @author by xiaoxige on 2018/5/20.
- *         AutoNet default network interceptor
+ * AutoNet default network interceptor
  */
 
 public class AutoDefaultInterceptor implements Interceptor {
 
+    private Object mFlag;
     private String extraDynamicParam;
     private Map<String, String> heads;
     private Long encryptionKey;
@@ -31,8 +32,9 @@ public class AutoDefaultInterceptor implements Interceptor {
     private IAutoNetEncryptionCallback encryptionCallback;
     private IAutoNetHeadCallBack headCallBack;
 
-    public AutoDefaultInterceptor(String extraDynamicParam, Map<String, String> heads, Long encryptionKey, Boolean isEncryption,
+    public AutoDefaultInterceptor(Object flag, String extraDynamicParam, Map<String, String> heads, Long encryptionKey, Boolean isEncryption,
                                   IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack) {
+        this.mFlag = flag;
         this.extraDynamicParam = extraDynamicParam;
         this.heads = heads;
         this.encryptionKey = encryptionKey;
@@ -53,7 +55,7 @@ public class AutoDefaultInterceptor implements Interceptor {
 
         Response proceed = chain.proceed(request);
         if (headCallBack != null) {
-            headCallBack.head(proceed.headers());
+            headCallBack.head(this.mFlag, proceed.headers());
         }
         return proceed;
     }

@@ -235,12 +235,14 @@ public class MainActivity extends RxActivity {
                         .setParam("a", "guidepage")
                         .setSuffixUrl("/init.php")
                         .setDomainNameKey("jsonTestBaseUrl")
+                        .setFlag("测试Json数据")
                         .setResponseClazz(TestResponseEntity.class)
                         .getFlowable();
 
                 // 百度数据
                 Flowable flowable2 = AutoNet.getInstance().createNet()
                         .doGet()
+                        .setFlag("百度数据")
                         .getFlowable();
 
                 tvResult.setText("正在请求");

@@ -58,12 +58,14 @@ public class MyApplication extends Application {
             }
         }).setHeadsCallback(new IAutoNetHeadCallBack() {
             @Override
-            public void head(Headers headers) {
+            public void head(Object flag, Headers headers) {
+                Log.e("TAG", "flag = " + flag);
                 Log.e("TAG", "头部回调：" + headers);
             }
         }).setBodyCallback(new IAutoNetBodyCallBack() {
             @Override
-            public boolean body(String object, FlowableEmitter emitter) {
+            public boolean body(Object flag, String object, FlowableEmitter emitter) {
+                Log.e("TAG", "flag = " + flag);
                 Log.e("TAG", "body： " + object);
                 return false;
             }

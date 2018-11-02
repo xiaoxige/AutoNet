@@ -24,7 +24,7 @@ import okhttp3.OkHttpClient;
 
 /**
  * @author by xiaoxige on 2018/5/20.
- *         Okhttp3 structure client
+ * Okhttp3 structure client
  */
 
 public class Client {
@@ -39,12 +39,12 @@ public class Client {
                 .build();
     }
 
-    public static OkHttpClient client(String extraDynamicParam, Long writeOutTime, Long readOutTime, Long connectOutTime, Map<String, String> heads,
+    public static OkHttpClient client(Object flag, String extraDynamicParam, Long writeOutTime, Long readOutTime, Long connectOutTime, Map<String, String> heads,
                                       Long encryptionKey, Boolean isEncryption, List<Interceptor> interceptors, IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .sslSocketFactory(createSSLSocketFactory())
                 .hostnameVerifier(new TrustAllHostnameVerifier())
-                .addNetworkInterceptor(new AutoDefaultInterceptor(extraDynamicParam, heads, encryptionKey, isEncryption, encryptionCallback, headCallBack))
+                .addNetworkInterceptor(new AutoDefaultInterceptor(flag, extraDynamicParam, heads, encryptionKey, isEncryption, encryptionCallback, headCallBack))
                 .addNetworkInterceptor(new StethoInterceptor())
                 .writeTimeout(writeOutTime, TimeUnit.SECONDS)
                 .readTimeout(readOutTime, TimeUnit.SECONDS)

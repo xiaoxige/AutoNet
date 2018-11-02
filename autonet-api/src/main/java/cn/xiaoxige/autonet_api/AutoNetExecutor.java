@@ -46,7 +46,7 @@ public class AutoNetExecutor {
 
     private AutoNetRepo mRepo;
 
-    public AutoNetExecutor(IAutoNetRequest requestEntity, Map requestMap, String extraDynamicParam,
+    public AutoNetExecutor(Object flag, IAutoNetRequest requestEntity, Map requestMap, String extraDynamicParam,
                            String url, String mediaType,
                            Long writeOutTime, Long readOutTime, Long connectOutTime,
                            Long encryptionKey, Boolean isEncryption, List<Interceptor> interceptors, Map<String, String> heads,
@@ -54,7 +54,7 @@ public class AutoNetExecutor {
         this.transformer = transformer;
         this.callBack = callBack;
         Map params = integrationParams(requestEntity, requestMap);
-        mRepo = new AutoNetRepoImpl(params, extraDynamicParam,
+        mRepo = new AutoNetRepoImpl(flag, params, extraDynamicParam,
                 url, mediaType, writeOutTime, readOutTime, connectOutTime,
                 encryptionKey, isEncryption, interceptors, heads, responseClazzName, reqType, encryptionCallback, headCallBack, bodyCallBack, callBack);
     }

@@ -94,73 +94,9 @@ public final class AutoNet {
         }
     }
 
-    /**
-     * Collect and undertake and Distribution and execution
-     *
-     * @param requestEntity
-     * @param extraDynamicParam
-     * @param domainNameKey
-     * @param suffixUrl
-     * @param mediaType
-     * @param writeOutTime
-     * @param readOutTime
-     * @param connectOutTime
-     * @param encryptionKey
-     * @param isEncryption
-     * @param netPattern
-     * @param reqType
-     * @param resType
-     * @param netStrategy
-     * @param callBack
-     * @param pushFileKey
-     * @param filePath
-     * @param fileName
-     * @param transformer
-     */
-    public static final void startNet(IAutoNetRequest requestEntity, Map requestMap, String extraDynamicParam,
-                                      String domainNameKey, String suffixUrl,
-                                      String mediaType, Long writeOutTime, Long readOutTime,
-                                      Long connectOutTime, Long encryptionKey, Boolean isEncryption,
-                                      String disposableBaseUrl, String disposableHeads,
-                                      AutoNetPatternAnontation.NetPattern netPattern, AutoNetTypeAnontation.Type reqType,
-                                      AutoNetTypeAnontation.Type resType, AutoNetStrategyAnontation.NetStrategy netStrategy,
-                                      String responseClazzName, IAutoNetCallBack callBack, String pushFileKey, String filePath, String fileName,
-                                      FlowableTransformer transformer) {
-
-        if (sConfig == null) {
-            throw new IllegalArgumentException("Please initialize first.");
-        }
-
-        if (!checkLegitimate(netPattern, reqType, resType, pushFileKey, filePath, fileName)) {
-            return;
-        }
-
-        AutoNetExecutor executor = structuralExecutor(requestEntity, requestMap, extraDynamicParam, domainNameKey, suffixUrl,
-                mediaType, writeOutTime, readOutTime, connectOutTime, encryptionKey, isEncryption,
-                disposableBaseUrl, disposableHeads, netPattern, reqType, resType, netStrategy,
-                responseClazzName, callBack, pushFileKey, filePath, fileName, transformer);
-
-        if (isPushFileOperation(reqType, pushFileKey, filePath)) {
-            executor.pushFile(pushFileKey, filePath);
-        } else if (isPullFileOperation(resType, filePath, fileName)) {
-            executor.pullFile(filePath, fileName);
-        } else {
-
-            if (netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.NET)) {
-                executor.netOpt(netPattern);
-            } else if (netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.LOCAL_NET)) {
-                executor.doLocalNet(netPattern);
-            } else if (netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.LOCAL)) {
-                executor.doLocal();
-            } else if (netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.NET_LOCAL)) {
-                executor.doNetLocal(netPattern);
-            }
-
-        }
-    }
 
     /**
-     * Get the upstream transmitter and handle it freely.
+     * Compatible with AutoNet annotated version
      *
      * @param requestEntity
      * @param requestMap
@@ -187,7 +123,115 @@ public final class AutoNet {
      * @param transformer
      * @return
      */
-    public static final Flowable createFlowable(IAutoNetRequest requestEntity, Map requestMap, String extraDynamicParam,
+    public static final void startNet(IAutoNetRequest requestEntity, Map requestMap, String extraDynamicParam,
+                                      String domainNameKey, String suffixUrl,
+                                      String mediaType, Long writeOutTime, Long readOutTime,
+                                      Long connectOutTime, Long encryptionKey, Boolean isEncryption,
+                                      String disposableBaseUrl, String disposableHeads,
+                                      AutoNetPatternAnontation.NetPattern netPattern, AutoNetTypeAnontation.Type reqType,
+                                      AutoNetTypeAnontation.Type resType, AutoNetStrategyAnontation.NetStrategy netStrategy,
+                                      String responseClazzName, IAutoNetCallBack callBack, String pushFileKey, String filePath, String fileName,
+                                      FlowableTransformer transformer) {
+        startNet(null, requestEntity, requestMap, extraDynamicParam, domainNameKey, suffixUrl, mediaType, writeOutTime, readOutTime,
+                connectOutTime, encryptionKey, isEncryption, disposableBaseUrl, disposableHeads, netPattern, reqType, resType, netStrategy,
+                responseClazzName, callBack, pushFileKey, filePath, fileName, transformer);
+    }
+
+    /**
+     * Collect and undertake and Distribution and execution
+     *
+     * @param requestEntity
+     * @param extraDynamicParam
+     * @param domainNameKey
+     * @param suffixUrl
+     * @param mediaType
+     * @param writeOutTime
+     * @param readOutTime
+     * @param connectOutTime
+     * @param encryptionKey
+     * @param isEncryption
+     * @param netPattern
+     * @param reqType
+     * @param resType
+     * @param netStrategy
+     * @param callBack
+     * @param pushFileKey
+     * @param filePath
+     * @param fileName
+     * @param transformer
+     */
+    public static final void startNet(Object flag, IAutoNetRequest requestEntity, Map requestMap, String extraDynamicParam,
+                                      String domainNameKey, String suffixUrl,
+                                      String mediaType, Long writeOutTime, Long readOutTime,
+                                      Long connectOutTime, Long encryptionKey, Boolean isEncryption,
+                                      String disposableBaseUrl, String disposableHeads,
+                                      AutoNetPatternAnontation.NetPattern netPattern, AutoNetTypeAnontation.Type reqType,
+                                      AutoNetTypeAnontation.Type resType, AutoNetStrategyAnontation.NetStrategy netStrategy,
+                                      String responseClazzName, IAutoNetCallBack callBack, String pushFileKey, String filePath, String fileName,
+                                      FlowableTransformer transformer) {
+
+        if (sConfig == null) {
+            throw new IllegalArgumentException("Please initialize first.");
+        }
+
+        if (!checkLegitimate(netPattern, reqType, resType, pushFileKey, filePath, fileName)) {
+            return;
+        }
+
+        AutoNetExecutor executor = structuralExecutor(flag, requestEntity, requestMap, extraDynamicParam, domainNameKey, suffixUrl,
+                mediaType, writeOutTime, readOutTime, connectOutTime, encryptionKey, isEncryption,
+                disposableBaseUrl, disposableHeads, netPattern, reqType, resType, netStrategy,
+                responseClazzName, callBack, pushFileKey, filePath, fileName, transformer);
+
+        if (isPushFileOperation(reqType, pushFileKey, filePath)) {
+            executor.pushFile(pushFileKey, filePath);
+        } else if (isPullFileOperation(resType, filePath, fileName)) {
+            executor.pullFile(filePath, fileName);
+        } else {
+
+            if (netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.NET)) {
+                executor.netOpt(netPattern);
+            } else if (netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.LOCAL_NET)) {
+                executor.doLocalNet(netPattern);
+            } else if (netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.LOCAL)) {
+                executor.doLocal();
+            } else if (netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.NET_LOCAL)) {
+                executor.doNetLocal(netPattern);
+            }
+
+        }
+    }
+
+    /**
+     * Get the upstream transmitter and handle it freely.
+     *
+     * @param flag
+     * @param requestEntity
+     * @param requestMap
+     * @param extraDynamicParam
+     * @param domainNameKey
+     * @param suffixUrl
+     * @param mediaType
+     * @param writeOutTime
+     * @param readOutTime
+     * @param connectOutTime
+     * @param encryptionKey
+     * @param isEncryption
+     * @param disposableBaseUrl
+     * @param disposableHeads
+     * @param netPattern
+     * @param reqType
+     * @param resType
+     * @param netStrategy
+     * @param responseClazzName
+     * @param callBack
+     * @param pushFileKey
+     * @param filePath
+     * @param fileName
+     * @param transformer
+     * @return
+     */
+    public static final Flowable createFlowable(Object flag, IAutoNetRequest requestEntity, Map requestMap, String extraDynamicParam,
                                                 String domainNameKey, String suffixUrl,
                                                 String mediaType, Long writeOutTime, Long readOutTime,
                                                 Long connectOutTime, Long encryptionKey, Boolean isEncryption,
@@ -204,7 +248,7 @@ public final class AutoNet {
             return null;
         }
 
-        AutoNetExecutor executor = structuralExecutor(requestEntity, requestMap, extraDynamicParam, domainNameKey, suffixUrl,
+        AutoNetExecutor executor = structuralExecutor(flag, requestEntity, requestMap, extraDynamicParam, domainNameKey, suffixUrl,
                 mediaType, writeOutTime, readOutTime, connectOutTime, encryptionKey, isEncryption,
                 disposableBaseUrl, disposableHeads, netPattern, reqType, resType, netStrategy,
                 responseClazzName, callBack, pushFileKey, filePath, fileName, transformer);
@@ -240,7 +284,7 @@ public final class AutoNet {
      * @param transformer
      * @return
      */
-    private static AutoNetExecutor structuralExecutor(IAutoNetRequest requestEntity, Map requestMap, String extraDynamicParam,
+    private static AutoNetExecutor structuralExecutor(Object flag, IAutoNetRequest requestEntity, Map requestMap, String extraDynamicParam,
                                                       String domainNameKey, String suffixUrl,
                                                       String mediaType, Long writeOutTime, Long readOutTime,
                                                       Long connectOutTime, Long encryptionKey, Boolean isEncryption,
@@ -254,7 +298,7 @@ public final class AutoNet {
         mediaType = autoAdjustmentAdjustmentMediaType(mediaType, reqType);
         responseClazzName = integrationResponseClazzName(responseClazzName, callBack);
 
-        AutoNetExecutor executor = new AutoNetExecutor(requestEntity, requestMap, extraDynamicParam, url, mediaType,
+        AutoNetExecutor executor = new AutoNetExecutor(flag, requestEntity, requestMap, extraDynamicParam, url, mediaType,
                 writeOutTime, readOutTime, connectOutTime, encryptionKey, isEncryption, sConfig.getInterceptors(),
                 heads, responseClazzName, transformer, reqType,
                 sAutoNetExtraConfig.getEncryptionCallback(), sAutoNetExtraConfig.getHeadCallBack(), sAutoNetExtraConfig.getBodyCallBack(), callBack);
@@ -692,6 +736,7 @@ public final class AutoNet {
     private static class AutoNetNonAnontation implements IAutoNetNonAnontation {
 
         private ProxyInfo info;
+        private Object mFlag;
         private IAutoNetRequest requestEntity;
         private Map requestMap;
         private String extraDynamicParam;
@@ -704,6 +749,12 @@ public final class AutoNet {
         private AutoNetNonAnontation() {
             requestMap = new ArrayMap();
             info = new ProxyInfo();
+        }
+
+        @Override
+        public IAutoNetNonAnontation setFlag(Object flag) {
+            this.mFlag = flag;
+            return this;
         }
 
         @Override
@@ -893,7 +944,7 @@ public final class AutoNet {
 
         @Override
         public Flowable getFlowable() {
-            return createFlowable(requestEntity, requestMap, extraDynamicParam, info.domainNameKey, info.suffixUrl, info.mediaType,
+            return createFlowable(mFlag, requestEntity, requestMap, extraDynamicParam, info.domainNameKey, info.suffixUrl, info.mediaType,
                     info.writeOutTime, info.readOutTime, info.connectOutTime, info.encryptionKey, info.isEncryption, info.disposableBaseUrl,
                     disposableHeads == null ? null : disposableHeads.toString(),
                     info.netPattern, info.reqType, info.resType, info.netStrategy, info.responseClazzName, null, pushFileKey, filePath, fileName, transformer);
@@ -901,7 +952,7 @@ public final class AutoNet {
 
         @Override
         public void start(IAutoNetCallBack callBack) {
-            startNet(requestEntity, requestMap, extraDynamicParam, info.domainNameKey, info.suffixUrl, info.mediaType,
+            startNet(mFlag, requestEntity, requestMap, extraDynamicParam, info.domainNameKey, info.suffixUrl, info.mediaType,
                     info.writeOutTime, info.readOutTime, info.connectOutTime, info.encryptionKey, info.isEncryption, info.disposableBaseUrl,
                     disposableHeads == null ? null : disposableHeads.toString(),
                     info.netPattern, info.reqType, info.resType, info.netStrategy, info.responseClazzName, callBack, pushFileKey, filePath, fileName, transformer);
@@ -949,6 +1000,8 @@ public final class AutoNet {
     }
 
     public interface IAutoNetNonAnontation {
+
+        IAutoNetNonAnontation setFlag(Object flag);
 
         IAutoNetNonAnontation setRequestEntity(IAutoNetRequest requestEntity);
 
