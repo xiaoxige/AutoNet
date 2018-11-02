@@ -1,4 +1,4 @@
 include ':app',
-        ':autonet-annotation',
-        ':autonet-processor',
+//        ':autonet-annotation',
+//        ':autonet-processor',
         ':autonet-api'
