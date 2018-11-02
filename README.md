@@ -21,8 +21,8 @@
 	* 支持上传文件和下载文件
 	* 可直接获得上游的Flowable, 用户自己进行操作结果。（eg: 使用zip去合并多个请求等）
 # gradle依赖
-	compile 'cn.xiaoxige:autonet-api:1.1.1'
-	annotationProcessor 'cn.xiaoxige:autonet-processor:1.1.1'
+	compile 'cn.xiaoxige:autonet-api:1.1.2'
+	annotationProcessor 'cn.xiaoxige:autonet-processor:1.1.2'
 # 使用
 ## 1. 初始化
 ### 1.1 AutoNetConfig(配置AutoNet的基本配置)注意：改配置基本是固定，如域名、头部数据
@@ -43,12 +43,12 @@
             }
         }).setHeadsCallback(new IAutoNetHeadCallBack() {
             @Override
-            public void head(Headers headers) {
+            public void head(Object flag, Headers headers) {
 				// 请求返回的头部数据回调
             }
         }).setBodyCallback(new IAutoNetBodyCallBack() {
             @Override
-            public boolean body(String object, FlowableEmitter emitter) {
+            public boolean body(Object flag, String object, FlowableEmitter emitter) {
 				// 自己处理需要返回true
                 return false;
             }
@@ -115,6 +115,8 @@
     AutoNet.getInstance().createNet()
 		// 设置url后缀（除去域名）
         .setSuffixUrl(String)
+		// 设置一个标志， 会在全局的Head和Body中回调
+		.setFlag(flag)
 		// 参数
         .setParams(Map)
         .setParam(key, value)
@@ -337,7 +339,7 @@
 
     AutoNet.getInstance().initAutoNet(this, config).setBodyCallback(new IAutoNetBodyCallBack() {
             @Override
-            public boolean body(String body, FlowableEmitter emitter) {
+            public boolean body(Object flag, String body, FlowableEmitter emitter) {
 				// 全局的， 所有的请求都会到这里
 				// 在这里可以根据自己的统一的字段去判断code什么的是否成功了
 				// 如果不成功可以以异常出去， 最后会在onFailed回调
