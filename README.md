@@ -7,7 +7,7 @@
 ## 2.ios版本：
 	https://github.com/xiaoxige/AutoNet-Ios
 # AutoNet 技术交流群：
-	141027175
+	QQ: 141027175
 # 特色
 	* 使用简单、调用方便
 	* 支持注解、 链式
