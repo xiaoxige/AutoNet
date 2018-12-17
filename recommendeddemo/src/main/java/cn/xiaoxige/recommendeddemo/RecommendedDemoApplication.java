@@ -2,9 +2,14 @@ package cn.xiaoxige.recommendeddemo;
 
 import android.app.Application;
 
+import com.google.gson.Gson;
+
 import cn.xiaoxige.autonet_api.AutoNet;
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
+import cn.xiaoxige.autonet_api.error.CustomError;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetBodyCallBack;
+import cn.xiaoxige.recommendeddemo.base.BaseResponse;
+import cn.xiaoxige.recommendeddemo.constant.CommonConstant;
 import io.reactivex.FlowableEmitter;
 
 /**
@@ -41,8 +46,41 @@ public class RecommendedDemoApplication extends Application {
             @Override
             public boolean body(Object flag, String response, FlowableEmitter emitter) {
 
+                try{
+                    BaseResponse baseResponse = new Gson().fromJson(response, BaseResponse.class);
+
+                    if(baseResponse.isTokenInvalid()){
+                        handlerTokenInvalid();
+                        return true;
+                    }
+
+                    // ...
+                    // 其他自己需要处理的逻辑
+
+                    if(flag != null && (Integer)flag == CommonConstant.FLAG_EXCLUDE_ERROR){
+                        // 这里就不再处理, 有可能需要在下游自行处理（eg: 如果zip, 一个接口为空了， 不会影响其他接口展示）
+                        return false;
+                    }
+
+                    if(!baseResponse.isSuccess()){
+                        emitter.onError(new CustomError(baseResponse.getMessage()));
+                        return true;
+                    }
+
+                }catch (Exception e){
+                    emitter.onError(e);
+                    return true;
+                }
+
                 return false;
             }
         });
+    }
+
+    private void handlerTokenInvalid() {
+        // 处理token失效的情况
+        // 1. 清空用户本地数据并更新相应数据
+        // 2. 跳转登录界面
+        // ...
     }
 }

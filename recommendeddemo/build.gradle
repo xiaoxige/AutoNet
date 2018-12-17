@@ -34,6 +34,7 @@ dependencies {
 
     compile project(':emptylayout')
 
+    // AutoNet 依赖
     compile 'cn.xiaoxige:autonet-api:1.1.2'
     annotationProcessor 'cn.xiaoxige:autonet-processor:1.1.2'
 
