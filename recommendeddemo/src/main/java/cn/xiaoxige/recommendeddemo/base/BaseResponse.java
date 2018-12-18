@@ -2,8 +2,8 @@ package cn.xiaoxige.recommendeddemo.base;
 
 public class BaseResponse {
 
-    private int code = 0;
-    private String message;
+    private int errorCode = 0;
+    private String errorMsg;
 
 
     /****
@@ -11,7 +11,7 @@ public class BaseResponse {
      * @return
      */
     public boolean isSuccess() {
-        return this.code == 0;
+        return this.errorCode == 0;
     }
 
     /****
@@ -19,22 +19,22 @@ public class BaseResponse {
      * @return
      */
     public boolean isTokenInvalid() {
-        return this.code == 1003;
+        return this.errorCode == -1001;
     }
 
-    public int getCode() {
-        return code;
+    public int getErrorCode() {
+        return errorCode;
     }
 
-    public void setCode(int code) {
-        this.code = code;
+    public void setErrorCode(int errorCode) {
+        this.errorCode = errorCode;
     }
 
-    public String getMessage() {
-        return message;
+    public String getErrorMsg() {
+        return errorMsg;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
     }
 }

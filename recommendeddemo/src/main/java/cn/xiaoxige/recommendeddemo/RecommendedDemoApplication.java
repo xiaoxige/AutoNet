@@ -31,7 +31,7 @@ public class RecommendedDemoApplication extends Application {
         AutoNetConfig config = new AutoNetConfig.Builder()
                 // 只有在debug状态下在开启stetho
                 .isOpenStetho(BuildConfig.DEBUG)
-
+                .setDefaultDomainName(CommonConstant.BASE_URL)
                 .build();
 
         /****
@@ -46,10 +46,10 @@ public class RecommendedDemoApplication extends Application {
             @Override
             public boolean body(Object flag, String response, FlowableEmitter emitter) {
 
-                try{
+                try {
                     BaseResponse baseResponse = new Gson().fromJson(response, BaseResponse.class);
 
-                    if(baseResponse.isTokenInvalid()){
+                    if (baseResponse.isTokenInvalid()) {
                         handlerTokenInvalid();
                         return true;
                     }
@@ -57,17 +57,17 @@ public class RecommendedDemoApplication extends Application {
                     // ...
                     // 其他自己需要处理的逻辑
 
-                    if(flag != null && (Integer)flag == CommonConstant.FLAG_EXCLUDE_ERROR){
+                    if (flag != null && (Integer) flag == CommonConstant.FLAG_EXCLUDE_ERROR) {
                         // 这里就不再处理, 有可能需要在下游自行处理（eg: 如果zip, 一个接口为空了， 不会影响其他接口展示）
                         return false;
                     }
 
-                    if(!baseResponse.isSuccess()){
-                        emitter.onError(new CustomError(baseResponse.getMessage()));
+                    if (!baseResponse.isSuccess()) {
+                        emitter.onError(new CustomError(baseResponse.getErrorMsg()));
                         return true;
                     }
 
-                }catch (Exception e){
+                } catch (Exception e) {
                     emitter.onError(e);
                     return true;
                 }
