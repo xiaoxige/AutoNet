@@ -158,6 +158,7 @@ public class MainActivity extends Activity {
             if (mAdapter.getDataSize() <= 0) {
                 mEmptyLayout.showError();
             }
+            refreshLayout.setRefreshing(false);
             HandlerError.handlerError(throwable);
         }
 
@@ -167,6 +168,7 @@ public class MainActivity extends Activity {
             if (mAdapter.getDataSize() <= 0) {
                 mEmptyLayout.showEmpty();
             }
+            refreshLayout.setRefreshing(false);
             HandlerError.handlerEmpty();
         }
     }
