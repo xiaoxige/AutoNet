@@ -37,192 +37,207 @@
 	* 设置头部参数
 	* 设置Okhttp的拦截器
 ### 1.2 AutoNet的初始化操作
-	AutoNet.getInstance().initAutoNet(Context, AutoNetConfig);
-	可以链式去设置加密的回调，头部数据的回调，Body数据的回调, eg:
-	AutoNet.getInstance().initAutoNet(Context, AutoNetConfig)
-	.setEncryptionCallback(new IAutoNetEncryptionCallback() {
-            @Override
-            public String encryption(Long key, String encryptionContent) {
-				// 可通过key去加密参数
-                return encryptionContent;
-            }
-        }).setHeadsCallback(new IAutoNetHeadCallBack() {
-            @Override
-            public void head(Object flag, Headers headers) {
-				// 请求返回的头部数据回调
-            }
-        }).setBodyCallback(new IAutoNetBodyCallBack() {
-            @Override
-            public boolean body(Object flag, String object, FlowableEmitter emitter) {
-				// 自己处理需要返回true
-                return false;
-            }
-	});
-	还可以再次设置域名和头部数据（这里的配置为灵活的， 可在任意地方修改）
-	AutoNet.getInstance().updateOrInsertHead(key, value);
-	AutoNet.getInstance().updateOrInsertDomainNames(key, value);
+``` java
+AutoNet.getInstance().initAutoNet(Context, AutoNetConfig);
+可以链式去设置加密的回调，头部数据的回调，Body数据的回调, eg:
+AutoNet.getInstance().initAutoNet(Context, AutoNetConfig)
+.setEncryptionCallback(new IAutoNetEncryptionCallback() {
+        @Override
+        public String encryption(Long key, String encryptionContent) {
+			// 可通过key去加密参数
+            return encryptionContent;
+        }
+    }).setHeadsCallback(new IAutoNetHeadCallBack() {
+        @Override
+        public void head(Object flag, Headers headers) {
+			// 请求返回的头部数据回调
+        }
+    }).setBodyCallback(new IAutoNetBodyCallBack() {
+        @Override
+        public boolean body(Object flag, String object, FlowableEmitter emitter) {
+			// 自己处理需要返回true
+            return false;
+        }
+});
+还可以再次设置域名和头部数据（这里的配置为灵活的， 可在任意地方修改）
+AutoNet.getInstance().updateOrInsertHead(key, value);
+AutoNet.getInstance().updateOrInsertDomainNames(key, value);
+```
 ## 2. 回调介绍
 	回调需要继承实现AutoNet提供好的接口或者抽象类。AutoNet已经分类， 用户需要什么功能就去集成相应的接口或者抽象类即可
 ### 2.1 IAutoNetDataBeforeCallBack（数据返回前的处理， 可定制要继续返回给客户前端的数据）
-	public interface IAutoNetDataBeforeCallBack<T> extends IAutoNetCallBack {
-		// T为用户指定的body要返回的实体类（AutoNet会自动转换）， emitter为Rxjava的上游， 可改变其返回结果。 如果自己处理需要返回true。eg: T为一个实体类， 里面有一个List集合， 我们在View层只需要关注List集合，则可以在这里直接重新定义并返回List集合， 并返回true。 （注意：其实这里还有一个功能就是， 根据自己的需求去判断是否集合为空更妙。emitter.onError(new EmptyError())。）
-    	boolean handlerBefore(T t, FlowableEmitter emitter);
-	}
+``` java
+public interface IAutoNetDataBeforeCallBack<T> extends IAutoNetCallBack {
+	// T为用户指定的body要返回的实体类（AutoNet会自动转换）， emitter为Rxjava的上游， 可改变其返回结果。 如果自己处理需要返回true。eg: T为一个实体类， 里面有一个List集合， 我们在View层只需要关注List集合，则可以在这里直接重新定义并返回List集合， 并返回true。 （注意：其实这里还有一个功能就是， 根据自己的需求去判断是否集合为空更妙。emitter.onError(new EmptyError())。）
+	boolean handlerBefore(T t, FlowableEmitter emitter);
+}
+```
 ### 2.2 IAutoNetDataSuccessCallBack（只关心成功的数据， 不关心失败和数据为空的结果）
-	public interface IAutoNetDataSuccessCallBack<T> extends IAutoNetCallBack {
-		// T为用户需要返回的实体类
-    	void onSuccess(T entity);
-	}
+``` java
+public interface IAutoNetDataSuccessCallBack<T> extends IAutoNetCallBack {
+	// T为用户需要返回的实体类
+	void onSuccess(T entity);
+}
+```
 ### 2.3 IAutoNetDataCallBack（数据返回比较全的回调, 包含了数据成功、数据失败、数据为空）
-	public interface IAutoNetDataCallBack<T> extends IAutoNetDataSuccessCallBack<T> {
-		// 失败
-    	void onFailed(Throwable throwable);
-		// 数据为空（注意：如果不在IAutoNetDataBeforeCallBack去根据自己的业务去手动抛出emitter.onError(new EmptyError())的话， AutoNet是不知道你的业务是什么的， 所以在这个情况下AutoNet在body都为空的时候才调用onEmpty()）
-    	void onEmpty();
-	}
+``` java
+public interface IAutoNetDataCallBack<T> extends IAutoNetDataSuccessCallBack<T> {
+	// 失败
+	void onFailed(Throwable throwable);
+	// 数据为空（注意：如果不在IAutoNetDataBeforeCallBack去根据自己的业务去手动抛出emitter.onError(new EmptyError())的话， AutoNet是不知道你的业务是什么的， 所以在这个情况下AutoNet在body都为空的时候才调用onEmpty()）
+	void onEmpty();
+}
+```
 ### 2.4 IAutoNetLocalOptCallBack（需要用到本地操作， eg：网络策略， 本地、 先本地后网络， 先网络后本地。 其实AutoNet并不能自动根据你的业务和字段给你建立数据库， 需要自己去实现）
-	public interface IAutoNetLocalOptCallBack extends IAutoNetCallBack {
-    	Object optLocalData(Map request);
-	}
+``` java
+public interface IAutoNetLocalOptCallBack extends IAutoNetCallBack {
+	Object optLocalData(Map request);
+}
+```
 ### 2.5 IAutoNetFileCallBack（文件操作时的回调， 需要关心上传错误等需要继承上面的IAutoNetDataCallBack）
-	public interface IAutoNetFileCallBack extends IAutoNetCallBack {
-		// 上传文件或者下载文件的进度（0~100）
-    	void onPregress(float progress);
-		// 上传成功或者下载成功后的File文件回调
-    	void onComplete(File file);
-	}
+``` java
+public interface IAutoNetFileCallBack extends IAutoNetCallBack {
+	// 上传文件或者下载文件的进度（0~100）
+	void onPregress(float progress);
+	// 上传成功或者下载成功后的File文件回调
+	void onComplete(File file);
+}
+```
 ### 2.6 AbsAutoNetCallback（数据回调的集合， 其实数据写这个就行了， 需要什么方法重写什么方法即可）
-	// 其中 T为返回的body的实体类，Z为自己处理后需要返回给View层后的实体类
-	public abstract class AbsAutoNetCallback<T, Z> implements IAutoNetDataBeforeCallBack<T>, IAutoNetDataCallBack<Z> {
+``` java
+// 其中 T为返回的body的实体类，Z为自己处理后需要返回给View层后的实体类
+public abstract class AbsAutoNetCallback<T, Z> implements IAutoNetDataBeforeCallBack<T>, IAutoNetDataCallBack<Z> {
 
-	    @Override
-	    public boolean handlerBefore(T t, FlowableEmitter emitter) {
-	        return false;
-	    }
+    @Override
+    public boolean handlerBefore(T t, FlowableEmitter emitter) {
+        return false;
+    }
 
-	    @Override
-	    public void onSuccess(Z entity) {
+    @Override
+    public void onSuccess(Z entity) {
 
-	    }
+    }
 
-	    @Override
-	    public void onFailed(Throwable throwable) {
+    @Override
+    public void onFailed(Throwable throwable) {
 
-	    }
+    }
 
-	    @Override
-	    public void onEmpty() {
+    @Override
+    public void onEmpty() {
 
-	    }
+    }
+}
+```
 
-	}
 ## 3. 链式调用
-    AutoNet.getInstance().createNet()
-		// 设置url后缀（除去域名）
-        .setSuffixUrl(String)
-		// 设置一个标志， 会在全局的Head和Body中回调
-		.setFlag(flag)
-		// 参数
-        .setParams(Map)
-        .setParam(key, value)
-        .setRequestEntity(IAutoNetRequest)
-		// post请求（可传参数）
-        .doPost(...)
-		// get请求（可传参数）
-        .doGet(...)
-		// put(可传参数)
-        .doPut(...)
-		// delete(可传参数)
-        .doDelete(...)
-		// 指定使用的域名的Key（默认default）
-        .setDomainNameKey(String)
-		// 设置网络请求方式
-        .setNetPattern(NetPattern)
-		// 设置网络策略
-        .setNetStrategy(NetStrategy)
-		// 设置请求类型（JSON/FORM/STREAM/OTHER）
-        .setReqType(Type)
-		// 设置返回类型（JSON/FORM/STREAM/OTHER）
-        .setResType(Type)
-		// 设置额外的参数（主要解决动态的拼在url中的参数。eg： www.xxx.com/news/1, 最后的那个1为动态）
-        .setExtraDynamicParam(String)
-		// 临时的BaseUrl
-        .setBaseUrl(String)
-		// 链接超时时间
-        .setConnectOutTime(Long)
-		// 读取时间
-        .setReadOuTime(Long)
-		// 写入时间
-        .setWriteOutTime(Long)
-		// 需要加密的参数的key， 可根据key去加密其中类型的参数， 在初始化时使用到了，还记得吗（上去看看）
-        .setEncryptionKey(Long)
-		// 设置MediaType
-        .setMediaType(String)
-		// 发送文件
-        .setPullFileParams()
-		// 接受文件
-        .setPushFileParams()
-		// 设置临时头部
-        .setHeads(String[])
-		// 绑定生命周期，防止内存泄漏（忘了？上面有说）
-        .setTransformer(...)
-		// 数据回调（2章节中讲到的一些回调）
-        (1).start(CallBack);
-		// 获得上游， 用户自己处理结果
-		(2).getFlowable();
-
+``` java
+AutoNet.getInstance().createNet()
+	// 设置url后缀（除去域名）
+    .setSuffixUrl(String)
+	// 设置一个标志， 会在全局的Head和Body中回调
+	.setFlag(flag)
+	// 参数
+    .setParams(Map)
+    .setParam(key, value)
+    .setRequestEntity(IAutoNetRequest)
+	// post请求（可传参数）
+    .doPost(...)
+	// get请求（可传参数）
+    .doGet(...)
+	// put(可传参数)
+    .doPut(...)
+	// delete(可传参数)
+    .doDelete(...)
+	// 指定使用的域名的Key（默认default）
+    .setDomainNameKey(String)
+	// 设置网络请求方式
+    .setNetPattern(NetPattern)
+	// 设置网络策略
+    .setNetStrategy(NetStrategy)
+	// 设置请求类型（JSON/FORM/STREAM/OTHER）
+    .setReqType(Type)
+	// 设置返回类型（JSON/FORM/STREAM/OTHER）
+    .setResType(Type)
+	// 设置额外的参数（主要解决动态的拼在url中的参数。eg： www.xxx.com/news/1, 最后的那个1为动态）
+    .setExtraDynamicParam(String)
+	// 临时的BaseUrl
+    .setBaseUrl(String)
+	// 链接超时时间
+    .setConnectOutTime(Long)
+	// 读取时间
+    .setReadOuTime(Long)
+	// 写入时间
+    .setWriteOutTime(Long)
+	// 需要加密的参数的key， 可根据key去加密其中类型的参数， 在初始化时使用到了，还记得吗（上去看看）
+    .setEncryptionKey(Long)
+	// 设置MediaType
+    .setMediaType(String)
+	// 发送文件
+    .setPullFileParams()
+	// 接受文件
+    .setPushFileParams()
+	// 设置临时头部
+    .setHeads(String[])
+	// 绑定生命周期，防止内存泄漏（忘了？上面有说）
+    .setTransformer(...)
+	// 数据回调（2章节中讲到的一些回调）
+    (1).start(CallBack);
+	// 获得上游， 用户自己处理结果
+	(2).getFlowable();
+```
 ## 4. 获取上游并处理（已zip合并为例， 这里只是用了两个， 其实RxJava提供了好多， 当然还有其他用法，详情可以看RxJava的用法）
+``` java
+// 测试Json数据
+Flowable flowable1 = AutoNet.getInstance().createNet()
+        .doGet()
+        .setParam("m", "ina_app")
+        .setParam("c", "other")
+        .setParam("a", "guidepage")
+        .setSuffixUrl("/init.php")
+        .setDomainNameKey("jsonTestBaseUrl")
+        .setResponseClazz(TestResponseEntity.class)
+        .getFlowable();
 
-	// 测试Json数据
-	Flowable flowable1 = AutoNet.getInstance().createNet()
-	        .doGet()
-	        .setParam("m", "ina_app")
-	        .setParam("c", "other")
-	        .setParam("a", "guidepage")
-	        .setSuffixUrl("/init.php")
-	        .setDomainNameKey("jsonTestBaseUrl")
-	        .setResponseClazz(TestResponseEntity.class)
-	        .getFlowable();
+// 测试百度数据（http://www.baidu.com）
+Flowable flowable2 = AutoNet.getInstance().createNet()
+        .doGet()
+        .getFlowable();
 
-	// 测试百度数据（http://www.baidu.com）
-	Flowable flowable2 = AutoNet.getInstance().createNet()
-	        .doGet()
-	        .getFlowable();
+tvResult.setText("正在请求");
 
-	tvResult.setText("正在请求");
+//noinspection unchecked
+Flowable.zip(flowable1, flowable2, new BiFunction<TestResponseEntity, String, ZipTestEntity>() {
+    @Override
+    public ZipTestEntity apply(TestResponseEntity o, String o2) throws Exception {
+		// 合并
+        ZipTestEntity entity = new ZipTestEntity();
+        entity.setEntity(o);
+        entity.setBaiduWebMsg(o2);
+        return entity;
+    }
+}).subscribe(new FlowableSubscriber<ZipTestEntity>() {
+    @Override
+    public void onSubscribe(Subscription s) {
+        s.request(Integer.MAX_VALUE);
+    }
 
-	//noinspection unchecked
-	Flowable.zip(flowable1, flowable2, new BiFunction<TestResponseEntity, String, ZipTestEntity>() {
-	    @Override
-	    public ZipTestEntity apply(TestResponseEntity o, String o2) throws Exception {
-			// 合并
-	        ZipTestEntity entity = new ZipTestEntity();
-	        entity.setEntity(o);
-	        entity.setBaiduWebMsg(o2);
-	        return entity;
-	    }
-	}).subscribe(new FlowableSubscriber<ZipTestEntity>() {
-	    @Override
-	    public void onSubscribe(Subscription s) {
-	        s.request(Integer.MAX_VALUE);
-	    }
+    @Override
+    public void onNext(ZipTestEntity o) {
+        tvResult.setText(o.toString());
+    }
 
-	    @Override
-	    public void onNext(ZipTestEntity o) {
-	        tvResult.setText(o.toString());
-	    }
+    @Override
+    public void onError(Throwable t) {
+        tvResult.setText("请求失败： " + t.getMessage());
+    }
 
-	    @Override
-	    public void onError(Throwable t) {
-	        tvResult.setText("请求失败： " + t.getMessage());
-	    }
+    @Override
+    public void onComplete() {
 
-	    @Override
-	    public void onComplete() {
-
-	    }
-	});
-
+    }
+});
+```
 
 ## 5. 注解方式
 ### 5.1 注解介绍
@@ -244,166 +259,175 @@
 	如果使用的是注解方式请求网络， 在写完类后，请build -> rebuild project。
 ### 5.4 例子
 #### 一、普通请求
-	@AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.GET)
-    @AutoNetAnontation("/init.php")
-    @AutoNetBaseUrlKeyAnontation("jsonTestBaseUrl")
-    public class doGet implements IAutoNetDataBeforeCallBack<TestResponseEntity>, IAutoNetDataCallBack<List<Entity>> {
-        @Override
-        public boolean handlerBefore(TestResponseEntity o, FlowableEmitter emitter) {
-			List<Entity> entitys = o.getList();
-			if(entitys == null || entitys.isEmpty()){
-	            emitter.onError(new EmptyError());
-				return true;
-			}
-			emitter.onNext(entitys);
-            return true;
-        }
-
-        @Override
-        public void onSuccess(List<Entity> entitys) {
-
-        }
-
-        @Override
-        public void onFailed(Throwable throwable) {
-
-        }
-
-        @Override
-        public void onEmpty() {
-        }
+``` java
+@AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.GET)
+@AutoNetAnontation("/init.php")
+@AutoNetBaseUrlKeyAnontation("jsonTestBaseUrl")
+public class doGet implements IAutoNetDataBeforeCallBack<TestResponseEntity>, IAutoNetDataCallBack<List<Entity>> {
+    @Override
+    public boolean handlerBefore(TestResponseEntity o, FlowableEmitter emitter) {
+		List<Entity> entitys = o.getList();
+		if(entitys == null || entitys.isEmpty()){
+            emitter.onError(new EmptyError());
+			return true;
+		}
+		emitter.onNext(entitys);
+        return true;
     }
 
-	先build下， 然后再需要发送该网络连接时：
-	MainActivitydoGetAutoProxy.startNet(MainActivity.this， bindUntilEvent(ActivityEvent.DESTROY));
-	注意：MainActivitydoGetAutoProxy这个类生成的规则前面已给出
+    @Override
+    public void onSuccess(List<Entity> entitys) {
+
+    }
+
+    @Override
+    public void onFailed(Throwable throwable) {
+
+    }
+
+    @Override
+    public void onEmpty() {
+    }
+}
+
+先build下， 然后再需要发送该网络连接时：
+MainActivitydoGetAutoProxy.startNet(MainActivity.this， bindUntilEvent(ActivityEvent.DESTROY));
+注意：MainActivitydoGetAutoProxy这个类生成的规则前面已给出
+```
 #### 二、 上传文件
-	@AutoNetBaseUrlKeyAnontation("upFile")
-    @AutoNetTypeAnontation(reqType = AutoNetTypeAnontation.Type.STREAM)
-    @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.POST)
-    public class PushFile implements IAutoNetDataCallBack, IAutoNetFileCallBack {
+``` java
+@AutoNetBaseUrlKeyAnontation("upFile")
+@AutoNetTypeAnontation(reqType = AutoNetTypeAnontation.Type.STREAM)
+@AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.POST)
+public class PushFile implements IAutoNetDataCallBack, IAutoNetFileCallBack {
 
-        @Override
-        public void onFailed(Throwable throwable) {
-        }
-
-        @Override
-        public void onEmpty() {
-        }
-
-        @Override
-        public void onSuccess(Object entity) {
-        }
-
-        @Override
-        public void onPregress(float progress) {
-        }
-
-        @Override
-        public void onComplete(File file) {
-        }
+    @Override
+    public void onFailed(Throwable throwable) {
     }
 
-	请求方式：
-	MainActivityPushFileAutoProxy.pushFile(MainActivity.this, "upload", path + File.separator + "a.png");
+    @Override
+    public void onEmpty() {
+    }
+
+    @Override
+    public void onSuccess(Object entity) {
+    }
+
+    @Override
+    public void onPregress(float progress) {
+    }
+
+    @Override
+    public void onComplete(File file) {
+    }
+}
+
+请求方式：
+MainActivityPushFileAutoProxy.pushFile(MainActivity.this, "upload", path + File.separator + "a.png");
+```
 #### 三、 下载文件
-	@AutoNetBaseUrlKeyAnontation("downFile")
-    @AutoNetTypeAnontation(resType = AutoNetTypeAnontation.Type.STREAM)
-    @AutoNetAnontation("/apk/downLoad/android_4.2.4.apk")
-    public class PullFile implements IAutoNetDataCallBack, IAutoNetFileCallBack {
-        @Override
-        public void onFailed(Throwable throwable) {
-        }
-
-        @Override
-        public void onEmpty() {
-        }
-
-        @Override
-        public void onSuccess(Object entity) {
-            // 不被执行
-        }
-
-        @Override
-        public void onPregress(float progress) {
-        }
-
-        @Override
-        public void onComplete(File file) {
-        }
+``` java
+@AutoNetBaseUrlKeyAnontation("downFile")
+@AutoNetTypeAnontation(resType = AutoNetTypeAnontation.Type.STREAM)
+@AutoNetAnontation("/apk/downLoad/android_4.2.4.apk")
+public class PullFile implements IAutoNetDataCallBack, IAutoNetFileCallBack {
+    @Override
+    public void onFailed(Throwable throwable) {
     }
 
-	请求方式：
-	MainActivityPullFileAutoProxy.pullFile(MainActivity.this, path, "pppig.apk");
+    @Override
+    public void onEmpty() {
+    }
+
+    @Override
+    public void onSuccess(Object entity) {
+        // 不被执行
+    }
+
+    @Override
+    public void onPregress(float progress) {
+    }
+
+    @Override
+    public void onComplete(File file) {
+    }
+}
+
+请求方式：
+MainActivityPullFileAutoProxy.pullFile(MainActivity.this, path, "pppig.apk");
+```
 ## 6. 简单的例子
 ### 初始化
-	AutoNetConfig config = new AutoNetConfig.Builder()
-                .isOpenStetho(BuildConfig.DEBUG)
-                .setDefaultDomainName(ApiConstant.BASE_POST_URL)
-                .build();
+``` java
+AutoNetConfig config = new AutoNetConfig.Builder()
+            .isOpenStetho(BuildConfig.DEBUG)
+            .setDefaultDomainName(ApiConstant.BASE_POST_URL)
+            .build();
 
-    AutoNet.getInstance().initAutoNet(this, config).setBodyCallback(new IAutoNetBodyCallBack() {
-            @Override
-            public boolean body(Object flag, String body, FlowableEmitter emitter) {
-				// 全局的， 所有的请求都会到这里
-				// 在这里可以根据自己的统一的字段去判断code什么的是否成功了
-				// 如果不成功可以以异常出去， 最后会在onFailed回调
-                if (!TextUtils.isEmpty(body)) {
-                    try {
-                        BaseResponse baseResponse = new Gson().fromJson(body, BaseResponse.class);
-                        if (!baseResponse.isSuccess()) {
-                            emitter.onError(new CustomError(baseResponse.getMessage()));
-                            return true;
-                        }
-                    } catch (Exception e) {
-                        emitter.onError(e);
+AutoNet.getInstance().initAutoNet(this, config).setBodyCallback(new IAutoNetBodyCallBack() {
+        @Override
+        public boolean body(Object flag, String body, FlowableEmitter emitter) {
+			// 全局的， 所有的请求都会到这里
+			// 在这里可以根据自己的统一的字段去判断code什么的是否成功了
+			// 如果不成功可以以异常出去， 最后会在onFailed回调
+            if (!TextUtils.isEmpty(body)) {
+                try {
+                    BaseResponse baseResponse = new Gson().fromJson(body, BaseResponse.class);
+                    if (!baseResponse.isSuccess()) {
+                        emitter.onError(new CustomError(baseResponse.getMessage()));
                         return true;
                     }
+                } catch (Exception e) {
+                    emitter.onError(e);
+                    return true;
                 }
-                return false;
             }
-        });
-
+            return false;
+        }
+    });
+```
 ### 简单使用
-    AutoNet.getInstance().createNet()
-        .setSuffixUrl("/test")
-        .setParam("a", "a")
-        .setParam("b", 1)
-        .doPost()
-        .start(new TestListCallback());
-    private class TestListCallback extends AbsAutoNetCallback<TestListResponse, List<TestEntity>> {
+``` java
+AutoNet.getInstance().createNet()
+    .setSuffixUrl("/test")
+    .setParam("a", "a")
+    .setParam("b", 1)
+    .doPost()
+    .start(new TestListCallback());
+private class TestListCallback extends AbsAutoNetCallback<TestListResponse, List<TestEntity>> {
 
-	    @Override
-	    public boolean handlerBefore(TestListResponse response, FlowableEmitter emitter) {
-			// 这里可以在数据返回以前， 再次指定要返回的数据， 并根据自己的业务去判断是否为空（注意这里是在分线程中）
-	        List<TestEntity> entitys = response.getData();
-	        if (entitys == null || entitys.isEmpty()) {
-	            emitter.onError(new EmptyError());
-	            return true;
-	        }
-	        //noinspection unchecked
-	        emitter.onNext(entitys);
-	        return true;
-	    }
+    @Override
+    public boolean handlerBefore(TestListResponse response, FlowableEmitter emitter) {
+		// 这里可以在数据返回以前， 再次指定要返回的数据， 并根据自己的业务去判断是否为空（注意这里是在分线程中）
+        List<TestEntity> entitys = response.getData();
+        if (entitys == null || entitys.isEmpty()) {
+            emitter.onError(new EmptyError());
+            return true;
+        }
+        //noinspection unchecked
+        emitter.onNext(entitys);
+        return true;
+    }
 
-	    @Override
-	    public void onSuccess(List<TestEntity> entitys) {
-	        bindUserInfo(entitys);
-	        mEmptyLayout.showContent();
-	        refreshLayout.refreshComplete();
-	    }
-	
-	    @Override
-	    public void onFailed(Throwable throwable) {
-	        HandlerError.handlerError(throwable);
-	        mEmptyLayout.showContent();
-	        refreshLayout.refreshComplete();
-	    }
-	
-	    @Override
-	    public void onEmpty() {
-	        HandlerError.handlerEmpty();
-	        mEmptyLayout.showContent();
-	        refreshLayout.refreshComplete();
-	    }
-	}
+    @Override
+    public void onSuccess(List<TestEntity> entitys) {
+        bindUserInfo(entitys);
+        mEmptyLayout.showContent();
+        refreshLayout.refreshComplete();
+    }
+
+    @Override
+    public void onFailed(Throwable throwable) {
+        HandlerError.handlerError(throwable);
+        mEmptyLayout.showContent();
+        refreshLayout.refreshComplete();
+    }
+
+    @Override
+    public void onEmpty() {
+        HandlerError.handlerEmpty();
+        mEmptyLayout.showContent();
+        refreshLayout.refreshComplete();
+    }
+}
+```
