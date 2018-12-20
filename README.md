@@ -3,39 +3,39 @@
 > AutoNet 代理了OkHttp， 处理了复杂繁琐的网络请求代码！ 使Android开发网络应用更加简单，只需关注业务即可。
 # Git地址
 ## 1.Android版本：
-> https://github.com/xiaoxige/AutoNet
+> [Android版AutoNet](https://github.com/xiaoxige/AutoNet)
 ## 2.ios版本：
-> https://github.com/xiaoxige/AutoNet-Ios
+> [ios版AutoNet](https://github.com/xiaoxige/AutoNet-Ios)
 # AutoNet 技术交流群：
-> QQ: 141027175
+> QQ: **141027175**
 # Demo说明
-* app： AutoNet各个方式使用介绍
-* recommendeddemo： AutoNet推荐用法（注：Api使用了wanandroid的Api）
+> * app： AutoNet各个方式使用介绍
+> * recommendeddemo： AutoNet推荐用法（注：Api使用了wanandroid的Api）
 # 特色
-	* 使用简单、调用方便
-	* 支持注解、 链式
-	* 支持实体类、map传值
-	* 可防止内存泄漏（需继承RxFragmentActivity、或者RxFragment。并向AutoNet传入相应的生命周期）
-	* 可动态添加和修改头部
-	* 可对请求参数数据进行加密
-	* 可自主处理返回的头部数据
-	* 可自主处理返回的body数据
-	* 可自定义返回数据的类型
-	* 可定义固定、灵活及临时的域名、头部信息（优先级： 临时>灵活>固定。 有效性： 固定 >= 灵活 > 临时）
-	* 支持网络策略（网络、本地、先本地后网络、先网络后本地）
-	* 支持上传文件和下载文件
-	* 可直接获得上游的Flowable, 用户自己进行操作结果。（eg: 使用zip去合并多个请求等）
+> * 使用简单、调用方便
+> * 支持注解、 链式
+> * 支持实体类、map传值
+> * 可防止内存泄漏（需继承RxFragmentActivity、或者RxFragment。并向AutoNet传入相应的生命周期）
+> * 可动态添加和修改头部
+> * 可对请求参数数据进行加密
+> * 可自主处理返回的头部数据
+> * 可自主处理返回的body数据
+> * 可自定义返回数据的类型
+> * 可定义固定、灵活及临时的域名、头部信息（优先级： 临时>灵活>固定。 有效性： 固定 >= 灵活 > 临时）
+> * 支持网络策略（网络、本地、先本地后网络、先网络后本地）
+> * 支持上传文件和下载文件
+> * 可直接获得上游的Flowable, 用户自己进行操作结果。（eg: 使用zip去合并多个请求等）
 # gradle依赖
 	compile 'cn.xiaoxige:autonet-api:1.1.2'
 	annotationProcessor 'cn.xiaoxige:autonet-processor:1.1.2'
 # 使用
 ## 1. 初始化
 ### 1.1 AutoNetConfig(配置AutoNet的基本配置)注意：改配置基本是固定，如域名、头部数据
-	* 设置是否开启Stetho调试配置
-	* 设置默认域名（key: default）
-	* 设置多个域名
-	* 设置头部参数
-	* 设置Okhttp的拦截器
+> * 设置是否开启Stetho调试配置
+> * 设置默认域名（key: default）
+> * 设置多个域名
+> * 设置头部参数
+> * 设置Okhttp的拦截器
 ### 1.2 AutoNet的初始化操作
 ``` java
 AutoNet.getInstance().initAutoNet(Context, AutoNetConfig);
@@ -241,16 +241,16 @@ Flowable.zip(flowable1, flowable2, new BiFunction<TestResponseEntity, String, Zi
 
 ## 5. 注解方式
 ### 5.1 注解介绍
-    * AutoNetAnontation 网络参数设置(value(除去域名)、writeTime、readTime、connectOutTime)
-    * AutoNetBaseUrlKeyAnontation BaseUrl的选择标识key(value)
-    * AutoNetDisposableBaseUrlAnontation 本次请求临时使用的BaseUrl(value)
-    * AutoNetDisposableHeadAnnontation 本次请求临时使用的头部信息(value[])
-    * AutoNetEncryptionAnontation 加密参数设置(key, value)
-    * AutoNetMediaTypeAnontation 请求的MediaType(value)
-    * AutoNetPatternAnontation 请求方式(value(get/post/put/delete))
-    * AutoNetResponseEntityClass 请求返回的实体类(value)
-    * AutoNetStrategyAnontation 网络请求策略(value(net/local/local_net/net_local))
-    * AutoNetTypeAnontation 请求和返回的请求类型(reqType(json/form/stream), resType(json/form/stream))
+> * AutoNetAnontation 网络参数设置(value(除去域名)、writeTime、readTime、connectOutTime)
+> * AutoNetBaseUrlKeyAnontation BaseUrl的选择标识key(value)
+> * AutoNetDisposableBaseUrlAnontation 本次请求临时使用的BaseUrl(value)
+> * AutoNetDisposableHeadAnnontation 本次请求临时使用的头部信息(value[])
+> * AutoNetEncryptionAnontation 加密参数设置(key, value)
+> * AutoNetMediaTypeAnontation 请求的MediaType(value)
+> * AutoNetPatternAnontation 请求方式(value(get/post/put/delete))
+> * AutoNetResponseEntityClass 请求返回的实体类(value)
+> * AutoNetStrategyAnontation 网络请求策略(value(net/local/local_net/net_local))
+> * AutoNetTypeAnontation 请求和返回的请求类型(reqType(json/form/stream), resType(json/form/stream))
 
 ### 5.2 代理类名规则
     如果是回调是内部 则代理类名为 外层类名 + 回调类名 + AutoProxy
