@@ -1,16 +1,21 @@
 
 # AutoNet (网络框架)
 > AutoNet 代理了OkHttp， 处理了复杂繁琐的网络请求代码！ 使Android开发网络应用更加简单，只需关注业务即可。
+
 # Git地址
 ## 1.Android版本：
 > [Android版AutoNet](https://github.com/xiaoxige/AutoNet)
+
 ## 2.ios版本：
 > [ios版AutoNet](https://github.com/xiaoxige/AutoNet-Ios)
+
 # AutoNet 技术交流群：
 > QQ: **141027175**
+
 # Demo说明
 > * app： AutoNet各个方式使用介绍
 > * recommendeddemo： AutoNet推荐用法（注：Api使用了wanandroid的Api）
+
 # 特色
 > * 使用简单、调用方便
 > * 支持注解、 链式
@@ -25,6 +30,7 @@
 > * 支持网络策略（网络、本地、先本地后网络、先网络后本地）
 > * 支持上传文件和下载文件
 > * 可直接获得上游的Flowable, 用户自己进行操作结果。（eg: 使用zip去合并多个请求等）
+
 # gradle依赖
 	compile 'cn.xiaoxige:autonet-api:1.1.2'
 	annotationProcessor 'cn.xiaoxige:autonet-processor:1.1.2'
@@ -36,6 +42,7 @@
 > * 设置多个域名
 > * 设置头部参数
 > * 设置Okhttp的拦截器
+
 ### 1.2 AutoNet的初始化操作
 ``` java
 AutoNet.getInstance().initAutoNet(Context, AutoNetConfig);
