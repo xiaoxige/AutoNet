@@ -7,11 +7,11 @@ import java.lang.annotation.Target;
 
 /**
  * @author by zhuxiaoan on 2018/5/16 0016.
- *         <p>
- *         desc: can choose the corresponding domain name according to different key.
- *         <p>
- *         <p>
- *         value: domain name (protocol: //Ip:Port) key
+ * <p>
+ * desc: can choose the corresponding domain name according to different key.
+ * <p>
+ * <p>
+ * value: domain name (protocol: //Ip:Port) key
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)

@@ -7,12 +7,12 @@ import java.lang.annotation.Target;
 
 /**
  * @author by zhuxiaoan on 2017/12/11 0011.
- *         <p>
- *         desc: request type and return type
- *         <p>
- *         <p>
- *         reqType: request type
- *         resType: type of acceptance
+ * <p>
+ * desc: request type and return type
+ * <p>
+ * <p>
+ * reqType: request type
+ * resType: type of acceptance
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)

@@ -36,7 +36,7 @@ import cn.xiaoxige.annotation.entity.ProxyInfo;
 
 /**
  * @author by zhuxiaoan on 2018/5/16 0016.
- *         Annotate the processor, collect the content of the annotations and handle
+ * Annotate the processor, collect the content of the annotations and handle
  */
 @AutoService(Processor.class)
 public class AnnotationProcessor extends AbstractProcessor {
@@ -250,10 +250,10 @@ public class AnnotationProcessor extends AbstractProcessor {
 
     private void autoNetResponseEntityClassProc(ProxyInfo proxyInfo, AutoNetResponseEntityClass annotation, Element element) {
         try {
-            annotation.value();
+            Class<?> responseClass = annotation.value();
         } catch (MirroredTypeException e) {
             String responseEntityClassName = e.getTypeMirror().toString();
-            proxyInfo.responseClazzName = responseEntityClassName;
+//            proxyInfo.responseClazzName = responseEntityClassName;
         }
     }
 

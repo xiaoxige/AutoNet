@@ -6,7 +6,7 @@ import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 
 /**
  * @author by zhuxiaoan on 2018/5/16 0016.
- *         All the information entity classes of a request
+ * All the information entity classes of a request
  */
 
 public final class ProxyInfo {
@@ -47,6 +47,11 @@ public final class ProxyInfo {
      * this param is /index.jsp
      */
     public String suffixUrl = "/";
+
+    /**
+     * Request tracking flag
+     */
+    public int flag = 0;
 
     /**
      * out time of write with net
@@ -93,7 +98,13 @@ public final class ProxyInfo {
     /**
      * class of response
      */
+    public Class responseClazz = Void.class;
     public String responseClazzName = "";
+
+    /**
+     * class of target
+     */
+    public Class targetClazz = Void.class;
 
     /**
      * strategy of net

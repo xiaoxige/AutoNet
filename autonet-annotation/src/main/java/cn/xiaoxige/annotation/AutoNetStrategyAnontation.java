@@ -7,11 +7,11 @@ import java.lang.annotation.Target;
 
 /**
  * @author by zhuxiaoan on 2018/5/16 0016.
- *         <p>
- *         desc: network request strategy
- *         <p>
- *         <p>
- *         value: strategy
+ * <p>
+ * desc: network request strategy
+ * <p>
+ * <p>
+ * value: strategy
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)

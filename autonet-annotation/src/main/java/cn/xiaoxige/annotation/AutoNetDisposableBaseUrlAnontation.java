@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * @author by zhuxiaoan on 2018/5/17 0017.
- *         Once a domain name, the domain name will only affect this request.
+ * Once a domain name, the domain name will only affect this request.
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)

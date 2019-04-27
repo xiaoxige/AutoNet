@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * @author by zhuxiaoan on 2018/5/17 0017.
- *         Disposable head data will affect this request only.
+ * Disposable head data will affect this request only.
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
