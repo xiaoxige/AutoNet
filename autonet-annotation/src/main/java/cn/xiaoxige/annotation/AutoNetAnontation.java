@@ -29,4 +29,5 @@ public @interface AutoNetAnontation {
     long readTime() default 5000;
 
     long connectOutTime() default 5000;
+
 }

@@ -6,13 +6,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author by zhuxiaoan on 2018/5/17 0017.
- * Once a domain name, the domain name will only affect this request.
+ * @author xiaoxige
+ * @date 2019/5/26 10:48 AM
+ * -
+ * email: xiaoxigexiaoan@outlook.com
+ * desc: AutoNet target entity type
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
-public @interface AutoNetDisposableBaseUrlAnontation {
+public @interface AutoNetTargetEntityClass {
 
-    String value() default "";
+    Class<?> value() default Void.class;
 
 }

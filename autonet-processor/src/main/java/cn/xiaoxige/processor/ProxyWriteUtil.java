@@ -13,6 +13,7 @@ import java.util.Set;
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Modifier;
 
+import cn.xiaoxige.annotation.AutoNetAnontation;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
 import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
@@ -21,7 +22,7 @@ import io.reactivex.FlowableTransformer;
 
 /**
  * @author by zhuxiaoan on 2018/5/16 0016.
- *         Write the collected data to the tool class of Java source file.
+ * Write the collected data to the tool class of Java source file.
  */
 
 public class ProxyWriteUtil {
@@ -38,10 +39,11 @@ public class ProxyWriteUtil {
     private static final String AUTO_NET_PARAM_LEADER_NAME = "leader";
     private static final String AUTO_NET_PARAM_DOMAIN_NAME_KEY_NAME = "domainNameKey";
     private static final String AUTO_NET_PARAM_SUFFIX_URL_NAME = "suffixUrl";
-    private static final String AUTO_NET_PARAM_MEDIA_TYPE_NAME = "mediaType";
+    private static final String AUTO_NET_PARAM_FLAG = "flag";
     private static final String AUTO_NET_PARAM_WRITE_OUT_TIME_NAME = "writeOutTime";
     private static final String AUTO_NET_PARAM_READ_OUT_TIME_NAME = "readOutTime";
     private static final String AUTO_NET_PARAM_CONNECT_OUT_TIME_NAME = "connectOutTime";
+    private static final String AUTO_NET_PARAM_MEDIA_TYPE_NAME = "mediaType";
     private static final String AUTO_NET_PARAM_ENCRYPTION_KEY_NAME = "encryptionKey";
     private static final String AUTO_NET_PARAM_IS_ENCRYPTION_NAME = "isEncryption";
     private static final String AUTO_NET_PARAM_NET_PATTERN_NAME = "netPattern";
@@ -51,6 +53,7 @@ public class ProxyWriteUtil {
     private static final String AUTO_NET_PARAM_REQ_TYPE_NAME = "reqType";
     private static final String AUTO_NET_PARAM_RES_TYPE_NAME = "resType";
     private static final String AUTO_NET_PARAM_RESPONSE_CLAZZ_NAME_NAME = "responseClazzName";
+    private static final String AUTO_NET_PARAM_TATGET_CLAZZ_NAME_NAME = "targetClazzName";
     private static final String AUTO_NET_PARAM_PUSH_FILE_KEY_NAME = "pushFileKey";
     private static final String AUTO_NET_PARAM_FILE_PATH_NAME = "filePath";
     private static final String AUTO_NET_PARAM_FILE_NAME_NAME = "fileName";
@@ -72,7 +75,6 @@ public class ProxyWriteUtil {
         }
     }
 
-
     public static void write(ProxyInfo info, Filer filer) throws Exception {
         List<MethodSpec> methodSpecs = new ArrayList<>();
 
@@ -83,26 +85,30 @@ public class ProxyWriteUtil {
 
         // test ordinary
         MethodSpec testMethod = createTest(info);
-        // net mothods(ordinary)
-        List<MethodSpec> ordinaryMethod = createOrdinaryMethods(info);
-        // Matrix of User concern
-        MethodSpec matrixUserComcern = createMatrixUserComcern(info);
         // Matrix
         MethodSpec matrix = createMatrix(info);
 
+        // net mothods(ordinary)
+//        List<MethodSpec> ordinaryMethod = createOrdinaryMethods(info);
+        // Matrix of User concern
+//        MethodSpec matrixUserComcern = createMatrixUserComcern(info);
+
+
         methodSpecs.add(testMethod);
+        methodSpecs.add(matrix);
+
         //noinspection ConstantConditions
-        methodSpecs.addAll(ordinaryMethod);
+//        methodSpecs.addAll(ordinaryMethod);
 
         if (isExistenceStream) {
             // net nothods(file)
-            List<MethodSpec> fileMethodSpecs = createFileMethods(info);
+//            List<MethodSpec> fileMethodSpecs = createFileMethods(info);
             //noinspection ConstantConditions
-            methodSpecs.addAll(fileMethodSpecs);
+//            methodSpecs.addAll(fileMethodSpecs);
         }
 
-        methodSpecs.add(matrixUserComcern);
-        methodSpecs.add(matrix);
+//        methodSpecs.add(matrixUserComcern);
+//        methodSpecs.add(matrix);
 
         // Class
         TypeSpec autoClass = createAutoClass(info, methodSpecs);
@@ -329,8 +335,7 @@ public class ProxyWriteUtil {
 
         specBuilder
                 .addParameter(Object.class, AUTO_NET_PARAM_LEADER_NAME)
-                .addParameter(Integer.class, "type")
-        ;
+                .addParameter(Integer.class, "type");
 
         boolean callBackSelf = isCallBackSelf(info);
         String callBackFormat = callBackSelf ? "(" + AUTO_NET_I_CALLBACK + ") " + AUTO_NET_PARAM_LEADER_NAME :
@@ -338,7 +343,7 @@ public class ProxyWriteUtil {
                         + ").new " + info.targetClassSimpleName + "()";
 
         specBuilder
-                .addStatement("$T.getInstance().test($N, $L)", Class.forName(AUTO_NET_API_FACADE), callBackFormat, "type");
+                .addStatement("$T.getInstance().test($N, $N)", Class.forName(AUTO_NET_API_FACADE), callBackFormat, "type");
 
         return specBuilder.build();
     }
@@ -408,7 +413,7 @@ public class ProxyWriteUtil {
                 info.encryptionKey, info.isEncryption,
                 info.disposableBaseUrl, heads != null ? heads.toString() : null,
                 info.netPattern, info.reqType, info.resType,
-                info.netStrategy, info.responseClazzName,
+                info.netStrategy, "",
                 AUTO_NET_PARAM_PUSH_FILE_KEY_NAME, AUTO_NET_PARAM_FILE_PATH_NAME, AUTO_NET_PARAM_FILE_NAME_NAME, AUTO_NET_PARAM_TRANSFORMER_NAME);
 
         return specBuilder.build();
@@ -446,31 +451,95 @@ public class ProxyWriteUtil {
 
         // param
         specBuilder
+                /**
+                 * who
+                 */
+                // this
                 .addParameter(Object.class, AUTO_NET_PARAM_LEADER_NAME)
+
+                /**
+                 * request
+                 */
+                // request of Entity (need implement IAutoNetRequest)
                 .addParameter(Class.forName(AUTO_NET_I_REQUEST_REFERENCE), AUTO_NET_PARAM_REQUEST_ENTITY_NAME)
+                // request of map
                 .addParameter(Map.class, AUTO_NET_PARAM_REQUEST_MAP_NAME)
+                // extra dynamic param
                 .addParameter(String.class, AUTO_NET_PARAM_EXTRA_DYNAMIC_PARAM_NAME)
 
-                .addParameter(String.class, AUTO_NET_PARAM_DOMAIN_NAME_KEY_NAME)
+                /**
+                 * other construct AutoNet param
+                 */
+                // Anontation of AutoNetAnontation
+                // url
                 .addParameter(String.class, AUTO_NET_PARAM_SUFFIX_URL_NAME)
-                .addParameter(String.class, AUTO_NET_PARAM_MEDIA_TYPE_NAME)
+                // flag
+                .addParameter(Integer.class, AUTO_NET_PARAM_FLAG)
+                // write out time of net
                 .addParameter(long.class, AUTO_NET_PARAM_WRITE_OUT_TIME_NAME)
+                // read out time of net
                 .addParameter(long.class, AUTO_NET_PARAM_READ_OUT_TIME_NAME)
+                // connect out time of net
                 .addParameter(long.class, AUTO_NET_PARAM_CONNECT_OUT_TIME_NAME)
-                .addParameter(long.class, AUTO_NET_PARAM_ENCRYPTION_KEY_NAME)
-                .addParameter(Boolean.class, AUTO_NET_PARAM_IS_ENCRYPTION_NAME)
+
+                // Anontation of AutoNetBaseUrlKeyAnontation
+                // domain key(switch domain)
+                .addParameter(String.class, AUTO_NET_PARAM_DOMAIN_NAME_KEY_NAME)
+
+                // Anontation of AutoNetDisposableBaseUrlAnontation
+                // disposable base url
                 .addParameter(String.class, AUTO_NET_PARAM_DISPOSABLE_BASE_URL)
-                .addParameter(String.class, AUTO_NET_PARAM_DISPOSABLE_HEADS)
+
+                // Anontation of AutoNetDisposableHeadAnnontation
+                // disposable heads
+                .addParameter(Map.class, AUTO_NET_PARAM_DISPOSABLE_HEADS)
+
+                // Anontation of AutoNetEncryptionAnontation
+                // key of encryption
+                .addParameter(long.class, AUTO_NET_PARAM_ENCRYPTION_KEY_NAME)
+                // is need encryption
+                .addParameter(Boolean.class, AUTO_NET_PARAM_IS_ENCRYPTION_NAME)
+
+                // Anontation of AutoNetMediaTypeAnontation
+                // media
+                .addParameter(String.class, AUTO_NET_PARAM_MEDIA_TYPE_NAME)
+
+                // Anontation of AutoNetPatternAnontation
+                // way of request
                 .addParameter(AutoNetPatternAnontation.NetPattern.class, AUTO_NET_PARAM_NET_PATTERN_NAME)
-                .addParameter(AutoNetTypeAnontation.Type.class, AUTO_NET_PARAM_REQ_TYPE_NAME)
-                .addParameter(AutoNetTypeAnontation.Type.class, AUTO_NET_PARAM_RES_TYPE_NAME)
+
+                // Anontation of AutoNetResponseEntityClass
+                // class name of response
+                .addParameter(String.class, AUTO_NET_PARAM_RESPONSE_CLAZZ_NAME_NAME)
+
+                // Anontation of AutoNetStrategyAnontation
+                // stategy of net
                 .addParameter(AutoNetStrategyAnontation.NetStrategy.class, AUTO_NET_PARAM_NET_STRATEGY_NAME)
 
-                .addParameter(String.class, AUTO_NET_PARAM_RESPONSE_CLAZZ_NAME_NAME)
+                // Anontation of AutoNetTargetEntityClass
+                // class name of target
+                .addParameter(String.class, AUTO_NET_PARAM_TATGET_CLAZZ_NAME_NAME)
+
+                // Anontation of AutoNetTypeAnontation
+                // type of request
+                .addParameter(AutoNetTypeAnontation.Type.class, AUTO_NET_PARAM_REQ_TYPE_NAME)
+                // type of response
+                .addParameter(AutoNetTypeAnontation.Type.class, AUTO_NET_PARAM_RES_TYPE_NAME)
+
+                /**
+                 * param of file
+                 */
+                // file key of push file
                 .addParameter(String.class, AUTO_NET_PARAM_PUSH_FILE_KEY_NAME)
+                // path of file
                 .addParameter(String.class, AUTO_NET_PARAM_FILE_PATH_NAME)
+                // name of file
                 .addParameter(String.class, AUTO_NET_PARAM_FILE_NAME_NAME)
 
+                /**
+                 * transformer bind life and auto close
+                 */
+                // transformer
                 .addParameter(FlowableTransformer.class, AUTO_NET_PARAM_TRANSFORMER_NAME);
 
         boolean callBackSelf = isCallBackSelf(info);
@@ -481,15 +550,65 @@ public class ProxyWriteUtil {
         specBuilder
                 .addComment("AutoNet turns to find Api.")
                 .addStatement("$T.getInstance().startNet(" +
-                                "$L, $L, $L, $L, $L, $L, $L, " +
+                                "$N, $N, $N, $L, $L, $L, $L, " +
                                 "$L, $L, $L, $L, $L, $L, " +
                                 "$L, $L, $L, $L, $L, $N, $L, " +
-                                "$L, $L, $L)", Class.forName(AUTO_NET_API_FACADE), AUTO_NET_PARAM_REQUEST_ENTITY_NAME, AUTO_NET_PARAM_REQUEST_MAP_NAME, AUTO_NET_PARAM_EXTRA_DYNAMIC_PARAM_NAME, AUTO_NET_PARAM_DOMAIN_NAME_KEY_NAME,
-                        AUTO_NET_PARAM_SUFFIX_URL_NAME, AUTO_NET_PARAM_MEDIA_TYPE_NAME, AUTO_NET_PARAM_WRITE_OUT_TIME_NAME, AUTO_NET_PARAM_READ_OUT_TIME_NAME,
-                        AUTO_NET_PARAM_CONNECT_OUT_TIME_NAME, AUTO_NET_PARAM_ENCRYPTION_KEY_NAME, AUTO_NET_PARAM_IS_ENCRYPTION_NAME,
-                        AUTO_NET_PARAM_DISPOSABLE_BASE_URL, AUTO_NET_PARAM_DISPOSABLE_HEADS, AUTO_NET_PARAM_NET_PATTERN_NAME,
-                        AUTO_NET_PARAM_REQ_TYPE_NAME, AUTO_NET_PARAM_RES_TYPE_NAME, AUTO_NET_PARAM_NET_STRATEGY_NAME, AUTO_NET_PARAM_RESPONSE_CLAZZ_NAME_NAME, callBackFormat,
-                        AUTO_NET_PARAM_PUSH_FILE_KEY_NAME, AUTO_NET_PARAM_FILE_PATH_NAME, AUTO_NET_PARAM_FILE_NAME_NAME, AUTO_NET_PARAM_TRANSFORMER_NAME);
+                                "$L, $L, $L)",
+                        // AutoNet
+                        Class.forName(AUTO_NET_API_FACADE),
+                        // 1. requestEntity
+                        AUTO_NET_PARAM_REQUEST_ENTITY_NAME,
+
+
+                        // 2. requestMap
+                        AUTO_NET_PARAM_REQUEST_MAP_NAME,
+                        // 3. extraDynamicParam
+                        AUTO_NET_PARAM_EXTRA_DYNAMIC_PARAM_NAME,
+                        // 4. suffixUrl
+                        AUTO_NET_PARAM_SUFFIX_URL_NAME,
+                        // 5. flag
+                        AUTO_NET_PARAM_FLAG,
+                        // 6. writeOutTime
+                        AUTO_NET_PARAM_WRITE_OUT_TIME_NAME,
+                        // 7. readOutTime
+                        AUTO_NET_PARAM_READ_OUT_TIME_NAME,
+                        // 8. connectOutTime
+                        AUTO_NET_PARAM_CONNECT_OUT_TIME_NAME,
+                        // 9. domainNameKey
+                        AUTO_NET_PARAM_DOMAIN_NAME_KEY_NAME,
+                        // 10 . disposableBaseUrl
+                        AUTO_NET_PARAM_DISPOSABLE_BASE_URL,
+                        // 11. disposableHeads
+                        AUTO_NET_PARAM_DISPOSABLE_HEADS,
+                        // 12. encryptionKey
+                        AUTO_NET_PARAM_ENCRYPTION_KEY_NAME,
+                        // 13. isEncryption
+                        AUTO_NET_PARAM_IS_ENCRYPTION_NAME,
+                        // 14. mediaType
+                        AUTO_NET_PARAM_MEDIA_TYPE_NAME,
+                        // 15. netPattern
+                        AUTO_NET_PARAM_NET_PATTERN_NAME,
+                        // 16. responseClazzName
+                        AUTO_NET_PARAM_RESPONSE_CLAZZ_NAME_NAME,
+                        // 17. netStrategy
+                        AUTO_NET_PARAM_NET_STRATEGY_NAME,
+                        // 18. targetClazzName
+                        AUTO_NET_PARAM_TATGET_CLAZZ_NAME_NAME,
+                        // 19. reqType
+                        AUTO_NET_PARAM_REQ_TYPE_NAME,
+                        // 20. resType
+                        AUTO_NET_PARAM_RES_TYPE_NAME,
+                        // 21. pushFileKey
+                        AUTO_NET_PARAM_PUSH_FILE_KEY_NAME,
+                        // 22. filePath
+                        AUTO_NET_PARAM_FILE_PATH_NAME,
+                        // 23. fileName
+                        AUTO_NET_PARAM_FILE_NAME_NAME,
+                        // 24. callback
+                        callBackFormat,
+                        // 25. transformer
+                        AUTO_NET_PARAM_TRANSFORMER_NAME
+                );
 
         return specBuilder.build();
     }

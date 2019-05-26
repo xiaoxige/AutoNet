@@ -1,4 +1,8 @@
-include ':app', ':recommendeddemo', ':emptylayout',
-        ':autonet-annotation',
-        ':autonet-processor',
-        ':autonet-api'
+//include ':app'
+//include ':recommendeddemo'
+//include ':emptylayout'
+include ':autonet-annotation'
+include ':autonetapitest'
+include ':autonetannotationtest'
+include ':autonet-processor'
+//include ':autonet-api'

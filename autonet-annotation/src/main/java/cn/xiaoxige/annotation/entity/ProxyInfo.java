@@ -96,15 +96,14 @@ public final class ProxyInfo {
     public AutoNetPatternAnontation.NetPattern netPattern = AutoNetPatternAnontation.NetPattern.GET;
 
     /**
-     * class of response
+     * class name of response
      */
-    public Class responseClazz = Void.class;
-    public String responseClazzName = "";
+    public String responseClassName = "";
 
     /**
-     * class of target
+     * class name of target
      */
-    public Class targetClazz = Void.class;
+    public String targetClassName = "";
 
     /**
      * strategy of net

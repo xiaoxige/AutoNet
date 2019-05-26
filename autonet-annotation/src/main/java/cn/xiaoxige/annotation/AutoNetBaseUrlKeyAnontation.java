@@ -18,4 +18,5 @@ import java.lang.annotation.Target;
 public @interface AutoNetBaseUrlKeyAnontation {
 
     String value() default "default";
+
 }

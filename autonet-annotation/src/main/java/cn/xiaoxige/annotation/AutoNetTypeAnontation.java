@@ -31,9 +31,23 @@ public @interface AutoNetTypeAnontation {
      * other: is temporarily meaningless
      */
     enum Type {
+        /**
+         * Data transfer protocol way of json
+         */
         JSON,
+        /**
+         * Data transfer protocol way of form
+         */
         FORM,
+        /**
+         * Data transfer protocol way of stream
+         * if request type is stream, so is push file
+         * else response type is stream, so is pull file
+         */
         STREAM,
+        /**
+         * Data transfer protocol way of other (this way temporarily not supported)
+         */
         OTHER_TYPE
     }
 

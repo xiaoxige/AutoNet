@@ -30,10 +30,25 @@ public @interface AutoNetPatternAnontation {
      * other: has no significance for the time being
      */
     enum NetPattern {
+        /**
+         * net request the way of get
+         */
         GET,
+        /**
+         * net request the way of post
+         */
         POST,
+        /**
+         * net request the way of delete
+         */
         DELETE,
+        /**
+         * net request the way of put
+         */
         PUT,
+        /**
+         * net request the way of other (this way temporarily not supported)
+         */
         OTHER_PATTERN
     }
 

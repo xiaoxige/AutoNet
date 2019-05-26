@@ -27,9 +27,21 @@ public @interface AutoNetStrategyAnontation {
      * NET_LOCAL: first network after the local
      */
     enum NetStrategy {
+        /**
+         * net strategy way of local
+         */
         LOCAL,
+        /**
+         * net strategy way of net
+         */
         NET,
+        /**
+         * net strategy way of local first and again net
+         */
         LOCAL_NET,
+        /**
+         * net strategy way of net first and again local
+         */
         NET_LOCAL
     }
 
