@@ -6,6 +6,7 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -420,23 +421,6 @@ public class ProxyWriteUtil {
     }
 
     /**
-     * Head data conversion(String[] --> String)
-     *
-     * @param disposableHeads
-     * @return
-     */
-    private static StringBuffer transformationHeads(String[] disposableHeads) {
-        StringBuffer heads = null;
-        if (disposableHeads != null) {
-            heads = new StringBuffer();
-            for (String head : disposableHeads) {
-                heads.append(head + "\n");
-            }
-        }
-        return heads;
-    }
-
-    /**
      * According to the information, the final method of generating the main key is generated.
      *
      * @param info info of message
@@ -472,59 +456,59 @@ public class ProxyWriteUtil {
                  */
                 // Anontation of AutoNetAnontation
                 // url
-                .addParameter(String.class, AUTO_NET_PARAM_SUFFIX_URL_NAME)
+//                .addParameter(String.class, AUTO_NET_PARAM_SUFFIX_URL_NAME)
                 // flag
-                .addParameter(Integer.class, AUTO_NET_PARAM_FLAG)
+//                .addParameter(Integer.class, AUTO_NET_PARAM_FLAG)
                 // write out time of net
-                .addParameter(long.class, AUTO_NET_PARAM_WRITE_OUT_TIME_NAME)
+//                .addParameter(long.class, AUTO_NET_PARAM_WRITE_OUT_TIME_NAME)
                 // read out time of net
-                .addParameter(long.class, AUTO_NET_PARAM_READ_OUT_TIME_NAME)
+//                .addParameter(long.class, AUTO_NET_PARAM_READ_OUT_TIME_NAME)
                 // connect out time of net
-                .addParameter(long.class, AUTO_NET_PARAM_CONNECT_OUT_TIME_NAME)
+//                .addParameter(long.class, AUTO_NET_PARAM_CONNECT_OUT_TIME_NAME)
 
                 // Anontation of AutoNetBaseUrlKeyAnontation
                 // domain key(switch domain)
-                .addParameter(String.class, AUTO_NET_PARAM_DOMAIN_NAME_KEY_NAME)
+//                .addParameter(String.class, AUTO_NET_PARAM_DOMAIN_NAME_KEY_NAME)
 
                 // Anontation of AutoNetDisposableBaseUrlAnontation
                 // disposable base url
-                .addParameter(String.class, AUTO_NET_PARAM_DISPOSABLE_BASE_URL)
+//                .addParameter(String.class, AUTO_NET_PARAM_DISPOSABLE_BASE_URL)
 
                 // Anontation of AutoNetDisposableHeadAnnontation
                 // disposable heads
-                .addParameter(Map.class, AUTO_NET_PARAM_DISPOSABLE_HEADS)
+//                .addParameter(Map.class, AUTO_NET_PARAM_DISPOSABLE_HEADS)
 
                 // Anontation of AutoNetEncryptionAnontation
                 // key of encryption
-                .addParameter(long.class, AUTO_NET_PARAM_ENCRYPTION_KEY_NAME)
+//                .addParameter(long.class, AUTO_NET_PARAM_ENCRYPTION_KEY_NAME)
                 // is need encryption
-                .addParameter(Boolean.class, AUTO_NET_PARAM_IS_ENCRYPTION_NAME)
+//                .addParameter(Boolean.class, AUTO_NET_PARAM_IS_ENCRYPTION_NAME)
 
                 // Anontation of AutoNetMediaTypeAnontation
                 // media
-                .addParameter(String.class, AUTO_NET_PARAM_MEDIA_TYPE_NAME)
+//                .addParameter(String.class, AUTO_NET_PARAM_MEDIA_TYPE_NAME)
 
                 // Anontation of AutoNetPatternAnontation
                 // way of request
-                .addParameter(AutoNetPatternAnontation.NetPattern.class, AUTO_NET_PARAM_NET_PATTERN_NAME)
+//                .addParameter(AutoNetPatternAnontation.NetPattern.class, AUTO_NET_PARAM_NET_PATTERN_NAME)
 
                 // Anontation of AutoNetResponseEntityClass
                 // class name of response
-                .addParameter(String.class, AUTO_NET_PARAM_RESPONSE_CLAZZ_NAME_NAME)
+//                .addParameter(String.class, AUTO_NET_PARAM_RESPONSE_CLAZZ_NAME_NAME)
 
                 // Anontation of AutoNetStrategyAnontation
                 // stategy of net
-                .addParameter(AutoNetStrategyAnontation.NetStrategy.class, AUTO_NET_PARAM_NET_STRATEGY_NAME)
+//                .addParameter(AutoNetStrategyAnontation.NetStrategy.class, AUTO_NET_PARAM_NET_STRATEGY_NAME)
 
                 // Anontation of AutoNetTargetEntityClass
                 // class name of target
-                .addParameter(String.class, AUTO_NET_PARAM_TATGET_CLAZZ_NAME_NAME)
+//                .addParameter(String.class, AUTO_NET_PARAM_TATGET_CLAZZ_NAME_NAME)
 
                 // Anontation of AutoNetTypeAnontation
                 // type of request
-                .addParameter(AutoNetTypeAnontation.Type.class, AUTO_NET_PARAM_REQ_TYPE_NAME)
+//                .addParameter(AutoNetTypeAnontation.Type.class, AUTO_NET_PARAM_REQ_TYPE_NAME)
                 // type of response
-                .addParameter(AutoNetTypeAnontation.Type.class, AUTO_NET_PARAM_RES_TYPE_NAME)
+//                .addParameter(AutoNetTypeAnontation.Type.class, AUTO_NET_PARAM_RES_TYPE_NAME)
 
                 /**
                  * param of file
@@ -550,10 +534,10 @@ public class ProxyWriteUtil {
         specBuilder
                 .addComment("AutoNet turns to find Api.")
                 .addStatement("$T.getInstance().startNet(" +
-                                "$N, $N, $N, $L, $L, $L, $L, " +
-                                "$L, $L, $L, $N, $L, $L, " +
-                                "$L, $L, $L, $L, $L, $L, $L, " +
-                                "$L, $L, $L, $N, $N)",
+                                "$N, $N, $N, $S, $L, $L, $L, " +
+                                "$L, $S, $S, $S, $L, $L, " +
+                                "$S, $L, $N, $L, $N, $L, $L, " +
+                                "$N, $N, $N, $N, $N)",
                         // AutoNet
                         Class.forName(AUTO_NET_API_FACADE),
                         // 1. requestEntity
@@ -563,39 +547,61 @@ public class ProxyWriteUtil {
                         // 3. extraDynamicParam
                         AUTO_NET_PARAM_EXTRA_DYNAMIC_PARAM_NAME,
                         // 4. suffixUrl
-                        AUTO_NET_PARAM_SUFFIX_URL_NAME,
+//                        AUTO_NET_PARAM_SUFFIX_URL_NAME,
+                        info.suffixUrl,
                         // 5. flag
-                        AUTO_NET_PARAM_FLAG,
+//                        AUTO_NET_PARAM_FLAG,
+                        info.flag,
                         // 6. writeOutTime
-                        AUTO_NET_PARAM_WRITE_OUT_TIME_NAME,
+//                        AUTO_NET_PARAM_WRITE_OUT_TIME_NAME,
+                        info.writeOutTime,
                         // 7. readOutTime
-                        AUTO_NET_PARAM_READ_OUT_TIME_NAME,
+//                        AUTO_NET_PARAM_READ_OUT_TIME_NAME,
+                        info.readOutTime,
                         // 8. connectOutTime
-                        AUTO_NET_PARAM_CONNECT_OUT_TIME_NAME,
+//                        AUTO_NET_PARAM_CONNECT_OUT_TIME_NAME,
+                        info.connectOutTime,
                         // 9. domainNameKey
-                        AUTO_NET_PARAM_DOMAIN_NAME_KEY_NAME,
+//                        AUTO_NET_PARAM_DOMAIN_NAME_KEY_NAME,
+                        info.domainNameKey,
                         // 10 . disposableBaseUrl
-                        AUTO_NET_PARAM_DISPOSABLE_BASE_URL,
+//                        AUTO_NET_PARAM_DISPOSABLE_BASE_URL,
+                        info.disposableBaseUrl,
                         // 11. disposableHeads
-                        AUTO_NET_PARAM_DISPOSABLE_HEADS,
+//                        AUTO_NET_PARAM_DISPOSABLE_HEADS,
+//                        transformationHeadsToMap(info.disposableHeads),
+                        transformationHeads(info.disposableHeads),
                         // 12. encryptionKey
-                        AUTO_NET_PARAM_ENCRYPTION_KEY_NAME,
+//                        AUTO_NET_PARAM_ENCRYPTION_KEY_NAME,
+                        info.encryptionKey,
                         // 13. isEncryption
-                        AUTO_NET_PARAM_IS_ENCRYPTION_NAME,
+//                        AUTO_NET_PARAM_IS_ENCRYPTION_NAME,
+                        info.isEncryption,
                         // 14. mediaType
-                        AUTO_NET_PARAM_MEDIA_TYPE_NAME,
+//                        AUTO_NET_PARAM_MEDIA_TYPE_NAME,
+                        info.mediaType,
                         // 15. netPattern
-                        AUTO_NET_PARAM_NET_PATTERN_NAME,
+//                        AUTO_NET_PARAM_NET_PATTERN_NAME,
+                        info.netPattern,
                         // 16. responseClazzName
-                        AUTO_NET_PARAM_RESPONSE_CLAZZ_NAME_NAME,
+//                        AUTO_NET_PARAM_RESPONSE_CLAZZ_NAME_NAME,
+//                        info.responseClassName,
+//                        transformationClassForName(info.responseClassName),
+//                        info.responseClassName + ".class",
+                        transformationAgreementClassForClassName(info.responseClassName),
                         // 17. netStrategy
-                        AUTO_NET_PARAM_NET_STRATEGY_NAME,
+//                        AUTO_NET_PARAM_NET_STRATEGY_NAME,
+                        info.netStrategy,
                         // 18. targetClazzName
-                        AUTO_NET_PARAM_TATGET_CLAZZ_NAME_NAME,
+//                        AUTO_NET_PARAM_TATGET_CLAZZ_NAME_NAME,
+//                        info.targetClassName,
+                        transformationAgreementClassForClassName(info.targetClassName),
                         // 19. reqType
-                        AUTO_NET_PARAM_REQ_TYPE_NAME,
+//                        AUTO_NET_PARAM_REQ_TYPE_NAME,
+                        info.reqType,
                         // 20. resType
-                        AUTO_NET_PARAM_RES_TYPE_NAME,
+//                        AUTO_NET_PARAM_RES_TYPE_NAME,
+                        info.resType,
                         // 21. pushFileKey
                         AUTO_NET_PARAM_PUSH_FILE_KEY_NAME,
                         // 22. filePath
@@ -609,6 +615,52 @@ public class ProxyWriteUtil {
                 );
 
         return specBuilder.build();
+    }
+
+    private static String transformationAgreementClassForClassName(String className) {
+        return className == null || className.isEmpty() ? null : className + ".class";
+    }
+
+    /**
+     * Head data conversion(String[] --> String)
+     *
+     * @param disposableHeads
+     * @return
+     */
+    private static StringBuffer transformationHeads(String[] disposableHeads) {
+        StringBuffer heads = null;
+        if (disposableHeads != null) {
+            heads = new StringBuffer();
+            for (String head : disposableHeads) {
+                heads.append(head + "\n");
+            }
+        }
+        return heads;
+    }
+
+    /**
+     * Head data conversion(String[] --> Map)
+     *
+     * @param disposableHeads
+     * @return
+     */
+    private static Map transformationHeadsToMap(String[] disposableHeads) {
+        if (disposableHeads == null || disposableHeads.length <= 0) {
+            return null;
+        }
+        Map heads = new HashMap(disposableHeads.length);
+        for (String disposableHead : disposableHeads) {
+            if (disposableHead == null || disposableHead.isEmpty()) {
+                continue;
+            }
+            String[] split = disposableHead.split(":");
+            if (split.length != 2) {
+                continue;
+            }
+            //noinspection unchecked
+            heads.put(split[0], split[1]);
+        }
+        return heads;
     }
 
     /**

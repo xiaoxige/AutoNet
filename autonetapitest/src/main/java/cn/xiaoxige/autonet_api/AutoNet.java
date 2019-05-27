@@ -30,10 +30,10 @@ public class AutoNet {
                                String extraDynamicParam, String suffixUrl,
                                Integer flag, long writeOutTime, long readOutTime,
                                long connectOutTime, String domainNameKey,
-                               String disposableBaseUrl, Map disposableHeads,
+                               String disposableBaseUrl, String disposableHeads,
                                long encryptionKey, Boolean isEncryption, String mediaType,
-                               AutoNetPatternAnontation.NetPattern netPattern, String responseClazzName,
-                               AutoNetStrategyAnontation.NetStrategy netStrategy, String targetClazzName,
+                               AutoNetPatternAnontation.NetPattern netPattern, Class<?> responseClazzName,
+                               AutoNetStrategyAnontation.NetStrategy netStrategy, Class<?> targetClazzName,
                                AutoNetTypeAnontation.Type reqType,
                                AutoNetTypeAnontation.Type resType, String pushFileKey,
                                String filePath, String fileName, IAutoNetCallBack callBack, FlowableTransformer transformer) {
