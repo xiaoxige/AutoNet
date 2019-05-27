@@ -551,15 +551,13 @@ public class ProxyWriteUtil {
                 .addComment("AutoNet turns to find Api.")
                 .addStatement("$T.getInstance().startNet(" +
                                 "$N, $N, $N, $L, $L, $L, $L, " +
-                                "$L, $L, $L, $L, $L, $L, " +
-                                "$L, $L, $L, $L, $L, $N, $L, " +
-                                "$L, $L, $L)",
+                                "$L, $L, $L, $N, $L, $L, " +
+                                "$L, $L, $L, $L, $L, $L, $L, " +
+                                "$L, $L, $L, $N, $N)",
                         // AutoNet
                         Class.forName(AUTO_NET_API_FACADE),
                         // 1. requestEntity
                         AUTO_NET_PARAM_REQUEST_ENTITY_NAME,
-
-
                         // 2. requestMap
                         AUTO_NET_PARAM_REQUEST_MAP_NAME,
                         // 3. extraDynamicParam

@@ -14,6 +14,7 @@ import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
 import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
 import cn.xiaoxige.annotation.AutoNetTargetEntityClass;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 
 public class MainActivity extends Activity {
 
@@ -38,7 +39,7 @@ public class MainActivity extends Activity {
     @AutoNetStrategyAnontation(value = AutoNetStrategyAnontation.NetStrategy.LOCAL_NET)
     @AutoNetTargetEntityClass(value = TestTargetEntity.class)
     @AutoNetTypeAnontation(reqType = AutoNetTypeAnontation.Type.FORM, resType = AutoNetTypeAnontation.Type.JSON)
-    public class AutoNetCallback {
+    public class AutoNetCallback implements IAutoNetCallBack {
 
     }
 
