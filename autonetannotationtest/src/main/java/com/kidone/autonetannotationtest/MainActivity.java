@@ -37,8 +37,8 @@ public class MainActivity extends Activity {
     @AutoNetPatternAnontation(value = AutoNetPatternAnontation.NetPattern.POST)
     @AutoNetResponseEntityClass(TestResponseEntity.class)
     @AutoNetStrategyAnontation(value = AutoNetStrategyAnontation.NetStrategy.LOCAL_NET)
-//    @AutoNetTargetEntityClass(value = TestTargetEntity.class)
-    @AutoNetTypeAnontation(reqType = AutoNetTypeAnontation.Type.FORM, resType = AutoNetTypeAnontation.Type.JSON)
+    @AutoNetTargetEntityClass(value = TestTargetEntity.class)
+    @AutoNetTypeAnontation(reqType = AutoNetTypeAnontation.Type.JSON, resType = AutoNetTypeAnontation.Type.JSON)
     public class AutoNetCallback implements IAutoNetCallBack {
 
     }

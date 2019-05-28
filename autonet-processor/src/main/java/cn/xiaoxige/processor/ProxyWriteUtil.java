@@ -79,37 +79,24 @@ public class ProxyWriteUtil {
     public static void write(ProxyInfo info, Filer filer) throws Exception {
         List<MethodSpec> methodSpecs = new ArrayList<>();
 
-        AutoNetTypeAnontation.Type resType = info.resType;
         AutoNetTypeAnontation.Type reqType = info.reqType;
+        AutoNetTypeAnontation.Type resType = info.resType;
+        boolean isPushFile = reqType.equals(AutoNetTypeAnontation.Type.STREAM);
+        boolean isPullFile = resType.equals(AutoNetTypeAnontation.Type.STREAM);
         // Whether there is a file operation
-        boolean isExistenceStream = resType.equals(AutoNetTypeAnontation.Type.STREAM) || reqType.equals(AutoNetTypeAnontation.Type.STREAM);
+        boolean isExistenceStream = isPullFile || isPushFile;
 
         // test ordinary
         MethodSpec testMethod = createTest(info);
         // Matrix
         MethodSpec matrix = createMatrix(info);
-
-        // net mothods(ordinary)
-//        List<MethodSpec> ordinaryMethod = createOrdinaryMethods(info);
-        // Matrix of User concern
-//        MethodSpec matrixUserComcern = createMatrixUserComcern(info);
-
+        // create methods with way of request (file | net)
+        List<MethodSpec> methods = isExistenceStream ? createFileMethods(isPullFile,
+                isPushFile) : createOrdinaryMethods();
 
         methodSpecs.add(testMethod);
+        methodSpecs.addAll(methods);
         methodSpecs.add(matrix);
-
-        //noinspection ConstantConditions
-//        methodSpecs.addAll(ordinaryMethod);
-
-        if (isExistenceStream) {
-            // net nothods(file)
-//            List<MethodSpec> fileMethodSpecs = createFileMethods(info);
-            //noinspection ConstantConditions
-//            methodSpecs.addAll(fileMethodSpecs);
-        }
-
-//        methodSpecs.add(matrixUserComcern);
-//        methodSpecs.add(matrix);
 
         // Class
         TypeSpec autoClass = createAutoClass(info, methodSpecs);
@@ -136,44 +123,48 @@ public class ProxyWriteUtil {
     /**
      * Method of automatically generating file related request network
      *
-     * @param info
+     * @param isPushFile
+     * @param isPullFile
      * @return
      */
-    private static List<MethodSpec> createFileMethods(ProxyInfo info) throws ClassNotFoundException {
+    private static List<MethodSpec> createFileMethods(boolean isPullFile, boolean isPushFile) throws ClassNotFoundException {
         List<MethodSpec> specs = new ArrayList<>();
 
-        // push
-        // pushFile(object, fileKey, path)
-        specs.add(createFileMethodTemplate(info, false, true, false, false, false));
-        // pushFile(object, fileKey, path, transformer)
-        specs.add(createFileMethodTemplate(info, false, true, false, false, true));
-        // pushFile(object, entity, fileKey, path)
-        specs.add(createFileMethodTemplate(info, false, true, true, false, false));
-        // pushFile(object, entity, fileKey, path, transformer)
-        specs.add(createFileMethodTemplate(info, false, true, true, false, true));
-        // pushFile(object, map, fileKey, path)
-        specs.add(createFileMethodTemplate(info, false, true, false, true, false));
-        // pushFile(object, map, fileKey, path, transformer)
-        specs.add(createFileMethodTemplate(info, false, true, false, true, true));
+        if (isPushFile) {
+            // push
+            // pushFile(object, fileKey, path)
+            specs.add(createFileMethodTemplate(true, false, false, false));
+            // pushFile(object, fileKey, path, transformer)
+            specs.add(createFileMethodTemplate(true, false, false, true));
+            // pushFile(object, entity, fileKey, path)
+            specs.add(createFileMethodTemplate(true, true, false, false));
+            // pushFile(object, entity, fileKey, path, transformer)
+            specs.add(createFileMethodTemplate(true, true, false, true));
+            // pushFile(object, map, fileKey, path)
+            specs.add(createFileMethodTemplate(true, false, true, false));
+            // pushFile(object, map, fileKey, path, transformer)
+            specs.add(createFileMethodTemplate(true, false, true, true));
+        }
 
-        // pull
-        // pullFile(object, path, fileName)
-        specs.add(createFileMethodTemplate(info, false, false, false, false, false));
-        // pullFile(object, path, fileName, transformer)
-        specs.add(createFileMethodTemplate(info, false, false, false, false, true));
-        // pullFile(object, entity, path, fileName)
-        specs.add(createFileMethodTemplate(info, false, false, true, false, false));
-        // pullFile(object, entity, path, fileName, transformer)
-        specs.add(createFileMethodTemplate(info, false, false, true, false, true));
-        // pullFile(object, entity, path, fileName)
-        specs.add(createFileMethodTemplate(info, false, false, false, true, false));
-        // pullFile(object, entity, path, fileName, transformer)
-        specs.add(createFileMethodTemplate(info, false, false, false, true, true));
-
+        if (isPullFile) {
+            // pull
+            // pullFile(object, path, fileName)
+            specs.add(createFileMethodTemplate(false, false, false, false));
+            // pullFile(object, path, fileName, transformer)
+            specs.add(createFileMethodTemplate(false, false, false, true));
+            // pullFile(object, entity, path, fileName)
+            specs.add(createFileMethodTemplate(false, true, false, false));
+            // pullFile(object, entity, path, fileName, transformer)
+            specs.add(createFileMethodTemplate(false, true, false, true));
+            // pullFile(object, map, path, fileName)
+            specs.add(createFileMethodTemplate(false, false, true, false));
+            // pullFile(object, map, path, fileName, transformer)
+            specs.add(createFileMethodTemplate(false, false, true, true));
+        }
         return specs;
     }
 
-    private static MethodSpec createFileMethodTemplate(ProxyInfo info, boolean isPrivate, boolean isPush, boolean isExistenceTwo, boolean isExistenceThree, boolean isExistenceLast) throws ClassNotFoundException {
+    private static MethodSpec createFileMethodTemplate(boolean isPush, boolean isExistenceTwo, boolean isExistenceThree, boolean isExistenceLast) throws ClassNotFoundException {
 
         MethodSpec.Builder specBuilder = MethodSpec.methodBuilder(isPush ? AUTO_NET_METHOD_PUSH_FILE : AUTO_NET_METHOD_PULL_FILE)
                 .addJavadoc("The method of file request network\n")
@@ -208,7 +199,7 @@ public class ProxyWriteUtil {
             specBuilder.addParameter(FlowableTransformer.class, AUTO_NET_PARAM_TRANSFORMER_NAME);
         }
 
-        specBuilder.addStatement(AUTO_NET_METHOD_MATRIX + "($L, $L, $L, null, $L, $L, $L, $L)",
+        specBuilder.addStatement(AUTO_NET_METHOD_MATRIX + "($N, $L, $L, null, $L, $L, $L, $L)",
                 AUTO_NET_PARAM_LEADER_NAME,
                 (isExistenceTwo ? AUTO_NET_PARAM_REQUEST_ENTITY_NAME : null),
                 (isExistenceThree ? AUTO_NET_PARAM_REQUEST_MAP_NAME : null),
@@ -223,42 +214,41 @@ public class ProxyWriteUtil {
     /**
      * A method to automatically generate a common request network.
      *
-     * @param info
      * @return
      */
-    private static List<MethodSpec> createOrdinaryMethods(ProxyInfo info) throws ClassNotFoundException {
+    private static List<MethodSpec> createOrdinaryMethods() throws ClassNotFoundException {
         List<MethodSpec> specs = new ArrayList<>();
 
         // public startNet(object)
-        specs.add(createOrdinaryMatrixTemplate(info, false, false, false, false, false));
+        specs.add(createOrdinaryMatrixTemplate(false, false, false, false));
         // public startNet(object, transformer)
-        specs.add(createOrdinaryMatrixTemplate(info, false, false, false, false, true));
+        specs.add(createOrdinaryMatrixTemplate(false, false, false, true));
 
         // public startNet(object, entity)
-        specs.add(createOrdinaryMatrixTemplate(info, false, true, false, false, false));
+        specs.add(createOrdinaryMatrixTemplate(true, false, false, false));
         // public startNet(object, entity, transformer)
-        specs.add(createOrdinaryMatrixTemplate(info, false, true, false, false, true));
+        specs.add(createOrdinaryMatrixTemplate(true, false, false, true));
 
         // public startNet(object, extraDynamicParam)
-        specs.add(createOrdinaryMatrixTemplate(info, false, false, false, true, false));
+        specs.add(createOrdinaryMatrixTemplate(false, false, true, false));
         // public startNet(object, extraDynamicParam, transformer)
-        specs.add(createOrdinaryMatrixTemplate(info, false, false, false, true, true));
+        specs.add(createOrdinaryMatrixTemplate(false, false, true, true));
 
         // public startNet(object, entity, extraDynamicParam)
-        specs.add(createOrdinaryMatrixTemplate(info, false, true, false, true, false));
+        specs.add(createOrdinaryMatrixTemplate(true, false, true, false));
         // private startNet(object, entity, extraDynamicParam, transformer)
-        specs.add(createOrdinaryMatrixTemplate(info, true, true, false, true, true));
+        specs.add(createOrdinaryMatrixTemplate(true, false, true, true));
 
 
         // public startNet(object, map)
-        specs.add(createOrdinaryMatrixTemplate(info, false, false, true, false, false));
+        specs.add(createOrdinaryMatrixTemplate(false, true, false, false));
         // public startNet(object, map, transformer)
-        specs.add(createOrdinaryMatrixTemplate(info, false, false, true, false, true));
+        specs.add(createOrdinaryMatrixTemplate(false, true, false, true));
 
         // public startNet(object, map, extraDynamicParam)
-        specs.add(createOrdinaryMatrixTemplate(info, false, false, true, true, false));
+        specs.add(createOrdinaryMatrixTemplate(false, true, true, false));
         // private startNet(object, map, extraDynamicParam, transformer)
-        specs.add(createOrdinaryMatrixTemplate(info, true, false, true, true, true));
+        specs.add(createOrdinaryMatrixTemplate(false, true, true, true));
 
 
         return specs;
@@ -268,8 +258,6 @@ public class ProxyWriteUtil {
     /**
      * A template for producing common requests for network methods
      *
-     * @param info
-     * @param isPrivate
      * @param isExistenceTwo
      * @param isExistenceThree
      * @param isExistenceFore
@@ -277,7 +265,7 @@ public class ProxyWriteUtil {
      * @return
      * @throws ClassNotFoundException
      */
-    private static MethodSpec createOrdinaryMatrixTemplate(ProxyInfo info, boolean isPrivate, boolean isExistenceTwo, boolean isExistenceThree, boolean isExistenceFore, boolean isExistenceFive) throws ClassNotFoundException {
+    private static MethodSpec createOrdinaryMatrixTemplate(boolean isExistenceTwo, boolean isExistenceThree, boolean isExistenceFore, boolean isExistenceFive) throws ClassNotFoundException {
         MethodSpec.Builder specBuilder = MethodSpec.methodBuilder(AUTO_NET_METHOD_START_NET)
                 .addJavadoc("The method of common request network\n")
                 .addModifiers(Modifier.STATIC, Modifier.FINAL, Modifier.PUBLIC)
@@ -307,7 +295,7 @@ public class ProxyWriteUtil {
         }
 
 
-        specBuilder.addStatement(AUTO_NET_METHOD_MATRIX + "($L, $L, $L, $L, null, null, null, $L)",
+        specBuilder.addStatement(AUTO_NET_METHOD_MATRIX + "($N, $L, $L, $L, null, null, null, $L)",
                 AUTO_NET_PARAM_LEADER_NAME,
                 (isExistenceTwo ? AUTO_NET_PARAM_REQUEST_ENTITY_NAME : null),
                 (isExistenceThree ? AUTO_NET_PARAM_REQUEST_MAP_NAME : null),
@@ -375,47 +363,6 @@ public class ProxyWriteUtil {
                 specBuilder.addMethod(method);
             }
         }
-
-        return specBuilder.build();
-    }
-
-    /**
-     * Users are concerned about and use more methods (annotation of collected information automatically assign).
-     *
-     * @param info
-     * @return
-     */
-    private static MethodSpec createMatrixUserComcern(ProxyInfo info) throws ClassNotFoundException {
-        // method name
-        MethodSpec.Builder specBuilder = MethodSpec.methodBuilder(AUTO_NET_METHOD_MATRIX)
-                .addJavadoc("Users are concerned about and use more methods (annotation of collected information automatically assign).\n")
-                .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL);
-
-        // param
-        specBuilder
-                .addParameter(Object.class, AUTO_NET_PARAM_LEADER_NAME)
-                .addParameter(Class.forName(AUTO_NET_I_REQUEST_REFERENCE), AUTO_NET_PARAM_REQUEST_ENTITY_NAME)
-                .addParameter(Map.class, AUTO_NET_PARAM_REQUEST_MAP_NAME)
-                .addParameter(String.class, AUTO_NET_PARAM_EXTRA_DYNAMIC_PARAM_NAME)
-                .addParameter(String.class, AUTO_NET_PARAM_PUSH_FILE_KEY_NAME)
-                .addParameter(String.class, AUTO_NET_PARAM_FILE_PATH_NAME)
-                .addParameter(String.class, AUTO_NET_PARAM_FILE_NAME_NAME)
-                .addParameter(FlowableTransformer.class, AUTO_NET_PARAM_TRANSFORMER_NAME);
-
-        StringBuffer heads = transformationHeads(info.disposableHeads);
-
-        specBuilder.addStatement(AUTO_NET_METHOD_MATRIX + "($L, $L, $L, $L, $S, $S, $S, $L, $L, $L, $L, $L, $S, $S, $L, $L, $L, $L, $S, $L, $L, $L, $L)",
-                AUTO_NET_PARAM_LEADER_NAME,
-                AUTO_NET_PARAM_REQUEST_ENTITY_NAME,
-                AUTO_NET_PARAM_REQUEST_MAP_NAME,
-                AUTO_NET_PARAM_EXTRA_DYNAMIC_PARAM_NAME,
-                info.domainNameKey, info.suffixUrl, info.mediaType,
-                info.writeOutTime, info.readOutTime, info.connectOutTime,
-                info.encryptionKey, info.isEncryption,
-                info.disposableBaseUrl, heads != null ? heads.toString() : null,
-                info.netPattern, info.reqType, info.resType,
-                info.netStrategy, "",
-                AUTO_NET_PARAM_PUSH_FILE_KEY_NAME, AUTO_NET_PARAM_FILE_PATH_NAME, AUTO_NET_PARAM_FILE_NAME_NAME, AUTO_NET_PARAM_TRANSFORMER_NAME);
 
         return specBuilder.build();
     }
