@@ -95,6 +95,19 @@ public final class AutoNet {
     }
 
 
+    public final void startNet(IAutoNetRequest requestEntity, Map requestMap,
+                               String extraDynamicParam, String suffixUrl,
+                               Integer flag, long writeOutTime, long readOutTime,
+                               long connectOutTime, String domainNameKey,
+                               String disposableBaseUrl, String disposableHeads,
+                               long encryptionKey, Boolean isEncryption, String mediaType,
+                               AutoNetPatternAnontation.NetPattern netPattern, Class<?> responseClazzName,
+                               AutoNetStrategyAnontation.NetStrategy netStrategy, Class<?> targetClazzName,
+                               AutoNetTypeAnontation.Type reqType,
+                               AutoNetTypeAnontation.Type resType, String pushFileKey,
+                               String filePath, String fileName, IAutoNetCallBack callBack, FlowableTransformer transformer) {
+    }
+
     /**
      * Compatible with AutoNet annotated version
      *
@@ -869,9 +882,9 @@ public final class AutoNet {
 
         @Override
         public IAutoNetNonAnontation setResponseClazz(Class clazz) {
-            if (clazz != null) {
-                this.info.responseClazzName = clazz.getName();
-            }
+//            if (clazz != null) {
+//                this.info.responseClazzName = clazz.getName();
+//            }
             return this;
         }
 
@@ -943,18 +956,19 @@ public final class AutoNet {
 
         @Override
         public Flowable getFlowable() {
-            return createFlowable(mFlag, requestEntity, requestMap, extraDynamicParam, info.domainNameKey, info.suffixUrl, info.mediaType,
-                    info.writeOutTime, info.readOutTime, info.connectOutTime, info.encryptionKey, info.isEncryption, info.disposableBaseUrl,
-                    disposableHeads == null ? null : disposableHeads.toString(),
-                    info.netPattern, info.reqType, info.resType, info.netStrategy, info.responseClazzName, null, pushFileKey, filePath, fileName, transformer);
+//            return createFlowable(mFlag, requestEntity, requestMap, extraDynamicParam, info.domainNameKey, info.suffixUrl, info.mediaType,
+//                    info.writeOutTime, info.readOutTime, info.connectOutTime, info.encryptionKey, info.isEncryption, info.disposableBaseUrl,
+//                    disposableHeads == null ? null : disposableHeads.toString(),
+//                    info.netPattern, info.reqType, info.resType, info.netStrategy, info.responseClazzName, null, pushFileKey, filePath, fileName, transformer);
+            return null;
         }
 
         @Override
         public void start(IAutoNetCallBack callBack) {
-            startNet(mFlag, requestEntity, requestMap, extraDynamicParam, info.domainNameKey, info.suffixUrl, info.mediaType,
-                    info.writeOutTime, info.readOutTime, info.connectOutTime, info.encryptionKey, info.isEncryption, info.disposableBaseUrl,
-                    disposableHeads == null ? null : disposableHeads.toString(),
-                    info.netPattern, info.reqType, info.resType, info.netStrategy, info.responseClazzName, callBack, pushFileKey, filePath, fileName, transformer);
+//            startNet(mFlag, requestEntity, requestMap, extraDynamicParam, info.domainNameKey, info.suffixUrl, info.mediaType,
+//                    info.writeOutTime, info.readOutTime, info.connectOutTime, info.encryptionKey, info.isEncryption, info.disposableBaseUrl,
+//                    disposableHeads == null ? null : disposableHeads.toString(),
+//                    info.netPattern, info.reqType, info.resType, info.netStrategy, info.responseClazzName, callBack, pushFileKey, filePath, fileName, transformer);
         }
 
         /**
