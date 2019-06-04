@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.trello.rxlifecycle2.components.RxActivity;
 
+import junit.framework.Test;
+
 import org.reactivestreams.Subscription;
 
 import java.io.File;
@@ -45,6 +47,7 @@ public class MainActivity extends RxActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
     }
 
 }

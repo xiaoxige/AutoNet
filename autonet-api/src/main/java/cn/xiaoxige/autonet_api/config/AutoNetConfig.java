@@ -19,7 +19,7 @@ public class AutoNetConfig {
 
     private boolean isOpenStetho;
     private Map<String, String> domainNames;
-    private Map<String, String> headParam;
+    private Map<String, Object> headParam;
     private List<Interceptor> interceptors;
 
     private AutoNetConfig() {
@@ -36,7 +36,7 @@ public class AutoNetConfig {
 
         private boolean isOpenStetho;
         private Map<String, String> domainNames;
-        private Map<String, String> headParam;
+        private Map<String, Object> headParam;
         private List<Interceptor> interceptors;
 
         public Builder() {
@@ -65,7 +65,7 @@ public class AutoNetConfig {
             return this;
         }
 
-        public Builder setHeadParam(Map<String, String> headParam) {
+        public Builder setHeadParam(Map<String, Object> headParam) {
             if (headParam != null) {
                 this.headParam.putAll(headParam);
             }
@@ -92,7 +92,7 @@ public class AutoNetConfig {
         return domainNames;
     }
 
-    public Map<String, String> getHeadParam() {
+    public Map<String, Object> getHeadParam() {
         return headParam;
     }
 
