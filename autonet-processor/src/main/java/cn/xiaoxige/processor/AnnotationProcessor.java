@@ -29,9 +29,7 @@ import cn.xiaoxige.annotation.AutoNetDisposableHeadAnnontation;
 import cn.xiaoxige.annotation.AutoNetEncryptionAnontation;
 import cn.xiaoxige.annotation.AutoNetMediaTypeAnontation;
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
-import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
 import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
-import cn.xiaoxige.annotation.AutoNetTargetEntityClass;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.annotation.entity.ProxyInfo;
 
@@ -68,8 +66,6 @@ public class AnnotationProcessor extends AbstractProcessor {
         set.add(AutoNetPatternAnontation.class.getCanonicalName());
         set.add(AutoNetEncryptionAnontation.class.getCanonicalName());
         set.add(AutoNetBaseUrlKeyAnontation.class.getCanonicalName());
-        set.add(AutoNetResponseEntityClass.class.getCanonicalName());
-        set.add(AutoNetTargetEntityClass.class.getCanonicalName());
         set.add(AutoNetTypeAnontation.class.getCanonicalName());
         set.add(AutoNetMediaTypeAnontation.class.getCanonicalName());
         set.add(AutoNetAnontation.class.getCanonicalName());
@@ -99,14 +95,6 @@ public class AnnotationProcessor extends AbstractProcessor {
         }
 
         if (!isAnnotatedWithClass(roundEnvironment, AutoNetAnontation.class)) {
-            return false;
-        }
-
-        if (!isAnnotatedWithClass(roundEnvironment, AutoNetResponseEntityClass.class)) {
-            return false;
-        }
-
-        if (!isAnnotatedWithClass(roundEnvironment, AutoNetTargetEntityClass.class)) {
             return false;
         }
 
@@ -179,10 +167,6 @@ public class AnnotationProcessor extends AbstractProcessor {
                 autoNetBaseUrlKeyProc(proxyInfo, (AutoNetBaseUrlKeyAnontation) annotation);
             } else if (annotation instanceof AutoNetAnontation) {
                 autoNetProc(proxyInfo, (AutoNetAnontation) annotation);
-            } else if (annotation instanceof AutoNetResponseEntityClass) {
-                autoNetResponseEntityClassProc(proxyInfo, (AutoNetResponseEntityClass) annotation, element);
-            } else if (annotation instanceof AutoNetTargetEntityClass) {
-                autoNetTargetEntityClassProc(proxyInfo, (AutoNetTargetEntityClass) annotation, element);
             } else if (annotation instanceof AutoNetTypeAnontation) {
                 autoNetReqTypeProc(proxyInfo, (AutoNetTypeAnontation) annotation);
             } else if (annotation instanceof AutoNetMediaTypeAnontation) {
@@ -257,28 +241,6 @@ public class AnnotationProcessor extends AbstractProcessor {
         proxyInfo.writeOutTime = writeOutTime;
         proxyInfo.readOutTime = readOutTime;
         proxyInfo.connectOutTime = connectOutTime;
-    }
-
-    private void autoNetResponseEntityClassProc(ProxyInfo proxyInfo, AutoNetResponseEntityClass annotation, Element element) {
-        String responseClassName;
-        try {
-            Class<?> clazz = annotation.value();
-            responseClassName = clazz.getName();
-        } catch (MirroredTypeException e) {
-            responseClassName = e.getTypeMirror().toString();
-        }
-        proxyInfo.responseClassName = responseClassName;
-    }
-
-    private void autoNetTargetEntityClassProc(ProxyInfo proxyInfo, AutoNetTargetEntityClass annotation, Element element) {
-        String targetClassName;
-        try {
-            Class<?> targetClass = annotation.value();
-            targetClassName = targetClass.getName();
-        } catch (MirroredTypeException e) {
-            targetClassName = e.getTypeMirror().toString();
-        }
-        proxyInfo.targetClassName = targetClassName;
     }
 
     private void printError(String error) {

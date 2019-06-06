@@ -6,13 +6,13 @@ import io.reactivex.FlowableEmitter;
 
 /**
  * @author by zhuxiaoan on 2018/7/3 0003.
- *         AutoNet抽象的返回类， 用户可更具自己所关心的去重写
+ * AutoNet抽象的返回类， 用户可更具自己所关心的去重写
  */
 
-public abstract class AbsAutoNetCallback<T, Z> implements IAutoNetDataBeforeCallBack<T>, IAutoNetDataCallBack<Z> {
+public abstract class AbsAutoNetCallback<T, Z> implements IAutoNetDataBeforeCallBack<T, Z>, IAutoNetDataCallBack<Z> {
 
     @Override
-    public boolean handlerBefore(T t, FlowableEmitter emitter) {
+    public boolean handlerBefore(T t, FlowableEmitter<Z> emitter) {
         return false;
     }
 

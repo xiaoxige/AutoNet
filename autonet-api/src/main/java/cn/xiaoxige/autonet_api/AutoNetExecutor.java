@@ -39,7 +39,7 @@ import okhttp3.Interceptor;
  */
 
 @SuppressWarnings("WeakerAccess")
-public class AutoNetExecutor {
+public class AutoNetExecutor<T, Z> {
 
     private FlowableTransformer transformer;
     private IAutoNetCallBack callBack;
@@ -336,7 +336,7 @@ public class AutoNetExecutor {
         }
         if (callBack instanceof IAutoNetFileCallBack) {
             if (object instanceof Float) {
-                ((IAutoNetFileCallBack) callBack).onPregress((Float) object);
+                ((IAutoNetFileCallBack) callBack).onProgress((Float) object);
             } else if (object instanceof File) {
                 ((IAutoNetFileCallBack) callBack).onComplete((File) object);
             }

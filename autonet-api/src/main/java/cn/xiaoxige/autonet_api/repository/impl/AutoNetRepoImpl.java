@@ -184,7 +184,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
                 builder.addFormDataPart(pushFileKey, file.getName(),
                         ProgressRequestBody.createProgressRequestBody(MediaType.parse(mediaType), file, new IAutoNetFileCallBack() {
                             @Override
-                            public void onPregress(float progress) {
+                            public void onProgress(float progress) {
                                 //noinspection unchecked
                                 emitter.onNext(progress);
                             }

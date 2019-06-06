@@ -9,6 +9,14 @@ import io.reactivex.FlowableEmitter;
 
 public interface IAutoNetBodyCallBack {
 
-    boolean body(Object flag, String object, FlowableEmitter emitter);
+    /**
+     * Return volume original content callback
+     *
+     * @param flag    Tracking Mark
+     * @param body    Original Content
+     * @param emitter Upstream Launcher
+     * @return
+     */
+    boolean body(Object flag, String body, FlowableEmitter emitter);
 
 }

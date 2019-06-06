@@ -423,8 +423,8 @@ public class ProxyWriteUtil {
                 .addStatement("$T.getInstance().startNet(" +
                                 "$N, $N, $N, $S, $L, $L, $L, " +
                                 "$L, $S, $S, $S, $L, $L, " +
-                                "$S, $L, $L, $L, $L, $L, $L, " +
-                                "$N, $N, $N, $N, $N)",
+                                "$S, $L, $L, $L, $L, " +
+                                "$N, $N, $N, null, null, $N, $N)",
                         // AutoNet
                         Class.forName(AUTO_NET_API_FACADE),
                         // 1. requestEntity
@@ -457,33 +457,25 @@ public class ProxyWriteUtil {
                         info.mediaType,
                         // 15. netPattern
                         info.netPattern,
-                        // 16. responseClazzName
-                        transformationAgreementClassForClassName(info.responseClassName),
-                        // 17. netStrategy
+                        // 16. netStrategy
                         info.netStrategy,
-                        // 18. targetClazzName
-                        transformationAgreementClassForClassName(info.targetClassName),
-                        // 19. reqType
+                        // 17. reqType
                         info.reqType,
-                        // 20. resType
+                        // 18. resType
                         info.resType,
-                        // 21. pushFileKey
+                        // 19. pushFileKey
                         AUTO_NET_PARAM_PUSH_FILE_KEY_NAME,
-                        // 22. filePath
+                        // 20. filePath
                         AUTO_NET_PARAM_FILE_PATH_NAME,
-                        // 23. fileName
+                        // 21. fileName
                         AUTO_NET_PARAM_FILE_NAME_NAME,
-                        // 24. callback
+                        // 22. callback
                         callBackFormat,
-                        // 25. transformer
+                        // 23. transformer
                         AUTO_NET_PARAM_TRANSFORMER_NAME
                 );
 
         return specBuilder.build();
-    }
-
-    private static String transformationAgreementClassForClassName(String className) {
-        return className == null || className.isEmpty() || className.equals(Void.class.getName()) ? null : className + ".class";
     }
 
     /**

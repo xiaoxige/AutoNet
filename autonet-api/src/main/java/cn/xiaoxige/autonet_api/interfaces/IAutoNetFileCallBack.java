@@ -4,17 +4,16 @@ import java.io.File;
 
 /**
  * @author by zhuxiaoan on 2018/5/21 0021.
- *         AutoNet file operation flow progress callback.
+ * AutoNet file operation flow progress callback.
  */
-
 public interface IAutoNetFileCallBack extends IAutoNetCallBack {
 
     /**
      * uploading or downloading the progress of the file.
      *
-     * @param progress
+     * @param progress progress of opt
      */
-    void onPregress(float progress);
+    void onProgress(float progress);
 
     /**
      * file callback after file uploading or downloading

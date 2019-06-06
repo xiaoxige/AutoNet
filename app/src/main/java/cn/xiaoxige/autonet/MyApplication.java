@@ -28,7 +28,7 @@ public class MyApplication extends Application {
         super.onCreate();
 
 
-        Map<String, String> heads = new ArrayMap<>();
+        Map<String, Object> heads = new ArrayMap<>();
         heads.put("token", "0");
         heads.put("userId", "A");
 

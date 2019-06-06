@@ -47,7 +47,7 @@ public class ProgressRequestBody {
                     progress = (int) (current * AutoNetConstant.MAX_PROGRESS / remaining);
                     if (preProgress != progress && Math.abs(progress - preProgress) >= 1) {
                         if (callBack != null) {
-                            callBack.onPregress(progress);
+                            callBack.onProgress(progress);
                         }
                         preProgress = progress;
                     }

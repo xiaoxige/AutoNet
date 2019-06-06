@@ -2,43 +2,18 @@ package cn.xiaoxige.autonet;
 
 
 import android.os.Bundle;
-import android.support.v4.util.ArrayMap;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
-import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.trello.rxlifecycle2.components.RxActivity;
 
-import junit.framework.Test;
+import java.util.List;
 
-import org.reactivestreams.Subscription;
-
-import java.io.File;
-import java.util.Map;
-import java.util.Random;
-
-import cn.xiaoxige.annotation.AutoNetAnontation;
-import cn.xiaoxige.annotation.AutoNetBaseUrlKeyAnontation;
-import cn.xiaoxige.annotation.AutoNetPatternAnontation;
-import cn.xiaoxige.annotation.AutoNetResponseEntityClass;
-import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
-import cn.xiaoxige.annotation.AutoNetTypeAnontation;
-import cn.xiaoxige.autonet.entity.TestARequest;
-import cn.xiaoxige.autonet.entity.TestRequest;
 import cn.xiaoxige.autonet.entity.TestResponseEntity;
-import cn.xiaoxige.autonet.entity.ZipTestEntity;
 import cn.xiaoxige.autonet_api.AutoNet;
 import cn.xiaoxige.autonet_api.abstracts.AbsAutoNetCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataBeforeCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
-import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
-import cn.xiaoxige.autonet_api.interfaces.IAutoNetLocalOptCallBack;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
-import io.reactivex.FlowableSubscriber;
-import io.reactivex.functions.BiFunction;
 
 public class MainActivity extends RxActivity {
 
@@ -48,6 +23,44 @@ public class MainActivity extends RxActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        try {
+            TestResponseEntity testResponseEntity = AutoNet.getInstance().createNet().synchronizationNet(TestResponseEntity.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Flowable flowable = AutoNet.getInstance().createNet().getFlowable(TestResponseEntity.class);
+
+        AutoNet.getInstance().createNet().start(new TestCallback1());
+
+    }
+
+    private class TestCallback extends AbsAutoNetCallback<TestResponseEntity, List<String>> {
+
+    }
+
+    private class TestCallback1 implements IAutoNetDataCallBack<TestResponseEntity>, IAutoNetDataBeforeCallBack<String, List<String>> {
+
+        @Override
+        public void onFailed(Throwable throwable) {
+
+        }
+
+        @Override
+        public void onEmpty() {
+
+        }
+
+        @Override
+        public void onSuccess(TestResponseEntity entity) {
+
+        }
+
+
+        @Override
+        public boolean handlerBefore(String s, FlowableEmitter<List<String>> emitter) {
+            return false;
+        }
     }
 
 }

@@ -12,7 +12,8 @@ public interface IAutoNetHeadCallBack {
     /**
      * AutoNet request to return the header information of the data
      *
-     * @param headers
+     * @param flag    Tracking Mark
+     * @param headers headers of response
      */
     void head(Object flag, Headers headers);
 }
