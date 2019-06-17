@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.xiaoxige.annotation.AutoNetPatternAnontation;
+import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.autonet_api.abstracts.BaseUseCase;
 import cn.xiaoxige.autonet_api.constant.AutoNetConstant;
@@ -23,6 +24,7 @@ import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataSuccessCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetLocalOptCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
 import cn.xiaoxige.autonet_api.repository.AutoNetRepo;
 import cn.xiaoxige.autonet_api.repository.impl.AutoNetRepoImpl;
@@ -57,6 +59,10 @@ public class AutoNetExecutor<T, Z> {
         mRepo = new AutoNetRepoImpl(flag, params, extraDynamicParam,
                 url, mediaType, writeOutTime, readOutTime, connectOutTime,
                 encryptionKey, isEncryption, interceptors, heads, responseClazzName, reqType, encryptionCallback, headCallBack, bodyCallBack, callBack);
+    }
+
+    public <T, Z> AutoNetExecutor(String url, Map<String, Object> heads, Map params, Object flag, long writeOutTime, long readOutTime, long connectOutTime, long encryptionKey, Boolean isEncryption, String mediaType, AutoNetPatternAnontation.NetPattern netPattern, Class<T> responseClazz, AutoNetStrategyAnontation.NetStrategy netStrategy, Class<Z> targetClazz, AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType, String pushFileKey, String filePath, String fileName, IAutoNetFileCallBack accompanyFileCallback, IAutoNetLocalOptCallBack accompanyLocalOptCallback, IAutoNetCallBack callBack, FlowableTransformer transformer) {
+
     }
 
     @Deprecated
@@ -407,6 +413,19 @@ public class AutoNetExecutor<T, Z> {
             netState = BaseUseCase.NET_PUT;
         }
         return netState;
+    }
+
+    public <T> T synchronizationNet() throws Exception {
+
+        return null;
+    }
+
+    public Flowable structureFlowable() {
+        return null;
+    }
+
+    public void netOpt() {
+
     }
 
 

@@ -28,6 +28,7 @@ import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetLocalOptCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetRequest;
+import cn.xiaoxige.autonet_api.util.AutoNetTypeUtil;
 import cn.xiaoxige.autonet_api.util.DataConvertorUtils;
 import cn.xiaoxige.autonet_api.util.GenericParadigmUtil;
 import io.reactivex.Flowable;
@@ -102,6 +103,38 @@ public final class AutoNet {
         return new AutoNetNonAnontation();
     }
 
+    /**
+     * AutoNet initiates synchronization requests
+     *
+     * @param requestEntity
+     * @param requestMap
+     * @param extraDynamicParam
+     * @param suffixUrl
+     * @param flag
+     * @param writeOutTime
+     * @param readOutTime
+     * @param connectOutTime
+     * @param domainNameKey
+     * @param disposableBaseUrl
+     * @param disposableHeads
+     * @param encryptionKey
+     * @param isEncryption
+     * @param mediaType
+     * @param netPattern
+     * @param responseClazz
+     * @param netStrategy
+     * @param reqType
+     * @param resType
+     * @param pushFileKey
+     * @param filePath
+     * @param fileName
+     * @param accompanyFileCallback
+     * @param accompanyLocalOptCallback
+     * @param transformer
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
     private <T> T startSynchronizationNet(IAutoNetRequest requestEntity, Map requestMap,
                                           String extraDynamicParam, String suffixUrl,
                                           Object flag, long writeOutTime, long readOutTime,
@@ -125,10 +158,41 @@ public final class AutoNet {
                 resType, pushFileKey, filePath, fileName, accompanyFileCallback, accompanyLocalOptCallback, null, transformer);
 
 
-        return null;
+        return autoNetExecutor.synchronizationNet();
 
     }
 
+    /**
+     * AutoNet获取上游发射器， 提供给用户自定义下游的
+     *
+     * @param requestEntity
+     * @param requestMap
+     * @param extraDynamicParam
+     * @param suffixUrl
+     * @param flag
+     * @param writeOutTime
+     * @param readOutTime
+     * @param connectOutTime
+     * @param domainNameKey
+     * @param disposableBaseUrl
+     * @param disposableHeads
+     * @param encryptionKey
+     * @param isEncryption
+     * @param mediaType
+     * @param netPattern
+     * @param responseClazz
+     * @param netStrategy
+     * @param reqType
+     * @param resType
+     * @param pushFileKey
+     * @param filePath
+     * @param fileName
+     * @param accompanyFileCallback
+     * @param accompanyLocalOptCallback
+     * @param transformer
+     * @param <T>
+     * @return
+     */
     private <T> Flowable createFlowable(IAutoNetRequest requestEntity, Map requestMap,
                                         String extraDynamicParam, String suffixUrl,
                                         Object flag, long writeOutTime, long readOutTime,
@@ -149,9 +213,38 @@ public final class AutoNet {
                 netPattern, assertResponseClass(responseClazz), netStrategy, Void.class, reqType,
                 resType, pushFileKey, filePath, fileName, accompanyFileCallback, accompanyLocalOptCallback, null, transformer);
 
-        return autoNetExecutor.structureFlowable(netPattern);
+        return autoNetExecutor.structureFlowable();
     }
 
+    /**
+     * AutoNet initiates asynchronous requests
+     *
+     * @param requestEntity
+     * @param requestMap
+     * @param extraDynamicParam
+     * @param suffixUrl
+     * @param flag
+     * @param writeOutTime
+     * @param readOutTime
+     * @param connectOutTime
+     * @param domainNameKey
+     * @param disposableBaseUrl
+     * @param disposableHeads
+     * @param encryptionKey
+     * @param isEncryption
+     * @param mediaType
+     * @param netPattern
+     * @param netStrategy
+     * @param reqType
+     * @param resType
+     * @param pushFileKey
+     * @param filePath
+     * @param fileName
+     * @param accompanyFileCallback
+     * @param accompanyLocalOptCallback
+     * @param callBack
+     * @param transformer
+     */
     public void startNet(IAutoNetRequest requestEntity, Map requestMap,
                          String extraDynamicParam, String suffixUrl,
                          Object flag, long writeOutTime, long readOutTime,
@@ -173,9 +266,43 @@ public final class AutoNet {
                 netPattern, integrationResponseClass(callBack), netStrategy, integrationTargetClass(callBack), reqType,
                 resType, pushFileKey, filePath, fileName, accompanyFileCallback, accompanyLocalOptCallback, callBack, transformer);
 
-        autoNetExecutor.netOpt(netPattern);
+        autoNetExecutor.netOpt();
     }
 
+    /**
+     * Constructing AutuNet Real Executors
+     *
+     * @param requestEntity
+     * @param requestMap
+     * @param extraDynamicParam
+     * @param suffixUrl
+     * @param flag
+     * @param writeOutTime
+     * @param readOutTime
+     * @param connectOutTime
+     * @param domainNameKey
+     * @param disposableBaseUrl
+     * @param disposableHeads
+     * @param encryptionKey
+     * @param isEncryption
+     * @param mediaType
+     * @param netPattern
+     * @param responseClazz
+     * @param netStrategy
+     * @param targetClazz
+     * @param reqType
+     * @param resType
+     * @param pushFileKey
+     * @param filePath
+     * @param fileName
+     * @param accompanyFileCallback
+     * @param accompanyLocalOptCallback
+     * @param callBack
+     * @param transformer
+     * @param <T>
+     * @param <Z>
+     * @return
+     */
     private <T, Z> AutoNetExecutor<T, Z> structuralExecutor(IAutoNetRequest requestEntity, Map requestMap,
                                                             String extraDynamicParam, String suffixUrl,
                                                             Object flag, long writeOutTime, long readOutTime,
@@ -189,22 +316,39 @@ public final class AutoNet {
                                                             String filePath, String fileName,
                                                             IAutoNetFileCallBack accompanyFileCallback, IAutoNetLocalOptCallBack accompanyLocalOptCallback, IAutoNetCallBack callBack, FlowableTransformer transformer) {
 
-
+        // Merge header data
         Map<String, Object> heads = integrationHeads(sConfig.getHeadParam(), sAutoNetExtraConfig.getExtraHeads(), disposableHeads);
+        // Merge collation request addresses
         String url = getUrlByRequest(domainNameKey, sConfig.getDomainNames(), sAutoNetExtraConfig.getExtraDomainNames(), disposableBaseUrl, suffixUrl, extraDynamicParam);
+        // Automatically adjust the type if not specified manually
         mediaType = TextUtils.isEmpty(mediaType) ? autoAdjustmentAdjustmentMediaType(mediaType, reqType) : mediaType;
+        // Merge request params
         Map params = integrationParams(requestEntity, requestMap);
 
-//        new AutoNetExecutor(url, heads, params, flag, writeOutTime, readOutTime, connectOutTime, encryptionKey, isEncryption,
-//                mediaType);
-
-        AutoNetExecutor executor = new AutoNetExecutor<T, Z>(flag, requestEntity, requestMap, extraDynamicParam, url, mediaType,
-                writeOutTime, readOutTime, connectOutTime, encryptionKey, isEncryption, sConfig.getInterceptors(),
-                new ArrayMap<String, String>(0), "", transformer, reqType,
-                sAutoNetExtraConfig.getEncryptionCallback(), sAutoNetExtraConfig.getHeadCallBack(), sAutoNetExtraConfig.getBodyCallBack(), callBack);
-        return executor;
+        //noinspection unchecked
+        return new AutoNetExecutor(url, heads, params, flag, writeOutTime, readOutTime, connectOutTime,
+                encryptionKey, isEncryption,
+                mediaType,
+                netPattern,
+                responseClazz,
+                netStrategy,
+                targetClazz,
+                reqType, resType,
+                pushFileKey, filePath, fileName,
+                accompanyFileCallback, accompanyLocalOptCallback,
+                callBack, transformer);
     }
 
+    /**
+     * Check whether AutoNet public parts are legal
+     *
+     * @param netPattern
+     * @param reqType
+     * @param resType
+     * @param pushFileKey
+     * @param filePath
+     * @param fileName
+     */
     private void assertCommon(AutoNetPatternAnontation.NetPattern netPattern,
                               AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType,
                               String pushFileKey, String filePath, String fileName) {
@@ -227,7 +371,7 @@ public final class AutoNet {
             throw new IllegalArgumentException("Autonet does not accept sending and receiving files at the same time.");
         }
         // 3.2. => check file operation
-        if (isPushFileOperation(reqType)) {
+        if (AutoNetTypeUtil.isPushFileOperation(reqType)) {
             if (TextUtils.isEmpty(pushFileKey) || TextUtils.isEmpty(filePath)) {
                 throw new IllegalArgumentException("Push file operation, pushFileKey and filePath cannot be empty.");
             }
@@ -235,7 +379,7 @@ public final class AutoNet {
             if (!new File(filePath).exists()) {
                 throw new IllegalArgumentException("The push file does not exist.");
             }
-        } else if (isPullFileOperation(resType)) {
+        } else if (AutoNetTypeUtil.isPullFileOperation(resType)) {
             if (TextUtils.isEmpty(filePath) || TextUtils.isEmpty(fileName)) {
                 throw new IllegalArgumentException("Please specify the location and name of the download file.");
             }
@@ -243,6 +387,11 @@ public final class AutoNet {
 
     }
 
+    /**
+     * Check the validity of synchronization requests
+     *
+     * @param netStrategy
+     */
     private void assertSynchronization(AutoNetStrategyAnontation.NetStrategy netStrategy) {
         // Check whether the policy is legitimate
         if (netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.LOCAL_NET) || netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.NET_LOCAL)) {
@@ -250,6 +399,13 @@ public final class AutoNet {
         }
     }
 
+    /**
+     * Check and return valid class object types
+     *
+     * @param responseClass
+     * @param <T>
+     * @return
+     */
     private <T> Class<?> assertResponseClass(Class<T> responseClass) {
         return responseClass == null ? Void.class : responseClass;
     }
@@ -262,7 +418,9 @@ public final class AutoNet {
      * @return
      */
     private String autoAdjustmentAdjustmentMediaType(String mediaType, AutoNetTypeAnontation.Type reqType) {
-        if (reqType.equals(AutoNetTypeAnontation.Type.STREAM)) {
+        if (reqType.equals(AutoNetTypeAnontation.Type.JSON)) {
+            return "application/json;charset=utf-8";
+        } else if (reqType.equals(AutoNetTypeAnontation.Type.STREAM)) {
             return "application/octet-stream;charset=UTF-8";
         } else if (reqType.equals(AutoNetTypeAnontation.Type.FORM)) {
             return "application/x-www-form-urlencoded;charset=UTF-8";
@@ -270,6 +428,12 @@ public final class AutoNet {
         return mediaType;
     }
 
+    /**
+     * AutoNet Automatically Analyses and Finds the Right Return Body
+     *
+     * @param callBack
+     * @return
+     */
     private Class integrationResponseClass(IAutoNetCallBack callBack) {
         Class responseClass = null;
         // pathfinder
@@ -310,6 +474,12 @@ public final class AutoNet {
         return responseClass == null || responseClass.equals(IAutoNetLocalOptCallBack.class) ? Void.class : responseClass;
     }
 
+    /**
+     * AutoNet Automatically Analyses and Finds the Right Target Body
+     *
+     * @param callBack
+     * @return
+     */
     private Class integrationTargetClass(IAutoNetCallBack callBack) {
         Class targetClass = null;
         // pathfinder
@@ -376,6 +546,13 @@ public final class AutoNet {
         return domains;
     }
 
+    /**
+     * AutoNet automatically and legally splicing URL addresses according to URL rules
+     *
+     * @param first
+     * @param second
+     * @return
+     */
     private StringBuffer intelligenceSplicingUrl(StringBuffer first, String second) {
         if (second.startsWith(AutoNetConstant.SLASH)) {
             second = second.substring(1);
@@ -445,14 +622,6 @@ public final class AutoNet {
             }
         }
         return heads;
-    }
-
-    private boolean isPushFileOperation(AutoNetTypeAnontation.Type reqType) {
-        return reqType.equals(AutoNetTypeAnontation.Type.STREAM);
-    }
-
-    private boolean isPullFileOperation(AutoNetTypeAnontation.Type resType) {
-        return resType.equals(AutoNetTypeAnontation.Type.STREAM);
     }
 
     /**
