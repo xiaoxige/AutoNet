@@ -319,11 +319,9 @@ public class AutoNetRepoImpl<T> implements AutoNetRepo<T> {
                 }
             }
 
-            // When downloading files, the callback file is no longer completed,
-            // because the file has been retrieved from the synchronized result value, which prevents the upstream file from launching twice.
-            //if (callBack != null) {
-            //callBack.onComplete(file);
-            //}
+            if (callBack != null) {
+                callBack.onComplete(file);
+            }
 
             fos.flush();
         } catch (Exception e) {

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import cn.xiaoxige.autonet_api.AutoNet;
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
+import cn.xiaoxige.autonet_api.error.EmptyError;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetBodyCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
@@ -64,9 +65,9 @@ public class MyApplication extends Application {
             }
         }).setBodyCallback(new IAutoNetBodyCallBack() {
             @Override
-            public boolean body(Object flag, String object, FlowableEmitter emitter) {
+            public boolean body(Object flag, String body) throws Exception {
                 Log.e("TAG", "flag = " + flag);
-                Log.e("TAG", "body： " + object);
+                Log.e("TAG", "body： " + body);
                 return false;
             }
 

@@ -18,6 +18,7 @@ import cn.xiaoxige.annotation.entity.ProxyInfo;
 import cn.xiaoxige.autonet_api.abstracts.AbsAutoNetCallback;
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.constant.AutoNetConstant;
+import cn.xiaoxige.autonet_api.executor.AutoNetExecutor;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetBodyCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataBeforeCallBack;
@@ -150,12 +151,13 @@ public final class AutoNet {
         assertCommon(netPattern, netStrategy, reqType, resType, responseClazz, pushFileKey, filePath, fileName);
         assertSynchronization(netStrategy);
 
+        Class<?> responseClass = assertResponseClass(responseClazz);
         //noinspection unchecked
         AutoNetExecutor<T, ?> autoNetExecutor = (AutoNetExecutor<T, ?>) structuralExecutor(requestEntity, requestMap,
                 extraDynamicParam, suffixUrl,
                 flag, writeOutTime, readOutTime,
                 connectOutTime, domainNameKey, disposableBaseUrl, disposableHeads, encryptionKey, isEncryption, mediaType,
-                netPattern, assertResponseClass(responseClazz), netStrategy, Void.class, reqType,
+                netPattern, responseClass, netStrategy, responseClass, reqType,
                 resType, pushFileKey, filePath, fileName, accompanyFileCallback, accompanyLocalOptCallback, null, transformer);
 
         return autoNetExecutor.synchronizationNet();
@@ -206,12 +208,13 @@ public final class AutoNet {
         assertCommon(netPattern, netStrategy, reqType, resType, responseClazz, pushFileKey, filePath, fileName);
         assertFlowable(netStrategy);
 
+        Class<?> responseClass = assertResponseClass(responseClazz);
         //noinspection unchecked
         AutoNetExecutor<T, ?> autoNetExecutor = (AutoNetExecutor<T, ?>) structuralExecutor(requestEntity, requestMap,
                 extraDynamicParam, suffixUrl,
                 flag, writeOutTime, readOutTime,
                 connectOutTime, domainNameKey, disposableBaseUrl, disposableHeads, encryptionKey, isEncryption, mediaType,
-                netPattern, assertResponseClass(responseClazz), netStrategy, Void.class, reqType,
+                netPattern, responseClass, netStrategy, responseClass, reqType,
                 resType, pushFileKey, filePath, fileName, accompanyFileCallback, accompanyLocalOptCallback, null, transformer);
 
         return autoNetExecutor.structureFlowable(false);
@@ -267,7 +270,7 @@ public final class AutoNet {
                 extraDynamicParam, suffixUrl,
                 flag, writeOutTime, readOutTime,
                 connectOutTime, domainNameKey, disposableBaseUrl, disposableHeads, encryptionKey, isEncryption, mediaType,
-                netPattern, responseClass, netStrategy, integrationTargetClass(callBack), reqType,
+                netPattern, responseClass, netStrategy, integrationTargetClass(callBack, responseClass), reqType,
                 resType, pushFileKey, filePath, fileName, accompanyFileCallback, accompanyLocalOptCallback, callBack, transformer);
 
         autoNetExecutor.net();
@@ -406,7 +409,7 @@ public final class AutoNet {
                 throw new IllegalArgumentException("Please specify the location and name of the download file.");
             }
             // 3.3.5. => The download file must be File if the return value is specified
-            if (responseClazz != null && !File.class.equals(responseClazz) && !Void.class.equals(responseClazz) && !Object.class.equals(responseClazz)) {
+            if (responseClazz != null && !File.class.equals(responseClazz) && !Object.class.equals(responseClazz)) {
                 throw new IllegalArgumentException("The download file must be File if the return value is specified");
             }
         }
@@ -525,7 +528,7 @@ public final class AutoNet {
      * @param callBack
      * @return
      */
-    private Class integrationTargetClass(IAutoNetCallBack callBack) {
+    private Class integrationTargetClass(IAutoNetCallBack callBack, Class responseClass) {
         Class targetClass = null;
         // pathfinder
         List<GenericParadigmUtil.Pathfinder> pathfinders = new ArrayList<>(1);
@@ -542,8 +545,12 @@ public final class AutoNet {
                     GenericParadigmUtil.getInterfacePosition(callBack, IAutoNetDataBeforeCallBack.class),
                     pathfinders);
         }
+        // 2.2 If the target type is not specified in the above two steps, the target type is the return body type.
+        if (targetClass == null || targetClass.equals(IAutoNetDataBeforeCallBack.class)) {
+            targetClass = responseClass;
+        }
 
-        return targetClass == null || targetClass.equals(IAutoNetDataBeforeCallBack.class) ? String.class : targetClass;
+        return targetClass == null ? String.class : targetClass;
     }
 
     /**

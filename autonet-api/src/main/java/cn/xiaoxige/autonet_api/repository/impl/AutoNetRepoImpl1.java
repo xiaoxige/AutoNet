@@ -249,7 +249,7 @@ public class AutoNetRepoImpl1 implements AutoNetRepo1 {
 
         if (bodyCallBack != null) {
             boolean isContinue
-                    = bodyCallBack.body(this.mFlag, content, emitter);
+                    = bodyCallBack.body(this.mFlag, content);
             if (isContinue) {
                 return;
             }

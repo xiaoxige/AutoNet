@@ -4,11 +4,17 @@ import android.support.v4.util.ArrayMap;
 import android.util.Log;
 
 import org.junit.Test;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import cn.xiaoxige.autonet.entity.ITestA;
+import cn.xiaoxige.autonet.entity.ITestB;
+import cn.xiaoxige.autonet.entity.TestEntity;
 import cn.xiaoxige.autonet.entity.TestResponseEntity;
 import cn.xiaoxige.autonet_api.AutoNet;
 import cn.xiaoxige.autonet_api.abstracts.AbsAutoNetCallback;
@@ -16,9 +22,15 @@ import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetBodyCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
+import cn.xiaoxige.autonet_api.util.ClassInstanceofPlusUtil;
+import cn.xiaoxige.autonet_api.util.GenericParadigmUtil;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
+import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.functions.Consumer;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.subscribers.DefaultSubscriber;
 import okhttp3.Headers;
 
 import static org.junit.Assert.*;
@@ -32,12 +44,32 @@ public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
 
-        Class<File> responseClass = File.class;
+        Class<?> listClass = List.class;
 
-        if(File.class.equals(responseClass)){
+        List<String> strings = new ArrayList<>();
+
+        Class temp = strings.getClass();
+
+        boolean b = ClassInstanceofPlusUtil.instanceOf(strings, listClass);
+
+        Class testAClass = ITestA.class;
+        TestEntity testEntity = new TestEntity();
+        boolean bb = ClassInstanceofPlusUtil.instanceOf(testEntity, TestEntity.class);
+
+        while (true) {
+            if (temp == null) {
+                break;
+            }
+            Class[] interfaces = temp.getInterfaces();
+            for (Class aClass : interfaces) {
+                System.out.println(aClass.getName());
+                if (aClass.equals(listClass)) {
+                    System.out.println("xiaoxige");
+                }
+            }
+            System.out.println(temp.getName());
+            temp = temp.getSuperclass();
         }
-
-
 
         Map map = new ArrayMap();
         ((ArrayMap) map).put("one", 1);
@@ -92,11 +124,12 @@ public class ExampleUnitTest {
             }
         }).setBodyCallback(new IAutoNetBodyCallBack() {
             @Override
-            public boolean body(Object flag, String object, FlowableEmitter emitter) {
+            public boolean body(Object flag, String body) throws Exception {
                 Log.e("TAG", "flag = " + flag);
-                Log.e("TAG", "body： " + object);
+                Log.e("TAG", "body： " + body);
                 return false;
             }
+
 
         }).updateOrInsertDomainNames("jsonTestBaseUrl", "http://api.news18a.com");
     }

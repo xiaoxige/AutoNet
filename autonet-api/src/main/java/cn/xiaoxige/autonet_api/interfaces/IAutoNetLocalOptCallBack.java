@@ -14,5 +14,5 @@ public interface IAutoNetLocalOptCallBack<T> extends IAutoNetCallBack {
      * @param request params request
      * @return
      */
-    T optLocalData(Map request);
+    T optLocalData(Map request) throws Exception;
 }

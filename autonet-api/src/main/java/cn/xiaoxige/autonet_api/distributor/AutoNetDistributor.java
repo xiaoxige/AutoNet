@@ -18,7 +18,7 @@ import cn.xiaoxige.autonet_api.util.NetUtil;
  * email: xiaoxigexiaoan@outlook.com
  * desc: AutoNet Distributor, which distributes requests
  */
-public class AutoNetDistributor<T> implements IDistributorExecution<T> {
+public class AutoNetDistributor<T> implements IDistributor<T> {
 
     private AutoNetPatternAnontation.NetPattern mNetPattern;
     private AutoNetTypeAnontation.Type mReqType;
@@ -52,8 +52,7 @@ public class AutoNetDistributor<T> implements IDistributorExecution<T> {
         return t;
     }
 
-    @Override
-    public T startNonFileRequest() throws Exception {
+    private T startNonFileRequest() throws Exception {
         // check network
         assertNetWork();
 
@@ -75,8 +74,7 @@ public class AutoNetDistributor<T> implements IDistributorExecution<T> {
         return t;
     }
 
-    @Override
-    public T startFileRequest(final IAutoNetFileCallBack callBack) throws Exception {
+    private T startFileRequest(final IAutoNetFileCallBack callBack) throws Exception {
         // check network
         assertNetWork();
 
@@ -96,7 +94,7 @@ public class AutoNetDistributor<T> implements IDistributorExecution<T> {
             @Override
             public void onComplete(File file) {
                 // transmit file progress
-                if (callBack != null) {
+                if (!AutoNetTypeUtil.isPullFileOperation(mResType) && callBack != null) {
                     callBack.onComplete(file);
                 }
                 // User monitoring

@@ -9,7 +9,7 @@ import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
  * email: xiaoxigexiaoan@outlook.com
  * desc:  Distribution and execution
  */
-public interface IDistributorExecution<T> {
+public interface IDistributor<T> {
 
     /**
      * Automatic Detection of Request Mode and Initiation of Request
@@ -20,21 +20,5 @@ public interface IDistributorExecution<T> {
      */
     T start(IAutoNetFileCallBack callBack) throws Exception;
 
-    /**
-     * Non-document requests
-     *
-     * @return
-     * @throws Exception
-     */
-    T startNonFileRequest() throws Exception;
-
-    /**
-     * file request
-     *
-     * @param callBack
-     * @return
-     * @throws Exception
-     */
-    T startFileRequest(IAutoNetFileCallBack callBack) throws Exception;
 
 }
