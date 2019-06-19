@@ -45,7 +45,7 @@ public class MyApplication extends Application {
 
         AutoNetConfig config = new AutoNetConfig.Builder()
                 .isOpenStetho(true)
-                .setDefaultDomainName("https:www.baidu.com")
+                .setDefaultDomainName("http://www.wanandroid.com")
                 .setHeadParam(heads)
                 .setDomainName(domainNames)
                 .build();

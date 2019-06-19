@@ -5,6 +5,7 @@ import android.util.Log;
 
 import org.junit.Test;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +32,23 @@ public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
 
+        Class<File> responseClass = File.class;
+
+        if(File.class.equals(responseClass)){
+        }
+
+
+
+        Map map = new ArrayMap();
+        ((ArrayMap) map).put("one", 1);
+        ((ArrayMap) map).put("two", "xiaoxige");
+        ((ArrayMap) map).put("three", 3.3f);
+        ((ArrayMap) map).put("fore", 3L);
+
+        System.out.println(map.get("one").toString());
+        System.out.println(map.get("two").toString());
+        System.out.println(map.get("three").toString());
+        System.out.println(map.get("fore").toString());
     }
 
     private class TestCallback extends AbsAutoNetCallback<TestResponseEntity, List<String>> {

@@ -1,42 +1,49 @@
 package cn.xiaoxige.autonet_api.repository;
 
 
-import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
+import io.reactivex.Flowable;
 
 /**
  * @author by zhuxiaoan on 2018/5/21 0021.
  * AutoNet's request implementation interface
  */
 
-public interface AutoNetRepo<T> {
+public interface AutoNetRepo1 {
 
     /**
      * get request
      *
      * @return
      */
-    T doNetGet() throws Exception;
+    Flowable doNetGet();
 
     /**
      * post request
      *
      * @return
      */
-    T doNetPost() throws Exception;
+    Flowable doNetPost();
 
     /**
      * put request
      *
      * @return
      */
-    T doPut() throws Exception;
+    Flowable doPut();
 
     /**
      * delete request
      *
      * @return
      */
-    T doDelete() throws Exception;
+    Flowable doDelete();
+
+    /**
+     * local request
+     *
+     * @return
+     */
+    Flowable doLocal();
 
     /**
      * upload file
@@ -45,7 +52,7 @@ public interface AutoNetRepo<T> {
      * @param filePath
      * @return
      */
-    T pushFile(String pushFileKey, String filePath, IAutoNetFileCallBack callBack) throws Exception;
+    Flowable pushFile(String pushFileKey, String filePath);
 
     /**
      * download file
@@ -54,6 +61,6 @@ public interface AutoNetRepo<T> {
      * @param fileName
      * @return
      */
-    T pullFile(String filePath, String fileName, IAutoNetFileCallBack callBack) throws Exception;
+    Flowable pullFile(String filePath, String fileName);
 
 }

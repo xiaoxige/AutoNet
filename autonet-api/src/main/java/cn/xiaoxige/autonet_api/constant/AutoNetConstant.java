@@ -18,6 +18,9 @@ public class AutoNetConstant {
 
     public static final String SLASH = "/";
 
+    public static final String PARAMETER_START_FLAG = "?";
+    public static final String PARAMETRIC_LINK_MARKER = "&";
+
     public static final Float NUM_100 = 100.0f;
 
     public static final Float MAX_PROGRESS = NUM_100;

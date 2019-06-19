@@ -25,17 +25,15 @@ import okio.Buffer;
 public class AutoDefaultInterceptor implements Interceptor {
 
     private Object mFlag;
-    private String extraDynamicParam;
-    private Map<String, String> heads;
+    private Map<String, Object> heads;
     private Long encryptionKey;
     private boolean isEncryption;
     private IAutoNetEncryptionCallback encryptionCallback;
     private IAutoNetHeadCallBack headCallBack;
 
-    public AutoDefaultInterceptor(Object flag, String extraDynamicParam, Map<String, String> heads, Long encryptionKey, Boolean isEncryption,
+    public AutoDefaultInterceptor(Object flag, Map<String, Object> heads, Long encryptionKey, Boolean isEncryption,
                                   IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack) {
         this.mFlag = flag;
-        this.extraDynamicParam = extraDynamicParam;
         this.heads = heads;
         this.encryptionKey = encryptionKey;
         this.isEncryption = isEncryption;
@@ -48,8 +46,6 @@ public class AutoDefaultInterceptor implements Interceptor {
         Request request = chain.request();
         // init head
         request = splicingHeads(request);
-        // init params
-        request = splicingParams(request);
         // init encryption
         request = encryptionParams(request);
 
@@ -93,23 +89,6 @@ public class AutoDefaultInterceptor implements Interceptor {
         return request;
     }
 
-    private Request splicingParams(Request request) {
-        HttpUrl httpUrl = request.url();
-        String url = httpUrl.toString();
-        if (!TextUtils.isEmpty(url) && !TextUtils.isEmpty(this.extraDynamicParam)) {
-            if (!url.endsWith(AutoNetConstant.SLASH) && !this.extraDynamicParam.startsWith(AutoNetConstant.SLASH)) {
-                this.extraDynamicParam += AutoNetConstant.SLASH;
-            } else if (url.endsWith(AutoNetConstant.SLASH) && this.extraDynamicParam.startsWith(AutoNetConstant.SLASH)) {
-                this.extraDynamicParam = this.extraDynamicParam.replace(AutoNetConstant.SLASH, "");
-            }
-
-            url += this.extraDynamicParam;
-        }
-        httpUrl = httpUrl.newBuilder(url).build();
-        request = request.newBuilder().url(httpUrl).build();
-        return request;
-    }
-
     private Request splicingHeads(Request request) {
         if (heads == null) {
             return request;
@@ -118,7 +97,11 @@ public class AutoDefaultInterceptor implements Interceptor {
         Headers.Builder builder = headers.newBuilder();
         Set<String> keys = heads.keySet();
         for (String key : keys) {
-            builder.add(key, heads.get(key));
+            String value = heads.get(key).toString();
+            if (TextUtils.isEmpty(value)) {
+                continue;
+            }
+            builder.add(key, heads.get(key).toString());
         }
         Headers newHeads = builder.build();
         return request.newBuilder().headers(newHeads).build();

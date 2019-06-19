@@ -18,6 +18,26 @@ import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 public class AutoNetTypeUtil {
 
     /**
+     * json ?
+     *
+     * @param reqType
+     * @return
+     */
+    public static boolean isJsonOperation(AutoNetTypeAnontation.Type reqType) {
+        return reqType.equals(AutoNetTypeAnontation.Type.JSON);
+    }
+
+    /**
+     * form ?
+     *
+     * @param reqType
+     * @return
+     */
+    public static boolean isFormOperation(AutoNetTypeAnontation.Type reqType) {
+        return reqType.equals(AutoNetTypeAnontation.Type.FORM);
+    }
+
+    /**
      * upload or download file ?
      *
      * @param reqType

@@ -1,7 +1,7 @@
 package cn.xiaoxige.autonet_api.interactors;
 
 import cn.xiaoxige.autonet_api.abstracts.BaseUseCase;
-import cn.xiaoxige.autonet_api.repository.AutoNetRepo;
+import cn.xiaoxige.autonet_api.repository.AutoNetRepo1;
 import io.reactivex.Flowable;
 
 /**
@@ -11,10 +11,10 @@ import io.reactivex.Flowable;
 
 public class AutoNetUseCase extends BaseUseCase {
 
-    private AutoNetRepo mRepo;
+    private AutoNetRepo1 mRepo;
     private int netState;
 
-    public AutoNetUseCase(AutoNetRepo repo, int netState) {
+    public AutoNetUseCase(AutoNetRepo1 repo, int netState) {
         super();
         this.mRepo = repo;
         this.netState = netState;

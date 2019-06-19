@@ -1,7 +1,7 @@
 package cn.xiaoxige.autonet_api.interactors;
 
 import cn.xiaoxige.autonet_api.abstracts.BaseUseCase;
-import cn.xiaoxige.autonet_api.repository.AutoNetRepo;
+import cn.xiaoxige.autonet_api.repository.AutoNetRepo1;
 import io.reactivex.Flowable;
 
 /**
@@ -11,11 +11,11 @@ import io.reactivex.Flowable;
 
 public class AutoNetPullFileUseCase extends BaseUseCase {
 
-    private AutoNetRepo mRepo;
+    private AutoNetRepo1 mRepo;
     private String mFilePath;
     private String mFileName;
 
-    public AutoNetPullFileUseCase(AutoNetRepo repo, String filePath, String fileName) {
+    public AutoNetPullFileUseCase(AutoNetRepo1 repo, String filePath, String fileName) {
         this.mRepo = repo;
         this.mFilePath = filePath;
         this.mFileName = fileName;

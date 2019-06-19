@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -15,19 +16,13 @@ import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.autonet_api.client.Client;
 import cn.xiaoxige.autonet_api.constant.AutoNetConstant;
 import cn.xiaoxige.autonet_api.error.EmptyError;
-import cn.xiaoxige.autonet_api.flowable.DefaultFlowable;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetBodyCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
-import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataBeforeCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
-import cn.xiaoxige.autonet_api.interfaces.IAutoNetLocalOptCallBack;
 import cn.xiaoxige.autonet_api.net.ProgressRequestBody;
 import cn.xiaoxige.autonet_api.repository.AutoNetRepo;
-import io.reactivex.Flowable;
-import io.reactivex.FlowableEmitter;
-import io.reactivex.FlowableOnSubscribe;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -38,259 +33,182 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 /**
- * @author by zhuxiaoan on 2018/5/21 0021.
+ * @author xiaoxige
+ * @date 2019/6/17 0017 15:36
+ * -
+ * email: xiaoxigexiaoan@outlook.com
+ * desc: Implementation of AutoNet Single Complete Request
  */
+public class AutoNetRepoImpl<T> implements AutoNetRepo<T> {
 
-public class AutoNetRepoImpl implements AutoNetRepo {
-
+    private String mUrl;
+    private Map<String, Object> mHeads;
+    private Map mParams;
     private Object mFlag;
-    private Map requestParams;
-    private String url;
-    private String mediaType;
-    private String responseClazzName;
-    private AutoNetTypeAnontation.Type reqType;
-    private IAutoNetCallBack callBack;
-    private IAutoNetBodyCallBack bodyCallBack;
+    private String mMediaType;
+    private Class<T> mResponseClass;
+    private AutoNetTypeAnontation.Type mReqType;
+    private IAutoNetBodyCallBack mBodyCallBack;
 
     private OkHttpClient client;
 
-
-    public AutoNetRepoImpl(Object flag, Map requestParams, String extraDynamicParam,
-                           String url, String mediaType,
-                           Long writeOutTime, Long readOutTime, Long connectOutTime,
-                           Long encryptionKey, Boolean isEncryption, List<Interceptor> interceptors, Map<String, String> heads,
-                           String responseClazzName, AutoNetTypeAnontation.Type reqType, IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack, IAutoNetBodyCallBack bodyCallBack, IAutoNetCallBack callBack) {
+    public AutoNetRepoImpl(String url, Map<String, Object> heads, Map params, Object flag, long writeOutTime, long readOutTime, long connectOutTime,
+                           long encryptionKey, Boolean isEncryption,
+                           String mediaType,
+                           Class<T> responseClazz,
+                           AutoNetTypeAnontation.Type reqType,
+                           List<Interceptor> interceptors,
+                           IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack, IAutoNetBodyCallBack bodyCallBack) {
+        this.mUrl = url;
+        this.mHeads = heads;
+        this.mParams = params;
         this.mFlag = flag;
-        this.requestParams = requestParams;
-        this.url = url;
-        this.mediaType = mediaType;
-        this.responseClazzName = responseClazzName;
-        this.reqType = reqType;
-        this.callBack = callBack;
-        this.bodyCallBack = bodyCallBack;
+        this.mMediaType = mediaType;
+        this.mResponseClass = responseClazz;
+        this.mReqType = reqType;
+        this.mBodyCallBack = bodyCallBack;
 
-        this.client = Client.client(flag, extraDynamicParam, writeOutTime, readOutTime, connectOutTime, heads, encryptionKey, isEncryption, interceptors, encryptionCallback, headCallBack);
+        this.client = Client.client(flag, heads, writeOutTime, readOutTime, connectOutTime, encryptionKey, isEncryption, interceptors, encryptionCallback, headCallBack);
     }
 
     @Override
-    public Flowable doNetGet() {
+    public T doNetGet() throws Exception {
+        String newUrl = restructureUrlWithParams(this.mUrl, this.mParams);
+        Request request = new Request.Builder()
+                .get()
+                .url(newUrl)
+                .build();
 
-        //noinspection UnnecessaryLocalVariable
-        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
-            @Override
-            public void subscribe(FlowableEmitter emitter) throws Exception {
-                String newUrl = restructureUrlWithParams(url, requestParams);
-                Request request = new Request.Builder()
-                        .get()
-                        .url(newUrl)
-                        .build();
-                executeNet(request, emitter);
+        return executeNet(request);
+    }
+
+    @Override
+    public T doNetPost() throws Exception {
+        String bodyParams = structureBodyParams(this.mReqType, this.mParams);
+        RequestBody body = RequestBody.create(MediaType.parse(this.mMediaType), bodyParams);
+        Request request = new Request.Builder().url(this.mUrl).post(body).build();
+
+        return executeNet(request);
+    }
+
+    @Override
+    public T doPut() throws Exception {
+
+        String bodyParams = structureBodyParams(this.mReqType, this.mParams);
+        RequestBody body = RequestBody.create(MediaType.parse(this.mMediaType), bodyParams);
+        Request request = new Request.Builder().url(this.mUrl).put(body).build();
+
+        return executeNet(request);
+    }
+
+    @Override
+    public T doDelete() throws Exception {
+        String newUrl = restructureUrlWithParams(this.mUrl, this.mParams);
+        Request request = new Request.Builder()
+                .delete()
+                .url(newUrl)
+                .build();
+
+        return executeNet(request);
+    }
+
+    @Override
+    public T pushFile(String pushFileKey, String filePath, final IAutoNetFileCallBack callBack) throws Exception {
+
+        MultipartBody.Builder builder = new MultipartBody.Builder();
+        builder.setType(MultipartBody.FORM);
+        if (this.mParams != null) {
+            //noinspection unchecked
+            Set<String> keys = this.mParams.keySet();
+            for (String key : keys) {
+                Object value = this.mParams.get(key);
+                if (value == null) {
+                    continue;
+                }
+                builder.addFormDataPart(key, value.toString());
             }
-        });
-        return flowable;
-    }
+        }
 
-    @Override
-    public Flowable doNetPost() {
-        //noinspection UnnecessaryLocalVariable
-        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
-            @Override
-            public void subscribe(FlowableEmitter emitter) throws Exception {
-                String bodyParams = structureBodyParams(reqType, requestParams);
-                RequestBody body = RequestBody.create(MediaType.parse(mediaType), bodyParams);
-                Request request = new Request.Builder().url(url).post(body).build();
-                executeNet(request, emitter);
-            }
-        });
-        return flowable;
-    }
+        File file = new File(filePath);
+        if (!file.exists()) {
+            throw new RuntimeException("File uploading files do not exist.");
+        }
 
-    @Override
-    public Flowable doPut() {
-        //noinspection UnnecessaryLocalVariable
-        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
-            @Override
-            public void subscribe(FlowableEmitter emitter) throws Exception {
-                String bodyParams = structureBodyParams(reqType, requestParams);
-                RequestBody body = RequestBody.create(MediaType.parse(mediaType), bodyParams);
-                Request request = new Request.Builder().url(url).put(body).build();
-                executeNet(request, emitter);
-            }
-        });
-        return flowable;
-    }
-
-    @Override
-    public Flowable doDelete() {
-        //noinspection UnnecessaryLocalVariable
-        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
-            @Override
-            public void subscribe(FlowableEmitter emitter) throws Exception {
-                String newUrl = restructureUrlWithParams(url, requestParams);
-                Request request = new Request.Builder()
-                        .delete()
-                        .url(newUrl)
-                        .build();
-                executeNet(request, emitter);
-            }
-        });
-        return flowable;
-    }
-
-    @Override
-    public Flowable doLocal() {
-        //noinspection UnnecessaryLocalVariable
-        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
-            @Override
-            public void subscribe(FlowableEmitter emitter) throws Exception {
-                if (callBack instanceof IAutoNetLocalOptCallBack) {
-                    Object object = ((IAutoNetLocalOptCallBack) callBack).optLocalData(requestParams);
-                    if (object == null) {
-                        emitter.onError(new EmptyError());
-                    } else {
+        builder.addFormDataPart(pushFileKey, file.getName(),
+                ProgressRequestBody.createProgressRequestBody(MediaType.parse(this.mMediaType), file, new IAutoNetFileCallBack() {
+                    @Override
+                    public void onProgress(float progress) {
                         //noinspection unchecked
-                        emitter.onNext(object);
+                        if (callBack != null) {
+                            callBack.onProgress(progress);
+                        }
                     }
-                } else {
-                    emitter.onError(new EmptyError());
-                }
 
-                emitter.onComplete();
-            }
-        });
-        return flowable;
+                    @Override
+                    public void onComplete(File file) {
+                        //noinspection unchecked
+                        if (callBack != null) {
+                            callBack.onComplete(file);
+                        }
+                    }
+                }));
+
+        Request request = new Request.Builder().url(this.mUrl).post(builder.build())
+                .build();
+
+        return executeNet(request);
     }
 
     @Override
-    public Flowable pushFile(final String pushFileKey, final String filePath) {
-        //noinspection UnnecessaryLocalVariable
-        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(final FlowableEmitter emitter) throws Exception {
-                MultipartBody.Builder builder = new MultipartBody.Builder();
-                builder.setType(MultipartBody.FORM);
-                if (requestParams != null) {
-                    Set<String> keys = requestParams.keySet();
-                    for (String key : keys) {
-                        builder.addFormDataPart(key, (String) requestParams.get(key));
-                    }
-                }
+    public T pullFile(String filePath, String fileName, IAutoNetFileCallBack callBack) throws Exception {
+        String bodyParams = structureBodyParams(this.mReqType, this.mParams);
+        RequestBody body = RequestBody.create(MediaType.parse(mMediaType), bodyParams);
+        Request request = new Request.Builder().url(this.mUrl).post(body).build();
+        Response response = client.newCall(request).execute();
+        if (response == null) {
+            throw new EmptyError();
+        }
 
-                File file = new File(filePath);
-                if (!file.exists()) {
-                    emitter.onError(new IllegalArgumentException("File uploading files do not exist."));
-                    return;
-                }
-                builder.addFormDataPart(pushFileKey, file.getName(),
-                        ProgressRequestBody.createProgressRequestBody(MediaType.parse(mediaType), file, new IAutoNetFileCallBack() {
-                            @Override
-                            public void onProgress(float progress) {
-                                //noinspection unchecked
-                                emitter.onNext(progress);
-                            }
+        File file = new File(filePath);
+        if (!file.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            file.mkdirs();
+        }
+        file = new File(filePath + File.separator + fileName);
+        if (!file.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            file.createNewFile();
+        }
 
-                            @Override
-                            public void onComplete(File file) {
-                                //noinspection unchecked
-                                emitter.onNext(file);
-                            }
-                        }));
-
-                Request request = new Request.Builder().url(url).post(builder.build())
-                        .build();
-                executeNet(request, emitter);
-            }
-        });
-        return flowable;
+        //noinspection unchecked
+        return (T) recvFile(response, file, callBack);
     }
 
-    @Override
-    public Flowable pullFile(final String filePath, final String fileName) {
-        //noinspection UnnecessaryLocalVariable
-        Flowable flowable = DefaultFlowable.create(new FlowableOnSubscribe() {
-            @Override
-            public void subscribe(FlowableEmitter emitter) throws Exception {
-                String bodyParams = structureBodyParams(reqType, requestParams);
-                RequestBody body = RequestBody.create(MediaType.parse(mediaType), bodyParams);
-                Request request = new Request.Builder().url(url).post(body).build();
-                Response response = client.newCall(request).execute();
-                if (response == null) {
-                    emitter.onError(new EmptyError());
-                    //noinspection UnnecessaryReturnStatement
-                    return;
-                }
-
-                File file = new File(filePath);
-                if (!file.exists()) {
-                    //noinspection ResultOfMethodCallIgnored
-                    file.mkdirs();
-                }
-                file = new File(filePath + File.separator + fileName);
-                if (!file.exists()) {
-                    //noinspection ResultOfMethodCallIgnored
-                    file.createNewFile();
-                }
-
-                recvFile(emitter, response, file);
-                emitter.onComplete();
-            }
-        });
-        return flowable;
-    }
-
-    private void executeNet(Request request, FlowableEmitter emitter) throws Exception {
+    private T executeNet(Request request) throws Exception {
         Response response = client.newCall(request).execute();
         ResponseBody body = response.body();
         if (body == null) {
-            emitter.onError(new EmptyError());
+            throw new EmptyError();
         }
-        //noinspection ConstantConditions
         String content = body.string();
-
-        if (bodyCallBack != null) {
-            boolean isContinue
-                    = bodyCallBack.body(this.mFlag, content, emitter);
-            if (isContinue) {
-                return;
-            }
-        }
-
         if (TextUtils.isEmpty(content)) {
-            emitter.onError(new EmptyError());
+            throw new EmptyError();
         }
 
-        try {
-            if (TextUtils.isEmpty(responseClazzName)
-                    || String.class.getCanonicalName().equals(responseClazzName)
-                    || Object.class.getCanonicalName().equals(responseClazzName)) {
-                if (callBack != null && callBack instanceof IAutoNetDataBeforeCallBack) {
-                    boolean isStop = ((IAutoNetDataBeforeCallBack) callBack).handlerBefore(content, emitter);
-                    if (isStop) {
-                        return;
-                    }
-                }
-                //noinspection SingleStatementInBlock,unchecked
-                emitter.onNext(content);
-            } else {
-
-                Class<?> clazz = Class.forName(responseClazzName);
-                Object object = new Gson().fromJson(content, clazz);
-                if (callBack != null && callBack instanceof IAutoNetDataBeforeCallBack) {
-                    boolean isStop = ((IAutoNetDataBeforeCallBack) callBack).handlerBefore(object, emitter);
-                    if (isStop) {
-                        return;
-                    }
-                }
-                //noinspection unchecked
-                emitter.onNext(object);
+        if (this.mBodyCallBack != null) {
+            if (this.mBodyCallBack.body(this.mFlag, content)) {
+                throw new Exception();
             }
-
-        } catch (Exception e) {
-            //noinspection unchecked
-            emitter.onError(e);
-        } finally {
-            emitter.onComplete();
         }
+
+        if (String.class.equals(this.mResponseClass) || Object.class.equals(this.mResponseClass)) {
+            // Return String type body data directly
+            //noinspection unchecked
+            return (T) content;
+        } else {
+            return new Gson().fromJson(content, this.mResponseClass);
+        }
+
     }
 
     /**
@@ -301,11 +219,7 @@ public class AutoNetRepoImpl implements AutoNetRepo {
      * @return
      */
     private String restructureUrlWithParams(String url, Map params) {
-        if (params == null) {
-            return url;
-        }
-
-        if (params.size() <= 0) {
+        if (params == null || params.isEmpty()) {
             return url;
         }
 
@@ -316,17 +230,18 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         StringBuffer paramsBuffer = new StringBuffer(url);
         int i = 0;
         for (String key : keys) {
-            if (i == 0 && !url.contains("?")) {
-                paramsBuffer.append("?");
+            if (i == 0 && !url.contains(AutoNetConstant.PARAMETER_START_FLAG)) {
+                paramsBuffer.append(AutoNetConstant.PARAMETER_START_FLAG);
             } else {
-                paramsBuffer.append("&");
+                paramsBuffer.append(AutoNetConstant.PARAMETRIC_LINK_MARKER);
             }
             Object value = params.get(key);
+            //noinspection StringConcatenationInsideStringBufferAppend
             paramsBuffer.append(key + "=" + value);
             i++;
         }
         url = paramsBuffer.toString();
-        if (url.endsWith("&")) {
+        if (url.endsWith(AutoNetConstant.PARAMETRIC_LINK_MARKER)) {
             url = url.substring(0, url.length() - 1);
         }
         return url;
@@ -360,27 +275,23 @@ public class AutoNetRepoImpl implements AutoNetRepo {
         if (requestParams == null || requestParams.size() <= 0) {
             return "";
         }
+        //noinspection StringBufferMayBeStringBuilder
         StringBuffer buffer = new StringBuffer();
+        //noinspection unchecked
         Set<String> keys = requestParams.keySet();
         for (String key : keys) {
-            buffer.append(key + "=" + requestParams.get(key) + "&");
+            //noinspection StringConcatenationInsideStringBufferAppend
+            buffer.append(key + "=" + requestParams.get(key) + AutoNetConstant.PARAMETRIC_LINK_MARKER);
         }
         String bodyParams = buffer.toString();
-        if (bodyParams.endsWith("&")) {
+        if (bodyParams.endsWith(AutoNetConstant.PARAMETRIC_LINK_MARKER)) {
             bodyParams = bodyParams.substring(0, bodyParams.length() - 1);
         }
         return bodyParams;
     }
 
-    /**
-     * Download the file
-     *
-     * @param emitter
-     * @param response
-     * @param file
-     * @throws Exception
-     */
-    private void recvFile(FlowableEmitter emitter, Response response, File file) throws Exception {
+
+    private File recvFile(Response response, File file, IAutoNetFileCallBack callBack) throws IOException {
         //noinspection ConstantConditions
         long fileSize = response.body().contentLength();
         //noinspection ConstantConditions
@@ -389,26 +300,43 @@ public class AutoNetRepoImpl implements AutoNetRepo {
 
         float preProgress = 0;
         float progress;
-        FileOutputStream fos = new FileOutputStream(file);
-        long pullLength = 0;
-        byte[] b = new byte[AutoNetConstant.DEFAULT_BYBE_SIZE];
-        int len;
-        while ((len = is.read(b)) != -1) {
-            fos.write(b, 0, len);
-            pullLength += len;
-            progress = (int) (pullLength * AutoNetConstant.MAX_PROGRESS / fileSize);
-            if (preProgress != progress && Math.abs(progress - preProgress) >= 1) {
-                //noinspection unchecked
-                emitter.onNext(progress);
-                preProgress = progress;
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file);
+            long pullLength = 0;
+            byte[] b = new byte[AutoNetConstant.DEFAULT_BYBE_SIZE];
+            int len;
+            while ((len = is.read(b)) != -1) {
+                fos.write(b, 0, len);
+                pullLength += len;
+                progress = (int) (pullLength * AutoNetConstant.MAX_PROGRESS / fileSize);
+                if (preProgress != progress && Math.abs(progress - preProgress) >= 1) {
+                    //noinspection unchecked
+                    if (callBack != null) {
+                        callBack.onProgress(progress);
+                    }
+                    preProgress = progress;
+                }
+            }
+
+            // When downloading files, the callback file is no longer completed,
+            // because the file has been retrieved from the synchronized result value, which prevents the upstream file from launching twice.
+            //if (callBack != null) {
+            //callBack.onComplete(file);
+            //}
+
+            fos.flush();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (fos != null) {
+                fos.close();
+            }
+            if (is != null) {
+                is.close();
             }
         }
-        //noinspection unchecked
-        emitter.onNext(file);
-        fos.flush();
-        fos.close();
-        is.close();
+        return file;
     }
-
 
 }

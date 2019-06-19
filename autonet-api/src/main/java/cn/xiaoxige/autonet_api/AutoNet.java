@@ -147,19 +147,18 @@ public final class AutoNet {
                                           AutoNetTypeAnontation.Type resType, String pushFileKey,
                                           String filePath, String fileName, IAutoNetFileCallBack accompanyFileCallback, IAutoNetLocalOptCallBack accompanyLocalOptCallback, FlowableTransformer transformer) throws Exception {
 
-        assertCommon(netPattern, reqType, resType, pushFileKey, filePath, fileName);
+        assertCommon(netPattern, netStrategy, reqType, resType, responseClazz, pushFileKey, filePath, fileName);
         assertSynchronization(netStrategy);
 
-        AutoNetExecutor<?, ?> autoNetExecutor = structuralExecutor(requestEntity, requestMap,
+        //noinspection unchecked
+        AutoNetExecutor<T, ?> autoNetExecutor = (AutoNetExecutor<T, ?>) structuralExecutor(requestEntity, requestMap,
                 extraDynamicParam, suffixUrl,
                 flag, writeOutTime, readOutTime,
                 connectOutTime, domainNameKey, disposableBaseUrl, disposableHeads, encryptionKey, isEncryption, mediaType,
                 netPattern, assertResponseClass(responseClazz), netStrategy, Void.class, reqType,
                 resType, pushFileKey, filePath, fileName, accompanyFileCallback, accompanyLocalOptCallback, null, transformer);
 
-
         return autoNetExecutor.synchronizationNet();
-
     }
 
     /**
@@ -204,16 +203,18 @@ public final class AutoNet {
                                         AutoNetTypeAnontation.Type reqType,
                                         AutoNetTypeAnontation.Type resType, String pushFileKey,
                                         String filePath, String fileName, IAutoNetFileCallBack accompanyFileCallback, IAutoNetLocalOptCallBack accompanyLocalOptCallback, FlowableTransformer transformer) {
-        assertCommon(netPattern, reqType, resType, pushFileKey, filePath, fileName);
+        assertCommon(netPattern, netStrategy, reqType, resType, responseClazz, pushFileKey, filePath, fileName);
+        assertFlowable(netStrategy);
 
-        AutoNetExecutor<?, ?> autoNetExecutor = structuralExecutor(requestEntity, requestMap,
+        //noinspection unchecked
+        AutoNetExecutor<T, ?> autoNetExecutor = (AutoNetExecutor<T, ?>) structuralExecutor(requestEntity, requestMap,
                 extraDynamicParam, suffixUrl,
                 flag, writeOutTime, readOutTime,
                 connectOutTime, domainNameKey, disposableBaseUrl, disposableHeads, encryptionKey, isEncryption, mediaType,
                 netPattern, assertResponseClass(responseClazz), netStrategy, Void.class, reqType,
                 resType, pushFileKey, filePath, fileName, accompanyFileCallback, accompanyLocalOptCallback, null, transformer);
 
-        return autoNetExecutor.structureFlowable();
+        return autoNetExecutor.structureFlowable(false);
     }
 
     /**
@@ -257,16 +258,19 @@ public final class AutoNet {
                          AutoNetTypeAnontation.Type resType, String pushFileKey,
                          String filePath, String fileName,
                          IAutoNetFileCallBack accompanyFileCallback, IAutoNetLocalOptCallBack accompanyLocalOptCallback, IAutoNetCallBack callBack, FlowableTransformer transformer) {
-        assertCommon(netPattern, reqType, resType, pushFileKey, filePath, fileName);
+
+        Class responseClass = integrationResponseClass(callBack);
+        assertCommon(netPattern, netStrategy, reqType, resType, responseClass, pushFileKey, filePath, fileName);
+        assertStartNet(accompanyLocalOptCallback, callBack);
 
         AutoNetExecutor<?, ?> autoNetExecutor = structuralExecutor(requestEntity, requestMap,
                 extraDynamicParam, suffixUrl,
                 flag, writeOutTime, readOutTime,
                 connectOutTime, domainNameKey, disposableBaseUrl, disposableHeads, encryptionKey, isEncryption, mediaType,
-                netPattern, integrationResponseClass(callBack), netStrategy, integrationTargetClass(callBack), reqType,
+                netPattern, responseClass, netStrategy, integrationTargetClass(callBack), reqType,
                 resType, pushFileKey, filePath, fileName, accompanyFileCallback, accompanyLocalOptCallback, callBack, transformer);
 
-        autoNetExecutor.netOpt();
+        autoNetExecutor.net();
     }
 
     /**
@@ -327,7 +331,7 @@ public final class AutoNet {
 
         //noinspection unchecked
         return new AutoNetExecutor(url, heads, params, flag, writeOutTime, readOutTime, connectOutTime,
-                encryptionKey, isEncryption,
+                encryptionKey, isEncryption, sConfig.getInterceptors(),
                 mediaType,
                 netPattern,
                 responseClazz,
@@ -336,6 +340,7 @@ public final class AutoNet {
                 reqType, resType,
                 pushFileKey, filePath, fileName,
                 accompanyFileCallback, accompanyLocalOptCallback,
+                sAutoNetExtraConfig.getEncryptionCallback(), sAutoNetExtraConfig.getHeadCallBack(), sAutoNetExtraConfig.getBodyCallBack(),
                 callBack, transformer);
     }
 
@@ -349,8 +354,8 @@ public final class AutoNet {
      * @param filePath
      * @param fileName
      */
-    private void assertCommon(AutoNetPatternAnontation.NetPattern netPattern,
-                              AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType,
+    private void assertCommon(AutoNetPatternAnontation.NetPattern netPattern, AutoNetStrategyAnontation.NetStrategy netStrategy,
+                              AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType, Class<?> responseClazz,
                               String pushFileKey, String filePath, String fileName) {
         // 1. check is initialize
         if (sConfig == null) {
@@ -367,24 +372,44 @@ public final class AutoNet {
 
         // 3. check some request param
         // 3.1. => Can't send and receive files at the same time
-        if (reqType.equals(AutoNetTypeAnontation.Type.STREAM) && resType.equals(AutoNetTypeAnontation.Type.STREAM)) {
+        if (AutoNetTypeUtil.isPushFileOperation(reqType) && AutoNetTypeUtil.isPullFileOperation(resType)) {
             throw new IllegalArgumentException("Autonet does not accept sending and receiving files at the same time.");
         }
-        // 3.2. => check file operation
+        // 3.2. => If it is file operation, it does not support network local, local network, local policy.
+        if (AutoNetTypeUtil.isFileOperation(reqType, resType)) {
+            if (netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.NET_LOCAL)
+                    || netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.LOCAL_NET)
+                    || netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.LOCAL)) {
+                throw new IllegalArgumentException("If it is file operation, it does not support network local, local network, local policy.");
+            }
+        }
+
+        // 3.3. => check file operation
         if (AutoNetTypeUtil.isPushFileOperation(reqType)) {
+            // 3.3.1. => Uploading files does not support request for get or delete
+            if (netPattern.equals(AutoNetPatternAnontation.NetPattern.GET)
+                    || netPattern.equals(AutoNetPatternAnontation.NetPattern.DELETE)) {
+                throw new IllegalArgumentException("Uploading files does not support request for get or delete");
+            }
+            // 3.3.2. => Necessary parameters for uploading files cannot be empty
             if (TextUtils.isEmpty(pushFileKey) || TextUtils.isEmpty(filePath)) {
                 throw new IllegalArgumentException("Push file operation, pushFileKey and filePath cannot be empty.");
             }
 
+            // 3.3.3. => Uploading documents must guarantee the existence of documents
             if (!new File(filePath).exists()) {
                 throw new IllegalArgumentException("The push file does not exist.");
             }
         } else if (AutoNetTypeUtil.isPullFileOperation(resType)) {
+            // 3.3.4. => Necessary parameters for downloading files cannot be empty
             if (TextUtils.isEmpty(filePath) || TextUtils.isEmpty(fileName)) {
                 throw new IllegalArgumentException("Please specify the location and name of the download file.");
             }
+            // 3.3.5. => The download file must be File if the return value is specified
+            if (responseClazz != null && !File.class.equals(responseClazz) && !Void.class.equals(responseClazz) && !Object.class.equals(responseClazz)) {
+                throw new IllegalArgumentException("The download file must be File if the return value is specified");
+            }
         }
-
     }
 
     /**
@@ -395,7 +420,27 @@ public final class AutoNet {
     private void assertSynchronization(AutoNetStrategyAnontation.NetStrategy netStrategy) {
         // Check whether the policy is legitimate
         if (netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.LOCAL_NET) || netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.NET_LOCAL)) {
-            throw new IllegalArgumentException("Synchronization does not support a local-first network, network-first-local policy");
+            throw new IllegalArgumentException("Synchronization does not support a local-first network, network-first-local policy.");
+        }
+    }
+
+    /**
+     * Check the validity of flowable requests
+     *
+     * @param netStrategy
+     */
+    private void assertFlowable(AutoNetStrategyAnontation.NetStrategy netStrategy) {
+        // Check whether the policy is legitimate
+        if (netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.LOCAL_NET) || netStrategy.equals(AutoNetStrategyAnontation.NetStrategy.NET_LOCAL)) {
+            throw new IllegalArgumentException("Flowable does not support a local-first network, network-first-local policy.");
+        }
+    }
+
+    private void assertStartNet(IAutoNetLocalOptCallBack accompanyLocalOptCallback, IAutoNetCallBack callBack) {
+        if (callBack != null && accompanyLocalOptCallback != null) {
+            if (callBack instanceof IAutoNetLocalOptCallBack) {
+                throw new IllegalArgumentException("There is an intelligent callback setup for local policy.");
+            }
         }
     }
 
@@ -407,7 +452,7 @@ public final class AutoNet {
      * @return
      */
     private <T> Class<?> assertResponseClass(Class<T> responseClass) {
-        return responseClass == null ? Void.class : responseClass;
+        return responseClass == null ? String.class : responseClass;
     }
 
     /**
@@ -471,7 +516,7 @@ public final class AutoNet {
                     pathfinders);
         }
 
-        return responseClass == null || responseClass.equals(IAutoNetLocalOptCallBack.class) ? Void.class : responseClass;
+        return responseClass == null || responseClass.equals(IAutoNetLocalOptCallBack.class) ? String.class : responseClass;
     }
 
     /**
@@ -498,7 +543,7 @@ public final class AutoNet {
                     pathfinders);
         }
 
-        return targetClass == null || targetClass.equals(IAutoNetDataBeforeCallBack.class) ? Void.class : targetClass;
+        return targetClass == null || targetClass.equals(IAutoNetDataBeforeCallBack.class) ? String.class : targetClass;
     }
 
     /**
@@ -554,11 +599,16 @@ public final class AutoNet {
      * @return
      */
     private StringBuffer intelligenceSplicingUrl(StringBuffer first, String second) {
-        if (second.startsWith(AutoNetConstant.SLASH)) {
-            second = second.substring(1);
+
+        // first is need opt if with / in end
+        if (first.toString().endsWith(AutoNetConstant.SLASH)) {
+            first = first.deleteCharAt(first.length() - 1);
         }
-        if (!first.toString().endsWith(AutoNetConstant.SLASH)) {
-            first.append(AutoNetConstant.SLASH);
+
+        if (!TextUtils.isEmpty(second)) {
+            if (!second.startsWith(AutoNetConstant.SLASH)) {
+                second = AutoNetConstant.SLASH + second;
+            }
         }
 
         return first.append(second);
@@ -1126,7 +1176,7 @@ public final class AutoNet {
 
         IAutoNetNonAnontation setAutoNetFileCallback(IAutoNetFileCallBack callBack);
 
-        IAutoNetNonAnontation setAutoNetLocalOptCallback(IAutoNetLocalOptCallBack callBack);
+        <T> IAutoNetNonAnontation setAutoNetLocalOptCallback(IAutoNetLocalOptCallBack<T> callBack);
 
         <T> Flowable getFlowable(Class<T> responseClass);
 

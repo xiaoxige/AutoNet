@@ -39,12 +39,12 @@ public class Client {
                 .build();
     }
 
-    public static OkHttpClient client(Object flag, String extraDynamicParam, Long writeOutTime, Long readOutTime, Long connectOutTime, Map<String, String> heads,
+    public static OkHttpClient client(Object flag, Map<String, Object> heads, Long writeOutTime, Long readOutTime, Long connectOutTime,
                                       Long encryptionKey, Boolean isEncryption, List<Interceptor> interceptors, IAutoNetEncryptionCallback encryptionCallback, IAutoNetHeadCallBack headCallBack) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .sslSocketFactory(createSSLSocketFactory())
                 .hostnameVerifier(new TrustAllHostnameVerifier())
-                .addNetworkInterceptor(new AutoDefaultInterceptor(flag, extraDynamicParam, heads, encryptionKey, isEncryption, encryptionCallback, headCallBack))
+                .addNetworkInterceptor(new AutoDefaultInterceptor(flag, heads, encryptionKey, isEncryption, encryptionCallback, headCallBack))
                 .addNetworkInterceptor(new StethoInterceptor())
                 .writeTimeout(writeOutTime, TimeUnit.SECONDS)
                 .readTimeout(readOutTime, TimeUnit.SECONDS)

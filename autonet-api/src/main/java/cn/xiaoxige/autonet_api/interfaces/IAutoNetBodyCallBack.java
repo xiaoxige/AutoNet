@@ -1,6 +1,5 @@
 package cn.xiaoxige.autonet_api.interfaces;
 
-import io.reactivex.FlowableEmitter;
 
 /**
  * @author by zhuxiaoan on 2018/5/22 0022.
@@ -12,11 +11,11 @@ public interface IAutoNetBodyCallBack {
     /**
      * Return volume original content callback
      *
-     * @param flag    Tracking Mark
-     * @param body    Original Content
-     * @param emitter Upstream Launcher
+     * @param flag
+     * @param body
      * @return
+     * @throws Exception
      */
-    boolean body(Object flag, String body, FlowableEmitter emitter);
+    boolean body(Object flag, String body) throws Exception;
 
 }

@@ -1,7 +1,7 @@
 package cn.xiaoxige.autonet_api.interactors;
 
 import cn.xiaoxige.autonet_api.abstracts.BaseUseCase;
-import cn.xiaoxige.autonet_api.repository.AutoNetRepo;
+import cn.xiaoxige.autonet_api.repository.AutoNetRepo1;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -14,11 +14,11 @@ import io.reactivex.schedulers.Schedulers;
 
 public class OpenAutoNetUseCase extends BaseUseCase {
 
-    private AutoNetRepo mRepo;
+    private AutoNetRepo1 mRepo;
     private int netState;
     private FlowableTransformer mTransformer;
 
-    public OpenAutoNetUseCase(AutoNetRepo repo, int netState, FlowableTransformer transformer) {
+    public OpenAutoNetUseCase(AutoNetRepo1 repo, int netState, FlowableTransformer transformer) {
         super();
         this.mRepo = repo;
         this.netState = netState;
