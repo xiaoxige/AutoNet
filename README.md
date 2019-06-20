@@ -18,6 +18,7 @@
 
 # 特色
 > * 使用简单、调用方便
+> * 支持了同步、异步操作
 > * 支持注解、 链式
 > * 支持实体类、map传值
 > * 可防止内存泄漏（需继承RxFragmentActivity、或者RxFragment。并向AutoNet传入相应的生命周期）
@@ -32,8 +33,8 @@
 > * 可直接获得上游的Flowable, 用户自己进行操作结果。（eg: 使用zip去合并多个请求等）
 
 # gradle依赖
-	compile 'cn.xiaoxige:autonet-api:1.1.2'
-	annotationProcessor 'cn.xiaoxige:autonet-processor:1.1.2'
+	compile 'cn.xiaoxige:autonet-api:2.0.0'
+	annotationProcessor 'cn.xiaoxige:autonet-processor:2.0.0'
 # 使用
 ## 1. 初始化
 ### 1.1 AutoNetConfig(配置AutoNet的基本配置)注意：改配置基本是固定，如域名、头部数据
@@ -61,7 +62,7 @@ AutoNet.getInstance().initAutoNet(Context, AutoNetConfig)
         }
     }).setBodyCallback(new IAutoNetBodyCallBack() {
         @Override
-        public boolean body(Object flag, String object, FlowableEmitter emitter) {
+        public boolean body(Object flag, String body) throw Exception {
 			// 自己处理需要返回true
             return false;
         }
@@ -70,13 +71,22 @@ AutoNet.getInstance().initAutoNet(Context, AutoNetConfig)
 AutoNet.getInstance().updateOrInsertHead(key, value);
 AutoNet.getInstance().updateOrInsertDomainNames(key, value);
 ```
+## 2. 支持清单
+
+|错误码|描述|
+|:------:|:------:|
+|1002|微信登录但未绑定手机号|
+|2000| 注册用户数据失败|
+|2001|账号不存在或者密码不正确|
+|2002|验证码错误|
+
 ## 2. 回调介绍
 	回调需要继承实现AutoNet提供好的接口或者抽象类。AutoNet已经分类， 用户需要什么功能就去集成相应的接口或者抽象类即可
 ### 2.1 IAutoNetDataBeforeCallBack（数据返回前的处理， 可定制要继续返回给客户前端的数据）
 ``` java
-public interface IAutoNetDataBeforeCallBack<T> extends IAutoNetCallBack {
+public interface IAutoNetDataBeforeCallBack<T, Z> extends IAutoNetCallBack {
 	// T为用户指定的body要返回的实体类（AutoNet会自动转换）， emitter为Rxjava的上游， 可改变其返回结果。 如果自己处理需要返回true。eg: T为一个实体类， 里面有一个List集合， 我们在View层只需要关注List集合，则可以在这里直接重新定义并返回List集合， 并返回true。 （注意：其实这里还有一个功能就是， 根据自己的需求去判断是否集合为空更妙。emitter.onError(new EmptyError())。）
-	boolean handlerBefore(T t, FlowableEmitter emitter);
+	boolean handlerBefore(T t, FlowableEmitter<Z> emitter);
 }
 ```
 ### 2.2 IAutoNetDataSuccessCallBack（只关心成功的数据， 不关心失败和数据为空的结果）
@@ -97,8 +107,8 @@ public interface IAutoNetDataCallBack<T> extends IAutoNetDataSuccessCallBack<T> 
 ```
 ### 2.4 IAutoNetLocalOptCallBack（需要用到本地操作， eg：网络策略， 本地、 先本地后网络， 先网络后本地。 其实AutoNet并不能自动根据你的业务和字段给你建立数据库， 需要自己去实现）
 ``` java
-public interface IAutoNetLocalOptCallBack extends IAutoNetCallBack {
-	Object optLocalData(Map request);
+public interface IAutoNetLocalOptCallBack<T> extends IAutoNetCallBack {
+    T optLocalData(Map request) throws Exception;
 }
 ```
 ### 2.5 IAutoNetFileCallBack（文件操作时的回调， 需要关心上传错误等需要继承上面的IAutoNetDataCallBack）
@@ -110,30 +120,38 @@ public interface IAutoNetFileCallBack extends IAutoNetCallBack {
 	void onComplete(File file);
 }
 ```
-### 2.6 AbsAutoNetCallback（数据回调的集合， 其实数据写这个就行了， 需要什么方法重写什么方法即可）
+### 2.6 IAutoNetComplete （请求结束后， 该回调会被调用，不管错误成功后都会调用）
+``` java
+public interface IAutoNetComplete extends IAutoNetCallBack {
+    void onComplete();
+}
+```
+### 2.7 AbsAutoNetCallback（数据回调的集合， 其实数据写这个就行了， 需要什么方法重写什么方法即可）
 ``` java
 // 其中 T为返回的body的实体类，Z为自己处理后需要返回给View层后的实体类
-public abstract class AbsAutoNetCallback<T, Z> implements IAutoNetDataBeforeCallBack<T>, IAutoNetDataCallBack<Z> {
+public abstract class AbsAutoNetCallback<T, Z> implements IAutoNetDataBeforeCallBack<T, Z>, IAutoNetDataCallBack<Z>, IAutoNetComplete {
 
     @Override
-    public boolean handlerBefore(T t, FlowableEmitter emitter) {
+    public boolean handlerBefore(T t, FlowableEmitter<Z> emitter) {
         return false;
     }
 
     @Override
     public void onSuccess(Z entity) {
-
     }
 
     @Override
     public void onFailed(Throwable throwable) {
-
     }
 
     @Override
     public void onEmpty() {
-
     }
+
+    @Override
+    public void onComplete() {
+    }
+}
 }
 ```
 
@@ -191,71 +209,93 @@ AutoNet.getInstance().createNet()
 	// 数据回调（2章节中讲到的一些回调）
     (1).start(CallBack);
 	// 获得上游， 用户自己处理结果
-	(2).getFlowable();
+	(2).getFlowable(Class);
+	// 同步请求
+	(3).synchronizationNet（Class）
 ```
 ## 4. 获取上游并处理（已zip合并为例， 这里只是用了两个， 其实RxJava提供了好多， 当然还有其他用法，详情可以看RxJava的用法）
 ``` java
-// 测试Json数据
-Flowable flowable1 = AutoNet.getInstance().createNet()
-        .doGet()
-        .setParam("m", "ina_app")
-        .setParam("c", "other")
-        .setParam("a", "guidepage")
-        .setSuffixUrl("/init.php")
-        .setDomainNameKey("jsonTestBaseUrl")
-        .setResponseClazz(TestResponseEntity.class)
-        .getFlowable();
-
-// 测试百度数据（http://www.baidu.com）
-Flowable flowable2 = AutoNet.getInstance().createNet()
-        .doGet()
-        .getFlowable();
-
-tvResult.setText("正在请求");
-
+// zip
+// 1. 得到wanAndroid的上游发射器
+Flowable wanAndroidFlowable = getWanAndroidFlowable();
+// 2. 得到百度的上游发射器
+Flowable baiduFlowable = getBaiduFlowable();
+// 3. 合并
 //noinspection unchecked
-Flowable.zip(flowable1, flowable2, new BiFunction<TestResponseEntity, String, ZipTestEntity>() {
+Flowable.zip(wanAndroidFlowable, baiduFlowable, new BiFunction<WanAndroidResponse, String, ZipEntity>() {
     @Override
-    public ZipTestEntity apply(TestResponseEntity o, String o2) throws Exception {
-		// 合并
-        ZipTestEntity entity = new ZipTestEntity();
-        entity.setEntity(o);
-        entity.setBaiduWebMsg(o2);
-        return entity;
+    public ZipEntity apply(WanAndroidResponse wanAndroidResponse, String s) throws Exception {
+        ZipEntity zipEntity = new ZipEntity();
+        List<WanAndroidEntity> data = wanAndroidResponse.getData();
+        zipEntity.setData(data);
+        zipEntity.setBaidu(s);
+        return zipEntity;
     }
-}).subscribe(new FlowableSubscriber<ZipTestEntity>() {
+}).subscribe(new Subscriber<ZipEntity>() {
     @Override
-    public void onSubscribe(Subscription s) {
-        s.request(Integer.MAX_VALUE);
-    }
-
-    @Override
-    public void onNext(ZipTestEntity o) {
-        tvResult.setText(o.toString());
+    public void onSubscribe(Subscription subscription) {
+        subscription.request(Integer.MAX_VALUE);
     }
 
     @Override
-    public void onError(Throwable t) {
-        tvResult.setText("请求失败： " + t.getMessage());
+    public void onNext(ZipEntity o) {
+        List<WanAndroidEntity> data = o.getData();
+        // 这里进行模拟， 如果 wanAndroid 数据是必须的数据， 为空就是错误
+        if (data == null || data.isEmpty()) {
+            Toast.makeText(MainActivity.this, "数据为空了", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Toast.makeText(MainActivity.this, "成功：\n" + o.toString(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onError(Throwable throwable) {
+        if (throwable instanceof EmptyError) {
+            Toast.makeText(MainActivity.this, "数据为空了", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Toast.makeText(MainActivity.this, "数据错误：\n" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onComplete() {
-
+        Toast.makeText(MainActivity.this, "结束", Toast.LENGTH_SHORT).show();
     }
 });
+
+
+private Flowable getWanAndroidFlowable() {
+    return AutoNet.getInstance().createNet()
+            .setDomainNameKey("wanandroid")
+            .setSuffixUrl("/wxarticle/chapters/json")
+            .doGet()
+            // 设置追踪， 为了在body拦截中， 不让其他逻辑进行了拦截
+            .setFlag(666)
+            .getFlowable(WanAndroidResponse.class)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io());
+}
+
+private Flowable getBaiduFlowable() {
+    return AutoNet.getInstance().createNet()
+            // 设置追踪， 为了在body拦截中， 不让其他逻辑进行了拦截
+            .setFlag(666)
+            .getFlowable(String.class)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io());
+}
 ```
 
 ## 5. 注解方式
 ### 5.1 注解介绍
-> * AutoNetAnontation 网络参数设置(value(除去域名)、writeTime、readTime、connectOutTime)
+> * AutoNetAnontation 网络参数设置(value(除去域名)、flag、 writeTime、readTime、connectOutTime)
 > * AutoNetBaseUrlKeyAnontation BaseUrl的选择标识key(value)
 > * AutoNetDisposableBaseUrlAnontation 本次请求临时使用的BaseUrl(value)
 > * AutoNetDisposableHeadAnnontation 本次请求临时使用的头部信息(value[])
 > * AutoNetEncryptionAnontation 加密参数设置(key, value)
 > * AutoNetMediaTypeAnontation 请求的MediaType(value)
 > * AutoNetPatternAnontation 请求方式(value(get/post/put/delete))
-> * AutoNetResponseEntityClass 请求返回的实体类(value)
 > * AutoNetStrategyAnontation 网络请求策略(value(net/local/local_net/net_local))
 > * AutoNetTypeAnontation 请求和返回的请求类型(reqType(json/form/stream), resType(json/form/stream))
 
@@ -337,7 +377,7 @@ MainActivityPushFileAutoProxy.pushFile(MainActivity.this, "upload", path + File.
 @AutoNetBaseUrlKeyAnontation("downFile")
 @AutoNetTypeAnontation(resType = AutoNetTypeAnontation.Type.STREAM)
 @AutoNetAnontation("/apk/downLoad/android_4.2.4.apk")
-public class PullFile implements IAutoNetDataCallBack, IAutoNetFileCallBack {
+public class PullFile implements IAutoNetDataCallBack<File>, IAutoNetFileCallBack {
     @Override
     public void onFailed(Throwable throwable) {
     }
@@ -347,8 +387,7 @@ public class PullFile implements IAutoNetDataCallBack, IAutoNetFileCallBack {
     }
 
     @Override
-    public void onSuccess(Object entity) {
-        // 不被执行
+    public void onSuccess(File entity) {
     }
 
     @Override
@@ -373,7 +412,7 @@ AutoNetConfig config = new AutoNetConfig.Builder()
 
 AutoNet.getInstance().initAutoNet(this, config).setBodyCallback(new IAutoNetBodyCallBack() {
         @Override
-        public boolean body(Object flag, String body, FlowableEmitter emitter) {
+        public boolean body(Object flag, String body) {
 			// 全局的， 所有的请求都会到这里
 			// 在这里可以根据自己的统一的字段去判断code什么的是否成功了
 			// 如果不成功可以以异常出去， 最后会在onFailed回调
@@ -381,7 +420,7 @@ AutoNet.getInstance().initAutoNet(this, config).setBodyCallback(new IAutoNetBody
                 try {
                     BaseResponse baseResponse = new Gson().fromJson(body, BaseResponse.class);
                     if (!baseResponse.isSuccess()) {
-                        emitter.onError(new CustomError(baseResponse.getMessage()));
+                        throw new CustomError(baseResponse.getMessage());
                         return true;
                     }
                 } catch (Exception e) {
