@@ -82,12 +82,19 @@ AutoNet.getInstance().updateOrInsertDomainNames(key, value);
 |链式异步（推荐）|GET/POST/DELETE/PUT|JSON/FORM/STREAM|NET/LOCAL_NET/LOCAL/NET_LOCAL|
 
 ### 2.2. 支持的回调
-|.|IAutoNetBodyCallBack|IAutoNetHeadCallBack|IAutoNetEncryptionCallback|AbsAutoNetCallback|IAutoNetCallBack|IAutoNetComplete|IAutoNetDataBeforeCallBack|IAutoNetDataSuccessCallBack|IAutoNetDataCallBack|IAutoNetFileCallBack|IAutoNetLocalOptCallBack|
-|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|
-|注解|✔|✔|✔|✔|✔|✔|✔|✔|✔|✔|✔|
-|链式同步|✔|✔|✔|✔|✔|✔|✔|✔|✔|✔|✔|
-|获取上游发射器|✔|✔|✔|✔|✔|✔|✔|✔|✔|✔|✔|
-|链式异步（推荐）|✔|✔|✔|✔|✔|✔|✔|✔|✔|✔|✔|
+|.|注解方式|链式同步|获取上游发射器|链式异步（推荐）|
+|:------:|:------:|:------:|:------:|:------:|
+|IAutoNetBodyCallBack|✔|✔|✔|✔|
+|IAutoNetHeadCallBack|✔|✔|✔|✔|
+|IAutoNetEncryptionCallback|✔|✔|✔|✔|
+|AbsAutoNetCallback|✔|✔|✔|✔|
+|IAutoNetCallBack|✔|✔|✔|✔|
+|IAutoNetComplete|✔|✔|✔|✔|
+|IAutoNetDataBeforeCallBack|✔|✔|✔|✔|
+|IAutoNetDataSuccessCallBack|✔|✔|✔|✔|
+|IAutoNetDataCallBack|✔|✔|✔|✔|
+|IAutoNetFileCallBack|✔|✔|✔|✔|
+|IAutoNetLocalOptCallBack|✔|✔|✔|✔|
 
 ## 2. 回调介绍
 	回调需要继承实现AutoNet提供好的接口或者抽象类。AutoNet已经分类， 用户需要什么功能就去集成相应的接口或者抽象类即可
