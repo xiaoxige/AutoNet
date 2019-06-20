@@ -22,6 +22,7 @@ import cn.xiaoxige.autonet.entity.TestResponseEntity;
 import cn.xiaoxige.autonet_api.AutoNet;
 import cn.xiaoxige.autonet_api.abstracts.AbsAutoNetCallback;
 import cn.xiaoxige.autonet_api.error.EmptyError;
+import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetComplete;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataBeforeCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataCallBack;
@@ -194,8 +195,7 @@ public class MainActivity extends RxActivity {
         AutoNet.getInstance().createNet()
                 .setSuffixUrl("/wxarticle/chapters/json")
                 .doGet()
-                .setFlag(1)
-                .setNetStrategy(AutoNetStrategyAnontation.NetStrategy.NET)
+                .setNetStrategy(AutoNetStrategyAnontation.NetStrategy.NET_LOCAL)
                 .start(new TestCallback());
 
 //        AutoNet.getInstance().createNet()
@@ -240,42 +240,60 @@ public class MainActivity extends RxActivity {
 
     }
 
-    private class TestCallback extends AbsAutoNetCallback<MainResponse, List<MainEntity>> implements IAutoNetLocalOptCallBack<MainResponse> {
-
+    private class TestCallback implements IAutoNetDataCallBack<MainResponse>, IAutoNetComplete {
         @Override
-        public boolean handlerBefore(MainResponse mainResponse, FlowableEmitter<List<MainEntity>> emitter) {
-            emitter.onNext(mainResponse.getData());
-            return true;
-        }
-
-        @Override
-        public void onSuccess(List<MainEntity> entity) {
-            super.onSuccess(entity);
-
+        public void onComplete() {
+            Log.e("TAG", "0");
         }
 
         @Override
         public void onFailed(Throwable throwable) {
-            super.onFailed(throwable);
+            Log.e("TAG", "");
         }
 
         @Override
         public void onEmpty() {
-            super.onEmpty();
+            Log.e("TAG", "");
         }
 
         @Override
-        public void onComplete() {
-            super.onComplete();
+        public void onSuccess(MainResponse entity) {
+            Log.e("TAG", "");
         }
 
-        @Override
-        public MainResponse optLocalData(Map request) throws Exception {
-            MainResponse mainResponse = new MainResponse();
-            List<MainEntity> data = new ArrayList<>();
-            mainResponse.setData(data);
-            return mainResponse;
-        }
+//        @Override
+//        public boolean handlerBefore(MainResponse mainResponse, FlowableEmitter<List<MainEntity>> emitter) {
+//            emitter.onNext(mainResponse.getData());
+//            return true;
+//        }
+//
+//        @Override
+//        public void onSuccess(MainResponse entity) {
+//            Log.e("TAG", "");
+//        }
+////
+//        @Override
+//        public void onFailed(Throwable throwable) {
+//            super.onFailed(throwable);
+//        }
+//
+//        @Override
+//        public void onEmpty() {
+//            super.onEmpty();
+//        }
+//
+//        @Override
+//        public void onComplete() {
+//            super.onComplete();
+//        }
+//
+//        @Override
+//        public MainResponse optLocalData(Map request) throws Exception {
+//            MainResponse mainResponse = new MainResponse();
+//            List<MainEntity> data = new ArrayList<>();
+//            mainResponse.setData(data);
+//            return mainResponse;
+//        }
     }
 
     private class TestCallback1 implements IAutoNetFileCallBack, IAutoNetComplete {

@@ -7,7 +7,7 @@ package cn.xiaoxige.autonet_api.interfaces;
  * email: xiaoxigexiaoan@outlook.com
  * desc: A Callback for AutoNet Completion of a Request
  */
-public interface IAutoNetComplete {
+public interface IAutoNetComplete extends IAutoNetCallBack {
 
     /**
      * Complete completion of a request operation in AutoNet
