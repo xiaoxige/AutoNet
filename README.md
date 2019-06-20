@@ -81,7 +81,7 @@ AutoNet.getInstance().updateOrInsertDomainNames(key, value);
 |获取上游发射器|GET/POST/DELETE/PUT|JSON/FORM/STREAM|NET/LOCAL|
 |链式异步（推荐）|GET/POST/DELETE/PUT|JSON/FORM/STREAM|NET/LOCAL_NET/LOCAL/NET_LOCAL|
 
-###2.2. 支持的回调
+### 2.2. 支持的回调
 |.|IAutoNetBodyCallBack|IAutoNetHeadCallBack|IAutoNetEncryptionCallback|AbsAutoNetCallback|IAutoNetCallBack|IAutoNetComplete|IAutoNetDataBeforeCallBack|IAutoNetDataSuccessCallBack|IAutoNetDataCallBack|IAutoNetFileCallBack|IAutoNetLocalOptCallBack|
 |:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|
 |注解|✔|✔|✔|✔|✔|✔|✔|✔|✔|✔|✔|
