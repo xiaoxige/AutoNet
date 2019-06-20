@@ -3,7 +3,7 @@ package cn.xiaoxige.autonet.entity;
 /**
  * @author by zhuxiaoan on 2018/12/18 0018.
  */
-public class MainEntity {
+public class WanAndroidEntity {
 
 //    List children;
 
@@ -74,7 +74,7 @@ public class MainEntity {
 
     @Override
     public String toString() {
-        return "MainEntity{" +
+        return "WanAndroidEntity{" +
                 "courseId=" + courseId +
                 ", id=" + id +
                 ", name='" + name + '\'' +

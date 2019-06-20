@@ -4,8 +4,11 @@ import android.app.Application;
 import android.support.v4.util.ArrayMap;
 import android.util.Log;
 
+import com.google.gson.Gson;
+
 import java.util.Map;
 
+import cn.xiaoxige.autonet.entity.BaseResponse;
 import cn.xiaoxige.autonet_api.AutoNet;
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
 import cn.xiaoxige.autonet_api.error.CustomError;
@@ -30,24 +33,24 @@ public class MyApplication extends Application {
         super.onCreate();
 
 
-        Map<String, Object> heads = new ArrayMap<>();
-        heads.put("token", "0");
-        heads.put("userId", "A");
-
-        Map<String, String> domainNames = new ArrayMap<>();
-        domainNames.put("pppig", "https://www.pangpangpig.com");
-        domainNames.put("upFile", "http://testimage.xxxx.com:8080");
-        domainNames.put("test", "http://192.168.1.38:8080");
-
         RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
             @Override
             public void accept(Throwable throwable) throws Exception {
             }
         });
 
+        Map<String, Object> heads = new ArrayMap<>();
+        heads.put("token", "0");
+        heads.put("userId", "A");
+
+        Map<String, String> domainNames = new ArrayMap<>();
+        domainNames.put("pppig", "https://newpc.pangpangpig.com");
+        domainNames.put("upFile", "https://zimg.pangpangpig.com");
+        domainNames.put("wanandroid", "http://www.wanandroid.com");
+
         AutoNetConfig config = new AutoNetConfig.Builder()
                 .isOpenStetho(true)
-                .setDefaultDomainName("http://www.wanandroid.com")
+                .setDefaultDomainName("http://www.baidu.com")
                 .setHeadParam(heads)
                 .setDomainName(domainNames)
                 .build();
@@ -69,16 +72,39 @@ public class MyApplication extends Application {
             public boolean body(Object flag, String body) throws Exception {
                 Log.e("TAG", "flag = " + flag);
                 Log.e("TAG", "body： " + body);
+
                 if (flag instanceof Integer) {
-                    if ((int) flag == 1) {
-                        throw new CustomError("测试等于了1");
+                    if ((int) flag == 666) {
+                        return false;
                     }
                 }
+
+                if (flag instanceof Integer) {
+                    if ((int) flag == 1) {
+                        throw new CustomError("flag 标志 为1， 我自动进行了拦截， 并给你想要的返回了错误...");
+                    }
+                }
+
+//                BaseResponse baseResponse = new Gson().fromJson(body, BaseResponse.class);
+//                if (!baseResponse.isTokenInvalid()) {
+//                    // token 失效, 返回 true自己进行处理
+//                    handleTokenInvalid();
+//                    return true;
+//                }
+//                if (!baseResponse.isSuccess()) {
+//                    // 返回系统返回的错误， 直接到对应接口的onFi里
+//                    throw new CustomError(baseResponse.getErrorMsg());
+//                }
+
                 return false;
             }
 
         }).updateOrInsertDomainNames("jsonTestBaseUrl", "http://api.news18a.com");
 
+
+    }
+
+    private void handleTokenInvalid() {
 
     }
 }

@@ -6,21 +6,21 @@ import java.util.List;
 /**
  * @author by zhuxiaoan on 2018/12/18 0018.
  */
-public class MainResponse extends BaseResponse {
+public class WanAndroidResponse extends BaseResponse {
 
-    private List<MainEntity> data;
+    private List<WanAndroidEntity> data;
 
-    public List<MainEntity> getData() {
+    public List<WanAndroidEntity> getData() {
         return data;
     }
 
-    public void setData(List<MainEntity> data) {
+    public void setData(List<WanAndroidEntity> data) {
         this.data = data;
     }
 
     @Override
     public String toString() {
-        return "MainResponse{" +
+        return "WanAndroidResponse{" +
                 "data=" + data +
                 '}';
     }
