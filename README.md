@@ -73,7 +73,7 @@ AutoNet.getInstance().updateOrInsertDomainNames(key, value);
 ```
 ## 2. 支持清单
 
-* 支持请求类型方式及策略
+### 2.1. 支持请求类型方式及策略
 |.|请求类型|请求方式|策略|
 |:------:|:------:|:------:|:------:|
 |注解方式| GET/POST/DELETE/PUT|JSON/FORM/STREAM|NET/LOCAL_NET/LOCAL/NET_LOCAL|
@@ -81,7 +81,7 @@ AutoNet.getInstance().updateOrInsertDomainNames(key, value);
 |获取上游发射器|GET/POST/DELETE/PUT|JSON/FORM/STREAM|NET/LOCAL|
 |链式异步（推荐）|GET/POST/DELETE/PUT|JSON/FORM/STREAM|NET/LOCAL_NET/LOCAL/NET_LOCAL|
 
-* 支持的回调
+### 2.2. 支持的回调
 |.|IAutoNetBodyCallBack|IAutoNetHeadCallBack|IAutoNetEncryptionCallback|AbsAutoNetCallback|IAutoNetCallBack|IAutoNetComplete|IAutoNetDataBeforeCallBack|IAutoNetDataSuccessCallBack|IAutoNetDataCallBack|IAutoNetFileCallBack|IAutoNetLocalOptCallBack|
 |:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|
 |注解|✔|✔|✔|✔|✔|✔|✔|✔|✔|✔|✔|
