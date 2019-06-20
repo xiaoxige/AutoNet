@@ -87,12 +87,12 @@ AutoNet.getInstance().updateOrInsertDomainNames(key, value);
 |IAutoNetBodyCallBack|✔|✔|✔|✔|
 |IAutoNetHeadCallBack|✔|✔|✔|✔|
 |IAutoNetEncryptionCallback|✔|✔|✔|✔|
-|AbsAutoNetCallback|✔|✔|✔|✔|
-|IAutoNetCallBack|✔|✔|✔|✔|
-|IAutoNetComplete|✔|✔|✔|✔|
-|IAutoNetDataBeforeCallBack|✔|✔|✔|✔|
-|IAutoNetDataSuccessCallBack|✔|✔|✔|✔|
-|IAutoNetDataCallBack|✔|✔|✔|✔|
+|AbsAutoNetCallback|✔|✘|✘|✔|
+|IAutoNetCallBack|✔|✘|✘|✔|
+|IAutoNetComplete|✔|✘|✘|✔|
+|IAutoNetDataBeforeCallBack|✔|✘|✘|✔|
+|IAutoNetDataSuccessCallBack|✔|✘|✘|✔|
+|IAutoNetDataCallBack|✔|✘|✘|✔|
 |IAutoNetFileCallBack|✔|✔|✔|✔|
 |IAutoNetLocalOptCallBack|✔|✔|✔|✔|
 
