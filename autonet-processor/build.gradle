@@ -2,8 +2,8 @@ apply plugin: 'java'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':autonet-annotation')
-//    compile 'cn.xiaoxige:autonet-annotation:1.1.2'
+//    compile project(':autonet-annotation')
+    compile 'cn.xiaoxige:autonet-annotation:2.0.0'
     compile 'com.google.auto.service:auto-service:1.0-rc3'
     compile 'com.squareup:javapoet:1.11.0'
 
@@ -21,7 +21,7 @@ targetCompatibility = "1.7"
 //    userOrg = 'xiaoxige'// 组织名，前面说了
 //    groupId = 'cn.xiaoxige'// 包名（跟bintray里的package不是一回事）
 //    artifactId = 'autonet-processor'// library的名字
-//    version = '1.1.2'// 版本 和前面两者组合起来就是依赖的内容compile 'com.xk:kinject:1.0.0'
+//    version = '2.0.0'// 版本 和前面两者组合起来就是依赖的内容compile 'com.xk:kinject:1.0.0'
 //    description = 'Automatic request network returns data, shielding the P layer and D layer, so that developers only need to pay attention to the View layer. this Androidlibrary is processor.'
 //    website = "https://github.com/xiaoxige/AutoNet"
 //    repoName = 'autonet'//前面说了，repository name
