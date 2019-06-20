@@ -36,7 +36,7 @@
 	compile 'cn.xiaoxige:autonet-api:2.0.0'
 	annotationProcessor 'cn.xiaoxige:autonet-processor:2.0.0'
 # 简易使用demo
-      ![image](https://github.com/xiaoxige/AutoNet/raw/master/Screenshots/AutoNet_Android.png)
+![image](https://github.com/xiaoxige/AutoNet/raw/master/Screenshots/AutoNet_Android.png)
 # 使用
 ## 1. 初始化
 ### 1.1 AutoNetConfig(配置AutoNet的基本配置)注意：改配置基本是固定，如域名、头部数据
