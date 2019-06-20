@@ -72,13 +72,22 @@ AutoNet.getInstance().updateOrInsertHead(key, value);
 AutoNet.getInstance().updateOrInsertDomainNames(key, value);
 ```
 ## 2. 支持清单
-
+### 2.1. 支持请求类型方式及策略
 |错误码|描述|
-|:------:|:------:|
-|1002|微信登录但未绑定手机号|
-|2000| 注册用户数据失败|
-|2001|账号不存在或者密码不正确|
-|2002|验证码错误|
+|:------:|:------:|:------:|:------:|
+||请求类型|请求方式|策略|
+|注解| GET/POST/DELETE/PUT|JSON/FORM/STREAM|NET/LOCAL_NET/LOCAL/NET_LOCAL|
+|链式同步|GET/POST/DELETE/PUT|JSON/FORM/STREAM|NET/LOCAL|
+|获取上游发射器|GET/POST/DELETE/PUT|JSON/FORM/STREAM|NET/LOCAL|
+|链式异步（推荐）|GET/POST/DELETE/PUT|JSON/FORM/STREAM|NET/LOCAL_NET/LOCAL/NET_LOCAL|
+
+###2.2. 支持的回调
+|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|
+||IAutoNetBodyCallBack|IAutoNetHeadCallBack|IAutoNetEncryptionCallback|AbsAutoNetCallback|IAutoNetCallBack|IAutoNetComplete|IAutoNetDataBeforeCallBack|IAutoNetDataSuccessCallBack|IAutoNetDataCallBack|IAutoNetFileCallBack|IAutoNetLocalOptCallBack|
+|注解|✔|✔|✔|✔|✔|✔|✔|✔|✔|✔|✔|
+|链式同步|
+|获取上游发射器|
+|链式异步（推荐）|
 
 ## 2. 回调介绍
 	回调需要继承实现AutoNet提供好的接口或者抽象类。AutoNet已经分类， 用户需要什么功能就去集成相应的接口或者抽象类即可
