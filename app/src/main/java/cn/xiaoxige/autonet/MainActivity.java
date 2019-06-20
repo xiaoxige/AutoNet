@@ -52,37 +52,38 @@ public class MainActivity extends RxActivity {
                 try {
 
 
-                    String rs = AutoNet.getInstance().createNet()
-                            .setBaseUrl("https://zimg.pangpangpig.com")
-                            .doPost()
-                            .setReqType(AutoNetTypeAnontation.Type.STREAM)
-                            .setPushFileParams("upload", getCacheDir().getAbsolutePath() + File.separator + "AutoNet.png")
-                            .setAutoNetFileCallback(new IAutoNetFileCallBack() {
-                                @Override
-                                public void onProgress(float progress) {
-                                    Log.e("TAG", "progress = " + progress);
-                                }
-
-                                @Override
-                                public void onComplete(File file) {
-                                    Log.e("TAG", "");
-                                }
-                            })
-                            .synchronizationNet(String.class);
-                    Log.e("TAG", "");
-
-//                    MainResponse res = AutoNet.getInstance().createNet()
-//                            .setSuffixUrl("/wxarticle/chapters/json")
-//                            .doGet()
-//                            .setNetStrategy(AutoNetStrategyAnontation.NetStrategy.NET)
-//                            .setAutoNetLocalOptCallback(new IAutoNetLocalOptCallBack<MainResponse>() {
+//                    String rs = AutoNet.getInstance().createNet()
+//                            .setBaseUrl("https://zimg.pangpangpig.com")
+//                            .doPost()
+//                            .setReqType(AutoNetTypeAnontation.Type.STREAM)
+//                            .setPushFileParams("upload", getCacheDir().getAbsolutePath() + File.separator + "AutoNet.png")
+//                            .setAutoNetFileCallback(new IAutoNetFileCallBack() {
 //                                @Override
-//                                public MainResponse optLocalData(Map request) {
-//                                    return null;
+//                                public void onProgress(float progress) {
+//                                    Log.e("TAG", "progress = " + progress);
+//                                }
+//
+//                                @Override
+//                                public void onComplete(File file) {
+//                                    Log.e("TAG", "");
 //                                }
 //                            })
-//                            .synchronizationNet(MainResponse.class);
-//                    Log.e("TAG", "res = " + res);
+//                            .synchronizationNet(String.class);
+//                    Log.e("TAG", "");
+
+                    MainResponse res = AutoNet.getInstance().createNet()
+                            .setSuffixUrl("/wxarticle/chapters/json")
+                            .doGet()
+                            .setFlag(1)
+                            .setNetStrategy(AutoNetStrategyAnontation.NetStrategy.NET)
+                            .setAutoNetLocalOptCallback(new IAutoNetLocalOptCallBack<MainResponse>() {
+                                @Override
+                                public MainResponse optLocalData(Map request) {
+                                    return null;
+                                }
+                            })
+                            .synchronizationNet(MainResponse.class);
+                    Log.e("TAG", "res = " + res);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -161,12 +162,12 @@ public class MainActivity extends RxActivity {
 //                });
 
 
-        Flowable flowable = AutoNet.getInstance().createNet()
-                .setSuffixUrl("/wxarticle/chapters/json")
-                .doGet()
-                .getFlowable(MainResponse.class)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io());
+//        Flowable flowable = AutoNet.getInstance().createNet()
+//                .setSuffixUrl("/wxarticle/chapters/json")
+//                .doGet()
+//                .getFlowable(MainResponse.class)
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribeOn(Schedulers.io());
 
 //        flowable.subscribe(new DefaultSubscriber() {
 //            @Override
@@ -190,11 +191,12 @@ public class MainActivity extends RxActivity {
 //            }
 //        });
 
-//        AutoNet.getInstance().createNet()
-//                .setSuffixUrl("/wxarticle/chapters/json")
-//                .doGet()
-//                .setNetStrategy(AutoNetStrategyAnontation.NetStrategy.NET)
-//                .start(new TestCallback());
+        AutoNet.getInstance().createNet()
+                .setSuffixUrl("/wxarticle/chapters/json")
+                .doGet()
+                .setFlag(1)
+                .setNetStrategy(AutoNetStrategyAnontation.NetStrategy.NET)
+                .start(new TestCallback());
 
 //        AutoNet.getInstance().createNet()
 //                .setBaseUrl("https://newpc.pangpangpig.com")
@@ -203,38 +205,38 @@ public class MainActivity extends RxActivity {
 //                .setPullFileParams(getCacheDir().getAbsolutePath(), "test.apk")
 //                .start(new TestCallback1());
 
-        Flowable flowable1 = AutoNet.getInstance().createNet()
-                .setBaseUrl("http://www.baidu.com")
-                .getFlowable(String.class)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io());
-
-        Flowable.zip(flowable1, flowable, new BiFunction<String, MainResponse, Object>() {
-            @Override
-            public Object apply(String o, MainResponse o2) throws Exception {
-                return "123456789";
-            }
-        }).subscribe(new DefaultSubscriber() {
-            @Override
-            protected void defaultOnNext(Object entity) {
-                super.defaultOnNext(entity);
-            }
-
-            @Override
-            protected void defaultOnEmptyError() {
-                super.defaultOnEmptyError();
-            }
-
-            @Override
-            protected void defaultOnErrorWithNotEmpty(Throwable throwable) {
-                super.defaultOnErrorWithNotEmpty(throwable);
-            }
-
-            @Override
-            protected void defaultOnComplete() {
-                super.defaultOnComplete();
-            }
-        });
+//        Flowable flowable1 = AutoNet.getInstance().createNet()
+//                .setBaseUrl("http://www.baidu.com")
+//                .getFlowable(String.class)
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribeOn(Schedulers.io());
+//
+//        Flowable.zip(flowable1, flowable, new BiFunction<String, MainResponse, Object>() {
+//            @Override
+//            public Object apply(String o, MainResponse o2) throws Exception {
+//                return "123456789";
+//            }
+//        }).subscribe(new DefaultSubscriber() {
+//            @Override
+//            protected void defaultOnNext(Object entity) {
+//                super.defaultOnNext(entity);
+//            }
+//
+//            @Override
+//            protected void defaultOnEmptyError() {
+//                super.defaultOnEmptyError();
+//            }
+//
+//            @Override
+//            protected void defaultOnErrorWithNotEmpty(Throwable throwable) {
+//                super.defaultOnErrorWithNotEmpty(throwable);
+//            }
+//
+//            @Override
+//            protected void defaultOnComplete() {
+//                super.defaultOnComplete();
+//            }
+//        });
 
     }
 
@@ -276,22 +278,7 @@ public class MainActivity extends RxActivity {
         }
     }
 
-    private class TestCallback1 implements IAutoNetDataCallBack<File>, IAutoNetFileCallBack, IAutoNetComplete {
-
-        @Override
-        public void onSuccess(File entity) {
-            Log.e("TAG", "");
-        }
-
-        @Override
-        public void onFailed(Throwable throwable) {
-            Log.e("TAG", "");
-        }
-
-        @Override
-        public void onEmpty() {
-            Log.e("TAG", "");
-        }
+    private class TestCallback1 implements IAutoNetFileCallBack, IAutoNetComplete {
 
         @Override
         public void onProgress(float progress) {

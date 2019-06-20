@@ -8,6 +8,7 @@ import java.util.Map;
 
 import cn.xiaoxige.autonet_api.AutoNet;
 import cn.xiaoxige.autonet_api.config.AutoNetConfig;
+import cn.xiaoxige.autonet_api.error.CustomError;
 import cn.xiaoxige.autonet_api.error.EmptyError;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetBodyCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
@@ -68,6 +69,11 @@ public class MyApplication extends Application {
             public boolean body(Object flag, String body) throws Exception {
                 Log.e("TAG", "flag = " + flag);
                 Log.e("TAG", "body： " + body);
+                if (flag instanceof Integer) {
+                    if ((int) flag == 1) {
+                        throw new CustomError("测试等于了1");
+                    }
+                }
                 return false;
             }
 

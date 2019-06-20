@@ -148,7 +148,7 @@ public final class AutoNet {
                                           AutoNetTypeAnontation.Type resType, String pushFileKey,
                                           String filePath, String fileName, IAutoNetFileCallBack accompanyFileCallback, IAutoNetLocalOptCallBack accompanyLocalOptCallback, FlowableTransformer transformer) throws Exception {
 
-        assertCommon(netPattern, netStrategy, reqType, resType, responseClazz, pushFileKey, filePath, fileName);
+        assertCommon(netPattern, netStrategy, reqType, resType, responseClazz, pushFileKey, filePath, fileName, null);
         assertSynchronization(netStrategy);
 
         Class<?> responseClass = assertResponseClass(responseClazz);
@@ -205,7 +205,7 @@ public final class AutoNet {
                                         AutoNetTypeAnontation.Type reqType,
                                         AutoNetTypeAnontation.Type resType, String pushFileKey,
                                         String filePath, String fileName, IAutoNetFileCallBack accompanyFileCallback, IAutoNetLocalOptCallBack accompanyLocalOptCallback, FlowableTransformer transformer) {
-        assertCommon(netPattern, netStrategy, reqType, resType, responseClazz, pushFileKey, filePath, fileName);
+        assertCommon(netPattern, netStrategy, reqType, resType, responseClazz, pushFileKey, filePath, fileName, null);
         assertFlowable(netStrategy);
 
         Class<?> responseClass = assertResponseClass(responseClazz);
@@ -263,7 +263,7 @@ public final class AutoNet {
                          IAutoNetFileCallBack accompanyFileCallback, IAutoNetLocalOptCallBack accompanyLocalOptCallback, IAutoNetCallBack callBack, FlowableTransformer transformer) {
 
         Class responseClass = integrationResponseClass(callBack);
-        assertCommon(netPattern, netStrategy, reqType, resType, responseClass, pushFileKey, filePath, fileName);
+        assertCommon(netPattern, netStrategy, reqType, resType, responseClass, pushFileKey, filePath, fileName, callBack);
         assertStartNet(accompanyLocalOptCallback, callBack);
 
         AutoNetExecutor<?, ?> autoNetExecutor = structuralExecutor(requestEntity, requestMap,
@@ -359,7 +359,7 @@ public final class AutoNet {
      */
     private void assertCommon(AutoNetPatternAnontation.NetPattern netPattern, AutoNetStrategyAnontation.NetStrategy netStrategy,
                               AutoNetTypeAnontation.Type reqType, AutoNetTypeAnontation.Type resType, Class<?> responseClazz,
-                              String pushFileKey, String filePath, String fileName) {
+                              String pushFileKey, String filePath, String fileName, IAutoNetCallBack callBack) {
         // 1. check is initialize
         if (sConfig == null) {
             throw new IllegalArgumentException("Please initialize first.");
@@ -409,7 +409,7 @@ public final class AutoNet {
                 throw new IllegalArgumentException("Please specify the location and name of the download file.");
             }
             // 3.3.5. => The download file must be File if the return value is specified
-            if (responseClazz != null && !File.class.equals(responseClazz) && !Object.class.equals(responseClazz)) {
+            if (callBack == null && responseClazz != null && !File.class.equals(responseClazz) && !Object.class.equals(responseClazz)) {
                 throw new IllegalArgumentException("The download file must be File if the return value is specified");
             }
         }
