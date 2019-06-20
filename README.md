@@ -503,6 +503,9 @@ private class TestListCallback extends AbsAutoNetCallback<TestListResponse, List
 
 ### 二、 body回调
 * 去除 FlowableEmitter 参数， 在之前需要进行特出处理的比如 **emitter.onError(new Custom("..."))** 改为 **throw new Custom("...")**
-
-### 三、 增加了IAutoNetComplete 接口， 如果你想监听请求结束， 就集成IAutoNetComplete。 它不管是否成功失败最后都会回调
-### 四、 如果是下载文件操作， 那么请求返回的ResponseClass 需要制定为 File.class类型
+### 三、 增加方法
+* 同步和手动获取上游发射器， 并不可指定callback, 在发送和接受文件时， 提供了setAutoNetFileCallback和setAutoNetLocalOptCallback方法。
+### 三、 增加接口 
+* 增加了IAutoNetComplete 接口， 如果你想监听请求结束， 就集成IAutoNetComplete。 它不管是否成功失败最后都会回调
+### 四、 下载文件方式的强制规定
+* 如果是下载文件操作， 那么请求返回的ResponseClass 需要制定为 File.class类型
