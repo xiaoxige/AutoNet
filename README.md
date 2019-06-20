@@ -96,23 +96,23 @@ AutoNet.getInstance().updateOrInsertDomainNames(key, value);
 |IAutoNetFileCallBack|✔|✔|✔|✔|
 |IAutoNetLocalOptCallBack|✔|✔|✔|✔|
 
-## 2. 回调介绍
+## 3. 回调介绍
 	回调需要继承实现AutoNet提供好的接口或者抽象类。AutoNet已经分类， 用户需要什么功能就去集成相应的接口或者抽象类即可
-### 2.1 IAutoNetDataBeforeCallBack（数据返回前的处理， 可定制要继续返回给客户前端的数据）
+### 3.1 IAutoNetDataBeforeCallBack（数据返回前的处理， 可定制要继续返回给客户前端的数据）
 ``` java
 public interface IAutoNetDataBeforeCallBack<T, Z> extends IAutoNetCallBack {
 	// T为用户指定的body要返回的实体类（AutoNet会自动转换）， emitter为Rxjava的上游， 可改变其返回结果。 如果自己处理需要返回true。eg: T为一个实体类， 里面有一个List集合， 我们在View层只需要关注List集合，则可以在这里直接重新定义并返回List集合， 并返回true。 （注意：其实这里还有一个功能就是， 根据自己的需求去判断是否集合为空更妙。emitter.onError(new EmptyError())。）
 	boolean handlerBefore(T t, FlowableEmitter<Z> emitter);
 }
 ```
-### 2.2 IAutoNetDataSuccessCallBack（只关心成功的数据， 不关心失败和数据为空的结果）
+### 3.2 IAutoNetDataSuccessCallBack（只关心成功的数据， 不关心失败和数据为空的结果）
 ``` java
 public interface IAutoNetDataSuccessCallBack<T> extends IAutoNetCallBack {
 	// T为用户需要返回的实体类
 	void onSuccess(T entity);
 }
 ```
-### 2.3 IAutoNetDataCallBack（数据返回比较全的回调, 包含了数据成功、数据失败、数据为空）
+### 3.3 IAutoNetDataCallBack（数据返回比较全的回调, 包含了数据成功、数据失败、数据为空）
 ``` java
 public interface IAutoNetDataCallBack<T> extends IAutoNetDataSuccessCallBack<T> {
 	// 失败
@@ -121,13 +121,13 @@ public interface IAutoNetDataCallBack<T> extends IAutoNetDataSuccessCallBack<T> 
 	void onEmpty();
 }
 ```
-### 2.4 IAutoNetLocalOptCallBack（需要用到本地操作， eg：网络策略， 本地、 先本地后网络， 先网络后本地。 其实AutoNet并不能自动根据你的业务和字段给你建立数据库， 需要自己去实现）
+### 3.4 IAutoNetLocalOptCallBack（需要用到本地操作， eg：网络策略， 本地、 先本地后网络， 先网络后本地。 其实AutoNet并不能自动根据你的业务和字段给你建立数据库， 需要自己去实现）
 ``` java
 public interface IAutoNetLocalOptCallBack<T> extends IAutoNetCallBack {
     T optLocalData(Map request) throws Exception;
 }
 ```
-### 2.5 IAutoNetFileCallBack（文件操作时的回调， 需要关心上传错误等需要继承上面的IAutoNetDataCallBack）
+### 3.5 IAutoNetFileCallBack（文件操作时的回调， 需要关心上传错误等需要继承上面的IAutoNetDataCallBack）
 ``` java
 public interface IAutoNetFileCallBack extends IAutoNetCallBack {
 	// 上传文件或者下载文件的进度（0~100）
@@ -136,13 +136,13 @@ public interface IAutoNetFileCallBack extends IAutoNetCallBack {
 	void onComplete(File file);
 }
 ```
-### 2.6 IAutoNetComplete （请求结束后， 该回调会被调用，不管错误成功后都会调用）
+### 3.6 IAutoNetComplete （请求结束后， 该回调会被调用，不管错误成功后都会调用）
 ``` java
 public interface IAutoNetComplete extends IAutoNetCallBack {
     void onComplete();
 }
 ```
-### 2.7 AbsAutoNetCallback（数据回调的集合， 其实数据写这个就行了， 需要什么方法重写什么方法即可）
+### 3.7 AbsAutoNetCallback（数据回调的集合， 其实数据写这个就行了， 需要什么方法重写什么方法即可）
 ``` java
 // 其中 T为返回的body的实体类，Z为自己处理后需要返回给View层后的实体类
 public abstract class AbsAutoNetCallback<T, Z> implements IAutoNetDataBeforeCallBack<T, Z>, IAutoNetDataCallBack<Z>, IAutoNetComplete {
@@ -171,7 +171,7 @@ public abstract class AbsAutoNetCallback<T, Z> implements IAutoNetDataBeforeCall
 }
 ```
 
-## 3. 链式调用
+## 4. 链式调用
 ``` java
 AutoNet.getInstance().createNet()
 	// 设置url后缀（除去域名）
@@ -229,7 +229,7 @@ AutoNet.getInstance().createNet()
 	// 同步请求
 	(3).synchronizationNet（Class）
 ```
-## 4. 获取上游并处理（已zip合并为例， 这里只是用了两个， 其实RxJava提供了好多， 当然还有其他用法，详情可以看RxJava的用法）
+## 5. 获取上游并处理（已zip合并为例， 这里只是用了两个， 其实RxJava提供了好多， 当然还有其他用法，详情可以看RxJava的用法）
 ``` java
 // zip
 // 1. 得到wanAndroid的上游发射器
@@ -303,8 +303,8 @@ private Flowable getBaiduFlowable() {
 }
 ```
 
-## 5. 注解方式
-### 5.1 注解介绍
+## 6. 注解方式
+### 6.1 注解介绍
 > * AutoNetAnontation 网络参数设置(value(除去域名)、flag、 writeTime、readTime、connectOutTime)
 > * AutoNetBaseUrlKeyAnontation BaseUrl的选择标识key(value)
 > * AutoNetDisposableBaseUrlAnontation 本次请求临时使用的BaseUrl(value)
@@ -315,12 +315,12 @@ private Flowable getBaiduFlowable() {
 > * AutoNetStrategyAnontation 网络请求策略(value(net/local/local_net/net_local))
 > * AutoNetTypeAnontation 请求和返回的请求类型(reqType(json/form/stream), resType(json/form/stream))
 
-### 5.2 代理类名规则
+### 6.2 代理类名规则
     如果是回调是内部 则代理类名为 外层类名 + 回调类名 + AutoProxy
     如果回调就是一个类 则代理类名为 回调类名 + AutoProxy
-### 5.3 注意
+### 6.3 注意
 	如果使用的是注解方式请求网络， 在写完类后，请build -> rebuild project。
-### 5.4 例子
+### 6.4 例子
 #### 一、普通请求
 ``` java
 @AutoNetPatternAnontation(AutoNetPatternAnontation.NetPattern.GET)
@@ -418,7 +418,7 @@ public class PullFile implements IAutoNetDataCallBack<File>, IAutoNetFileCallBac
 请求方式：
 MainActivityPullFileAutoProxy.pullFile(MainActivity.this, path, "pppig.apk");
 ```
-## 6. 简单的例子
+## 7. 简单的例子
 ### 初始化
 ``` java
 AutoNetConfig config = new AutoNetConfig.Builder()
@@ -493,3 +493,14 @@ private class TestListCallback extends AbsAutoNetCallback<TestListResponse, List
     }
 }
 ```
+
+# 2.0.0 修改点（该版本修改较大， 架构等都有修改， 所以和之前的版本可能有个别用法不同，如果切换最新版本需要主要一下几点）
+### 一、 支持了同步请求，异步请求
+* 增添了synchronizationNet（Class）方法。 Class 即后台返回的数据结构类型。
+* 修改了getFlowable（Class）, 增加参数Class。Class 即后台返回的数据结构类型。
+
+### 二、 body回调
+* 去除 FlowableEmitter 参数， 在之前需要进行特出处理的比如 **emitter.onError(new Custom("..."))** 改为 **throw new Custom("...")**
+
+### 三、 增加了IAutoNetComplete 接口， 如果你想监听请求结束， 就集成IAutoNetComplete。 它不管是否成功失败最后都会回调
+### 四、 如果是下载文件操作， 那么请求返回的ResponseClass 需要制定为 File.class类型
