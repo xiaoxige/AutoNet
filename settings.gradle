@@ -1,6 +1,6 @@
 include ':app'
-//include ':recommendeddemo'
-//include ':emptylayout'
+include ':recommendeddemo'
+include ':emptylayout'
 include ':autonet-annotation'
 //include ':autonetapitest'
 //include ':autonetannotationtest'

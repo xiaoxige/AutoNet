@@ -44,10 +44,10 @@ public class RecommendedDemoApplication extends Application {
          */
         AutoNet.getInstance().initAutoNet(this, config).setBodyCallback(new IAutoNetBodyCallBack() {
             @Override
-            public boolean body(Object flag, String response, FlowableEmitter emitter) {
+            public boolean body(Object flag, String body) throws Exception {
 
                 try {
-                    BaseResponse baseResponse = new Gson().fromJson(response, BaseResponse.class);
+                    BaseResponse baseResponse = new Gson().fromJson(body, BaseResponse.class);
 
                     if (baseResponse.isTokenInvalid()) {
                         handlerTokenInvalid();
@@ -63,17 +63,16 @@ public class RecommendedDemoApplication extends Application {
                     }
 
                     if (!baseResponse.isSuccess()) {
-                        emitter.onError(new CustomError(baseResponse.getErrorMsg()));
-                        return true;
+                        throw new CustomError(baseResponse.getErrorMsg());
                     }
 
                 } catch (Exception e) {
-                    emitter.onError(e);
-                    return true;
+                    throw e;
                 }
 
                 return false;
             }
+
         });
     }
 
