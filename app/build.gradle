@@ -34,8 +34,8 @@ dependencies {
 
 //    compile project(':autonet-api')
 //    annotationProcessor project(':autonet-processor')
-    compile 'cn.xiaoxige:autonet-api:2.0.0'
-    annotationProcessor 'cn.xiaoxige:autonet-processor:2.0.0'
+    compile 'cn.xiaoxige:autonet-api:2.0.2'
+    annotationProcessor 'cn.xiaoxige:autonet-processor:2.0.2'
 
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'

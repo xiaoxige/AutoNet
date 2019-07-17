@@ -33,8 +33,8 @@
 > * 可直接获得上游的Flowable, 用户自己进行操作结果。（eg: 使用zip去合并多个请求等）
 
 # gradle依赖
-	compile 'cn.xiaoxige:autonet-api:2.0.0'
-	annotationProcessor 'cn.xiaoxige:autonet-processor:2.0.0'
+	compile 'cn.xiaoxige:autonet-api:2.0.2'
+	annotationProcessor 'cn.xiaoxige:autonet-processor:2.0.2'
 # 简易使用demo
 ![image](https://github.com/xiaoxige/AutoNet/raw/master/Screenshots/AutoNet_Android.png)
 # 使用
@@ -496,7 +496,7 @@ private class TestListCallback extends AbsAutoNetCallback<TestListResponse, List
 }
 ```
 
-# 2.0.0 修改点（该版本修改较大， 架构等都有修改， 所以和之前的版本可能有个别用法不同，如果切换最新版本需要主要一下几点）
+# 2.0.+ 修改点（该版本修改较大， 架构等都有修改， 所以和之前的版本可能有个别用法不同，如果切换最新版本需要主要一下几点）
 ### 一、 支持了同步请求，异步请求
 * 增添了synchronizationNet（Class）方法。 Class 即后台返回的数据结构类型。
 * 修改了getFlowable（Class）, 增加参数Class。Class 即后台返回的数据结构类型。
