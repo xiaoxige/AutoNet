@@ -78,7 +78,7 @@ public final class ProxyInfo {
     /**
      * mediaType of request
      */
-    public String mediaType = "application/json; charset=utf-8";
+    public String mediaType = "";
 
     /**
      * A temporary domain name
