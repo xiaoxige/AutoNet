@@ -44,7 +44,7 @@ public class RecommendedDemoApplication extends Application {
          */
         AutoNet.getInstance().initAutoNet(this, config).setBodyCallback(new IAutoNetBodyCallBack() {
             @Override
-            public boolean body(Object flag, String body) throws Exception {
+            public boolean body(Object flag, int httpCode, String body) throws Exception {
 
                 try {
                     BaseResponse baseResponse = new Gson().fromJson(body, BaseResponse.class);

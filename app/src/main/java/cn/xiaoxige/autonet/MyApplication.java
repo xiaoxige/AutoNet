@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.util.Map;
 
 import cn.xiaoxige.autonet.entity.BaseResponse;
@@ -63,13 +64,14 @@ public class MyApplication extends Application {
             }
         }).setHeadsCallback(new IAutoNetHeadCallBack() {
             @Override
-            public void head(Object flag, Headers headers) {
+            public void head(Object flag, Headers headers) throws IOException {
                 Log.e("TAG", "flag = " + flag);
                 Log.e("TAG", "头部回调：" + headers);
             }
         }).setBodyCallback(new IAutoNetBodyCallBack() {
+
             @Override
-            public boolean body(Object flag, String body) throws Exception {
+            public boolean body(Object flag, int i, String body) throws Exception {
                 Log.e("TAG", "flag = " + flag);
                 Log.e("TAG", "body： " + body);
 

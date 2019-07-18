@@ -33,8 +33,8 @@
 > * 可直接获得上游的Flowable, 用户自己进行操作结果。（eg: 使用zip去合并多个请求等）
 
 # gradle依赖
-	compile 'cn.xiaoxige:autonet-api:2.0.2'
-	annotationProcessor 'cn.xiaoxige:autonet-processor:2.0.2'
+	compile 'cn.xiaoxige:autonet-api:2.0.3'
+	annotationProcessor 'cn.xiaoxige:autonet-processor:2.0.3'
 # 简易使用demo
 ![image](https://github.com/xiaoxige/AutoNet/raw/master/Screenshots/AutoNet_Android.png)
 # 使用
@@ -59,12 +59,12 @@ AutoNet.getInstance().initAutoNet(Context, AutoNetConfig)
         }
     }).setHeadsCallback(new IAutoNetHeadCallBack() {
         @Override
-        public void head(Object flag, Headers headers) {
+        public void head(Object flag, Headers headers)throw IOException {
 			// 请求返回的头部数据回调
         }
     }).setBodyCallback(new IAutoNetBodyCallBack() {
         @Override
-        public boolean body(Object flag, String body) throw Exception {
+        public boolean body(Object flag, int httpCode, String body) throw Exception {
 			// 自己处理需要返回true
             return false;
         }
@@ -430,7 +430,7 @@ AutoNetConfig config = new AutoNetConfig.Builder()
 
 AutoNet.getInstance().initAutoNet(this, config).setBodyCallback(new IAutoNetBodyCallBack() {
         @Override
-        public boolean body(Object flag, String body) {
+        public boolean body(Object flag, int httpCode, String body) {
 			// 全局的， 所有的请求都会到这里
 			// 在这里可以根据自己的统一的字段去判断code什么的是否成功了
 			// 如果不成功可以以异常出去， 最后会在onFailed回调
