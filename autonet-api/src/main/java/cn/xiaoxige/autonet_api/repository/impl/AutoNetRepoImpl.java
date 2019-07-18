@@ -15,9 +15,9 @@ import java.util.Set;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
 import cn.xiaoxige.autonet_api.client.Client;
 import cn.xiaoxige.autonet_api.constant.AutoNetConstant;
+import cn.xiaoxige.autonet_api.error.CutOffError;
 import cn.xiaoxige.autonet_api.error.EmptyError;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetBodyCallBack;
-import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetEncryptionCallback;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetHeadCallBack;
@@ -190,15 +190,16 @@ public class AutoNetRepoImpl<T> implements AutoNetRepo<T> {
         if (body == null) {
             throw new EmptyError();
         }
+
         String content = body.string();
-        if (TextUtils.isEmpty(content)) {
-            throw new EmptyError();
+        if (this.mBodyCallBack != null) {
+            if (this.mBodyCallBack.body(this.mFlag, response.code(), content)) {
+                throw new CutOffError();
+            }
         }
 
-        if (this.mBodyCallBack != null) {
-            if (this.mBodyCallBack.body(this.mFlag, content)) {
-                throw new Exception();
-            }
+        if (TextUtils.isEmpty(content)) {
+            throw new EmptyError();
         }
 
         if (String.class.equals(this.mResponseClass) || Object.class.equals(this.mResponseClass)) {

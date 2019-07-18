@@ -12,10 +12,11 @@ public interface IAutoNetBodyCallBack {
      * Return volume original content callback
      *
      * @param flag
+     * @param httpCode
      * @param body
      * @return
      * @throws Exception
      */
-    boolean body(Object flag, String body) throws Exception;
+    boolean body(Object flag, int httpCode, String body) throws Exception;
 
 }

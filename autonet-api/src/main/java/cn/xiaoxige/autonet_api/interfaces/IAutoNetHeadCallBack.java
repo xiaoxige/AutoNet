@@ -1,5 +1,7 @@
 package cn.xiaoxige.autonet_api.interfaces;
 
+import java.io.IOException;
+
 import okhttp3.Headers;
 
 /**
@@ -14,6 +16,7 @@ public interface IAutoNetHeadCallBack {
      *
      * @param flag    Tracking Mark
      * @param headers headers of response
+     * @throws IOException
      */
-    void head(Object flag, Headers headers);
+    void head(Object flag, Headers headers) throws IOException;
 }
