@@ -94,7 +94,7 @@ public class AutoNetDistributor<T> implements IDistributor<T> {
             @Override
             public void onComplete(File file) {
                 // transmit file progress
-                if (!AutoNetTypeUtil.isPullFileOperation(mResType) && callBack != null) {
+                if (callBack != null) {
                     callBack.onComplete(file);
                 }
                 // User monitoring

@@ -4,6 +4,7 @@ import java.io.File;
 
 import cn.xiaoxige.annotation.AutoNetStrategyAnontation;
 import cn.xiaoxige.annotation.AutoNetTypeAnontation;
+import cn.xiaoxige.autonet_api.constant.AutoNetConstant;
 import cn.xiaoxige.autonet_api.error.CutOffError;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetComplete;
@@ -12,7 +13,6 @@ import cn.xiaoxige.autonet_api.interfaces.IAutoNetDataSuccessCallBack;
 import cn.xiaoxige.autonet_api.interfaces.IAutoNetFileCallBack;
 import cn.xiaoxige.autonet_api.subscriber.DefaultSubscriber;
 import cn.xiaoxige.autonet_api.util.AutoNetTypeUtil;
-import cn.xiaoxige.autonet_api.util.ClassInstanceofPlusUtil;
 import io.reactivex.Flowable;
 
 /**
@@ -27,7 +27,6 @@ class NetExecutor<T, Z> {
     private AutoNetStrategyAnontation.NetStrategy mNetStrategy;
     private AutoNetTypeAnontation.Type mReqType;
     private AutoNetTypeAnontation.Type mResType;
-    private Class<Z> mTargetClass;
     private IAutoNetCallBack mCallBack;
     private AutoNetFlowableExecutor<Flowable, T> mExecution;
 
@@ -35,7 +34,6 @@ class NetExecutor<T, Z> {
         this.mNetStrategy = netStrategy;
         this.mReqType = reqType;
         this.mResType = resType;
-        this.mTargetClass = targetClass;
         this.mCallBack = callBack;
         this.mExecution = execution;
     }
@@ -136,11 +134,28 @@ class NetExecutor<T, Z> {
         //noinspection unchecked
         this.mExecution.getFlowable(true, isForceLocal)
                 .subscribe(new DefaultSubscriber() {
+
+                    // Default to the actual return body type
+                    private Integer resultType = AutoNetConstant.TYPE_RESULT_NODE_RESPONSE;
+
                     @Override
                     protected void defaultOnNext(Object entity) {
                         //noinspection unchecked
                         super.defaultOnNext(entity);
-                        asNext(entity);
+
+                        if (mCallBack == null) {
+                            return;
+                        }
+
+                        resultType = autoDistinguishReturnBodyType(resultType, entity);
+
+                        if (AutoNetConstant.TYPE_RESULT_NODE_RESPONSE == resultType) {
+                            asTarget(entity);
+                        } else if (AutoNetConstant.TYPE_RESULT_NODE_PROGRESS == resultType) {
+                            asProgress((Float) entity);
+                        } else if (AutoNetConstant.TYPE_RESULT_NODE_FILE == resultType) {
+                            asFileComplete((File) entity);
+                        }
                     }
 
                     @Override
@@ -178,43 +193,34 @@ class NetExecutor<T, Z> {
                 });
     }
 
-    private void asNext(Object entity) {
-        if (mCallBack == null) {
-            return;
+    private Integer autoDistinguishReturnBodyType(Integer resultType, Object entity) {
+        // If the file operation is done, it is necessary to determine whether the return body is a progress or a file.
+        if (resultType != AutoNetConstant.TYPE_RESULT_NODE_FILE && AutoNetTypeUtil.isFileOperation(this.mReqType, this.mResType)) {
+            if (entity instanceof Float) {
+                return AutoNetConstant.TYPE_RESULT_NODE_PROGRESS;
+            } else if (entity instanceof File) {
+                return AutoNetConstant.TYPE_RESULT_NODE_FILE;
+            }
         }
-
-        if (AutoNetTypeUtil.isFileOperation(this.mReqType, this.mResType)) {
-            asFile(entity);
-        } else {
-            asTarget(entity);
-        }
-    }
-
-    private void asFile(Object entity) {
-        asProgress(entity);
-        asFileComplete(entity);
-        asTarget(entity);
+        return AutoNetConstant.TYPE_RESULT_NODE_RESPONSE;
     }
 
     private void asTarget(Object entity) {
-
-        if (ClassInstanceofPlusUtil.instanceOf(entity, this.mTargetClass)) {
-            if (mCallBack instanceof IAutoNetDataSuccessCallBack) {
-                //noinspection SingleStatementInBlock,unchecked
-                ((IAutoNetDataSuccessCallBack) mCallBack).onSuccess(entity);
-            }
+        if (mCallBack instanceof IAutoNetDataSuccessCallBack) {
+            //noinspection SingleStatementInBlock,unchecked
+            ((IAutoNetDataSuccessCallBack) mCallBack).onSuccess(entity);
         }
     }
 
-    private void asProgress(Object entity) {
-        if (entity instanceof Float && mCallBack instanceof IAutoNetFileCallBack) {
-            ((IAutoNetFileCallBack) mCallBack).onProgress((Float) entity);
+    private void asProgress(Float entity) {
+        if (mCallBack instanceof IAutoNetFileCallBack) {
+            ((IAutoNetFileCallBack) mCallBack).onProgress(entity);
         }
     }
 
-    private void asFileComplete(Object entity) {
-        if (entity instanceof File && mCallBack instanceof IAutoNetFileCallBack) {
-            ((IAutoNetFileCallBack) mCallBack).onComplete((File) entity);
+    private void asFileComplete(File entity) {
+        if (mCallBack instanceof IAutoNetFileCallBack) {
+            ((IAutoNetFileCallBack) mCallBack).onComplete(entity);
         }
     }
 
