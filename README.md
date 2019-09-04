@@ -33,8 +33,8 @@
 > * 可直接获得上游的Flowable, 用户自己进行操作结果。（eg: 使用zip去合并多个请求等）
 
 # gradle依赖
-	compile 'cn.xiaoxige:autonet-api:2.0.3'
-	annotationProcessor 'cn.xiaoxige:autonet-processor:2.0.3'
+	compile 'cn.xiaoxige:autonet-api:2.0.4'
+	annotationProcessor 'cn.xiaoxige:autonet-processor:2.0.4'
 # 简易使用demo
 ![image](https://github.com/xiaoxige/AutoNet/raw/master/Screenshots/AutoNet_Android.png)
 # 使用
