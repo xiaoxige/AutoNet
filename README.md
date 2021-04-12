@@ -9,9 +9,6 @@
 ## 2.ios版本：
 > [ios版AutoNet](https://github.com/xiaoxige/AutoNet-Ios)
 
-# AutoNet 技术交流群：
-> QQ: **141027175**
-
 # Demo说明
 > * app： AutoNet各个方式使用介绍
 > * recommendeddemo： AutoNet推荐用法（注：Api使用了wanandroid的Api）
