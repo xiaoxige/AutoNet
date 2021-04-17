@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
 
 android {
     compileSdkVersion 25
@@ -36,7 +37,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
 //    compile project(':autonet-annotation')
-    compile 'cn.xiaoxige:autonet-annotation:2.0.4'
+    compile 'cn.xiaoxige:autonet-annotation:2.0.0'
     //OkHttp
     compile 'com.squareup.okhttp3:okhttp:3.9.1'
     // RxJava
@@ -59,16 +60,29 @@ dependencies {
 }
 
 
-apply plugin: 'maven'
-apply plugin: 'com.novoda.bintray-release'
+group = 'cn.xiaoxige'
+archivesBaseName = 'autonet-api'
+version = '2.0.0'
 
-//与android、dependencies在同一级
-publish {
-    userOrg = 'xiaoxige'// 组织名，前面说了
-    groupId = 'cn.xiaoxige'// 包名（跟bintray里的package不是一回事）
-    artifactId = 'autonet-api'// library的名字
-    version = '2.0.4'// 版本 和前面两者组合起来就是依赖的内容compile 'com.xk:kinject:1.0.0'
-    description = 'Automatic request network returns data, shielding the P layer and D layer, so that developers only need to pay attention to the View layer. this Androidlibrary is api.'
-    website = "https://github.com/xiaoxige/AutoNet"
-    repoName = 'autonet'//前面说了，repository name
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri('../depository'))
+        }
+    }
 }
+
+
+//apply plugin: 'maven'
+//apply plugin: 'com.novoda.bintray-release'
+//
+////与android、dependencies在同一级
+//publish {
+//    userOrg = 'xiaoxige'// 组织名，前面说了
+//    groupId = 'cn.xiaoxige'// 包名（跟bintray里的package不是一回事）
+//    artifactId = 'autonet-api'// library的名字
+//    version = '2.0.0'// 版本 和前面两者组合起来就是依赖的内容compile 'com.xk:kinject:1.0.0'
+//    description = 'Automatic request network returns data, shielding the P layer and D layer, so that developers only need to pay attention to the View layer. this Androidlibrary is api.'
+//    website = "https://github.com/xiaoxige/AutoNet"
+//    repoName = 'autonet'//前面说了，repository name
+//}

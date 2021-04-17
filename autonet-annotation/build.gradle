@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'maven'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -6,6 +7,18 @@ dependencies {
 
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
+
+group = 'cn.xiaoxige'
+archivesBaseName = 'autonet-annotation'
+version = '2.0.0'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri('../depository'))
+        }
+    }
+}
 
 //apply plugin: 'maven'
 //apply plugin: 'com.novoda.bintray-release'

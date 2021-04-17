@@ -4,8 +4,10 @@ buildscript {
     repositories {
         jcenter()
         maven {
-            url 'https://maven.google.com/'
-            name 'Google'
+            url uri('./depository')
+        }
+        maven {
+            url "https://gitee.com/xiaoxigexiaoan/warehouse/raw/master"
         }
     }
     dependencies {
@@ -27,12 +29,14 @@ allprojects {
     }
 
     repositories {
+        maven {
+            url uri('./depository')
+        }
+        maven {
+            url "https://gitee.com/xiaoxigexiaoan/warehouse/raw/master"
+        }
         jcenter()
         maven { url "https://dl.bintray.com/xiaoxige/autonet" }
-        maven {
-            url 'https://maven.google.com/'
-            name 'Google'
-        }
     }
 
     tasks.withType(Javadoc) {
