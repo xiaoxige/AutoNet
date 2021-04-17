@@ -4,7 +4,7 @@ apply plugin: 'maven'
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 //    compile project(':autonet-annotation')
-    compile 'cn.xiaoxige:autonet-annotation:2.0.4'
+    compile 'cn.xiaoxige:autonet-annotation:3.0.0'
     compile 'com.google.auto.service:auto-service:1.0-rc3'
     compile 'com.squareup:javapoet:1.11.0'
 
@@ -16,7 +16,7 @@ targetCompatibility = "1.7"
 
 group = 'cn.xiaoxige'
 archivesBaseName = 'autonet-processor'
-version = '2.0.0'
+version = '3.0.0'
 
 uploadArchives {
     repositories {

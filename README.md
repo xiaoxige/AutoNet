@@ -37,8 +37,8 @@ maven {
     url "https://gitee.com/xiaoxigexiaoan/warehouse/raw/master"
 }
 // 使用 model 中添加 AutoNet 依赖
-compile 'cn.xiaoxige:autonet-api:2.0.0'
-annotationProcessor 'cn.xiaoxige:autonet-processor:2.0.0'
+compile 'cn.xiaoxige:autonet-api:3.0.0'
+annotationProcessor 'cn.xiaoxige:autonet-processor:3.0.0'
 ```
 
 # 简易使用demo
